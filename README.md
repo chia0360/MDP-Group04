@@ -9,9 +9,8 @@ Named File folders are allocated based on the following allocated Team.
 -     Arduino Source Codes
 -     Algorithms Source Codes
 -     Android Source Codes
--     Raspberry Pi Source Codes (if any)
 
 Named Files folders are allocated for Documentations like Progress Reports and Wiki, CheckLists and References
--   Project / Progress Report and Wiki
 -   Check List and Milestones
--   Reference or Senior Codes / Papers
+-   Project Report and Wiki
+-   Senioor Codes and References
