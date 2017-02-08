@@ -8,6 +8,8 @@ from tkinter import font
 # import time
 
 # import config
+import sys
+import os
 import handler
 from logger import *
 from copy import deepcopy
@@ -26,7 +28,7 @@ class Simulator:
         t.title("Control Panel")
 
         # width x height + x_offset + y_offset
-        t.geometry('210x420+1050+28')
+        t.geometry('210x620+1050+28')
         widgetFont = font.Font(family='Helvetica', size=12, weight='bold')
         ttk.Style().configure("TButton", font=widgetFont, padding=6, relief="flat", background="#ccc")
         ttk.Style().configure("TLabel", font=widgetFont)
@@ -48,11 +50,13 @@ class Simulator:
         self.robot_s = []
         self.robot_e = []
         self.robot_w = []
+
         for i in range(4):
             self.robot_n += [PhotoImage(file=config.icon_path['north'][i])]
             self.robot_s += [PhotoImage(file=config.icon_path['south'][i])]
             self.robot_w += [PhotoImage(file=config.icon_path['west'][i])]
             self.robot_e += [PhotoImage(file=config.icon_path['east'][i])]
+
         self.map_free1               = PhotoImage(file=config.icon_path['free'])
         self.map_free_explored1      = PhotoImage(file=config.icon_path['explored_free'])
         self.map_obstacle1           = PhotoImage(file=config.icon_path['obstacle'])
@@ -80,17 +84,7 @@ class Simulator:
         control_pane_window.add(parameter_pane, weight=4)
         control_pane_window.add(action_pane, weight=1)
 
-        explore_button = ttk.Button(action_pane, text='Explore', width=16, command=self.algo.explore)
-        explore_button.grid(column=0, row=0, sticky=(W, E))
-        fastest_path_button = ttk.Button(action_pane, text='Fastest Path', command=self.algo.run)
-        fastest_path_button.grid(column=0, row=1, sticky=(W, E))
-        move_button = ttk.Button(action_pane, text='Move', command=self.move)
-        move_button.grid(column=0, row=2, sticky=(W, E))
-        left_button = ttk.Button(action_pane, text='Left', command=self.left)
-        left_button.grid(column=0, row=3, sticky=(W, E))
-        right_button = ttk.Button(action_pane, text='Right', command=self.right)
-        right_button.grid(column=0, row=4, sticky=(W, E))
-
+        #Control Panel Parameter Section
         step_per_second = StringVar()
         step_per_second_label = ttk.Label(parameter_pane, text="Step Per Second:")
         step_per_second_label.grid(column=0, row=0, sticky=W)
@@ -108,6 +102,26 @@ class Simulator:
         time_limit_label.grid(column=0, row=4, sticky=W)
         time_limit_entry = ttk.Entry(parameter_pane, textvariable=time_limit)
         time_limit_entry.grid(column=0, row=5, pady=(0, 10))
+
+        #Control Panel Action Section
+        explore_button = ttk.Button(action_pane, text='Explore', width=16, command=self.algo.explore)
+        explore_button.grid(column=0, row=0, sticky=(W, E))
+
+        fastest_path_button = ttk.Button(action_pane, text='Fastest Path', command=self.algo.run)
+        fastest_path_button.grid(column=0, row=1, sticky=(W, E))
+        
+        move_button = ttk.Button(action_pane, text='Move', command=self.move)
+        move_button.grid(column=0, row=2, sticky=(W, E))
+
+        left_button = ttk.Button(action_pane, text='Left', command=self.left)
+        left_button.grid(column=0, row=3, sticky=(W, E))
+
+        right_button = ttk.Button(action_pane, text='Right', command=self.right)
+        right_button.grid(column=0, row=4, sticky=(W, E))
+
+        reset_button = ttk.Button(action_pane, text='Reset', command=self.reset)
+        reset_button.grid(column=0, row=5, sticky=(W, E))
+
 
         # self.root.columnconfigure(0, weight=1)
         # self.root.rowconfigure(0, weight=1)
@@ -146,6 +160,9 @@ class Simulator:
     def right(self):
         self.handler.right()
         self.update_map()
+        
+    def reset(self):
+        f.flush()
     # ----------------------------------------------------------------------
 
 

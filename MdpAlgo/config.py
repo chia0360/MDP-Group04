@@ -1,3 +1,7 @@
+#--------------------------------------------------------------------
+#This is where the simulator map's template and legend are established
+#--------------------------------------------------------------------
+
 icon_path = dict(
     north = ['images/robot/topleft.gif',
              'images/robot/topright.gif',
@@ -16,30 +20,23 @@ icon_path = dict(
              'images/robot/bottomleft.gif',
              'images/robot/bottomright2.gif'],
     
-    free  				= 'images/gray.gif',
-    obstacle 			= 'images/gray.gif',
-    explored_free		= 'images/d_blue.gif',
+    free                = 'images/gray.gif',
+    obstacle 		= 'images/gray.gif',
+    explored_free	= 'images/d_blue.gif',
     explored_obstacle	= 'images/d_red.gif',
     start               = 'images/yellow.gif',
     end                 = 'images/l_green.gif',
     size                = 1
 )
 
-map_detail 	= dict(
-    height	= 15,
-    width	= 20
-)
-
-robot_detail = dict (
-    size	= 2,
-    delay   = 500
-)
+map_detail 	= dict(height = 15, width = 20)
+robot_detail    = dict(size = 2, delay = 500)
 
 sensor_range = dict (
-    front_left      = 1,
-    front_right     = 1,
-    left            = 1,
-    right           = 1
+    front_left      = 2,
+    front_right     = 2,
+    left            = 2,
+    right           = 2
 )
 
 verbose = dict (

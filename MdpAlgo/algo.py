@@ -210,7 +210,7 @@ class RightHandRule(algoAbstract):
         print('Sensor data: ', sensor_data)
         # sensor data [front left, front right, left, right]
 
-        # more than 1 means there are still room infront, less than 0 means the distance is more than the sensor's limit
+        # > 1 means there is still room infront, < 0 means the distance is more than the sensor's limit
         if (sensor_data[0] > 1 or sensor_data[0] < 0) and \
            (sensor_data[1] > 1 or sensor_data[1] < 0):
             return True

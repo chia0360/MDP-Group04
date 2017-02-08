@@ -17,4 +17,3 @@ class Robot:
 
     def send(self, msg):
         pass
-
