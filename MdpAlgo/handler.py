@@ -10,7 +10,7 @@ class Handler:
     def __init__(self, simulator):
         self.simulator  = simulator
         self.map        = map.Map()
-        self.algo       = algo.algoFactory(self, algoName='LHR')
+        self.algo       = algo.algoFactory(self, algoName='RHR')
         if config.robot_simulation:
             self.robot = robot_simulator.RobotSimulator(self)
             self.__do_read()
@@ -44,39 +44,19 @@ class Handler:
         self.simulator.update_map()
 
     def left(self):
-        # ===== Threading =====
-        # map_info.map_lock.acquire()
-        # verbose("Locked by "+threading.current_thread(),
-        #     tag='Map Lock', lv='debug')
-        # ===== ========= =====
         verbose("Action: turn left", tag='Handler')
         self.map.set_robot_direction( self.map.get_robot_direction_left() )
-        # Send command to robot
-        self.robot.send('R')
+        # self.robot.send('R')
         self.__do_read()
         self.simulator.update_map()
-        # ===== Threading =====
-        # map_info.map_lock.release()
-        # print("[Map Lock] Released by ", threading.current_thread())
-        # ===== ========= =====
+        
 
     def right(self):
-        # ===== Threading =====
-        # map_info.map_lock.acquire()
-        # verbose("Locked by "+threading.current_thread(),
-        #     tag='Map Lock', lv='debug')
-        # ===== ========= =====
         verbose("Action: turn right", tag='Handler')
         self.map.set_robot_direction( self.map.get_robot_direction_right() )
-        # Send command to robot
         self.robot.send('R')
         self.__do_read()
         self.simulator.update_map()
-        # ===== Threading =====
-        # map_info.map_lock.release()
-        # print("[Map Lock] Released by ", threading.current_thread())
-        # ===== ========= =====
-    # ----------------------------------------------------------------------
 
 
     # ----------------------------------------------------------------------
@@ -93,6 +73,7 @@ class Handler:
         # Getting the next position
         robot_location  = self.map.get_robot_location()
         robot_direction = self.map.get_robot_direction()
+        print("__do_move: ", robot_location, robot_direction)
         if   robot_direction == 'N':
                 robot_next = [robot_location[0]-1, robot_location[1]]
         elif robot_direction == 'S':
@@ -104,7 +85,7 @@ class Handler:
         else:
             verbose("ERROR: Direction undefined! __do_move",
                 tag='Handler', pre='   >> ', lv='quiet')
-
+        print("next: ", robot_next)
         # Validating the next position
         if self.map.valid_pos(robot_next[0], robot_next[1]):
             # Updating robot position value
@@ -119,57 +100,80 @@ class Handler:
         # print("[Map Lock] Released by ", threading.current_thread())
 
     def __do_read(self):
+        print("b4 do_read", self.map.get_robot_location())
         sensor_data = None
         while not sensor_data:
+            # [front-left, front-right, left, right] 
             sensor_data = self.robot.receive()
+
         robot_direction = self.map.get_robot_direction()
         robot_location  = self.map.get_robot_location()
 
         verbose('__do_read from sensor', sensor_data, tag='Handler', lv='debug')
 
-        dis_y = [-1, 0, 1, 0]
-        dis_x = [ 0, 1, 0,-1]
         direction_ref   = ['N', 'E', 'S', 'W']
-        sensor_loc      = [[-1, 0], [ 0, 1], [ 1, 0], [ 0,-1]]  # displacement of sensor relative to robot location
-        sensor_locd     = [[-1,-1], [-1, 1], [ 1, 1], [ 1,-1]]  # displacement of diagonal sensor relative to robot location
-        idx_disp        = [0, -4, -1, 3, 1]                     # index displacement
-        idx_dire        = [0,  0,  0, 3, 1]                     # direction displacement index
-        sensor_nbr      = 5
 
-        # front sensor
+        # sensor location_offset according to the direction of the robot
+        sensor_offset = {'N': [[0, 0], [0, 1], [0, 0], [0, 1]],
+                      'E': [[0, 1], [1, 1], [0, 1], [1, 1]],
+                      'S': [[1, 1], [1, 0], [1, 1], [1, 0]],
+                      'W': [[1, 0], [0, 0], [1, 0], [0, 0]]}
+
+        sensor_nbr      = 4
+
         idx = map.Map.DIRECTIONS.index(robot_direction)
         for i in range(sensor_nbr):
-            if idx_disp[i] < 0:
-                # diagonal sensor. front_right, front_left. using sensor_locd
-                sid =  (idx - idx_disp[i]) % 4
-                loc =  [robot_location[0] + sensor_locd[sid][0],
-                        robot_location[1] + sensor_locd[sid][1]]
+            if i == 2:
+                # left sensor 
+                sensor_direction_idx = (direction_ref.index(robot_direction) + 3) % 4
+            elif i == 3:
+                # right sensor 
+                sensor_direction_idx = (direction_ref.index(robot_direction) + 1) % 4
             else:
-                # axis sensor. front, left, right. using sensor_loc
-                sid =  (idx + idx_disp[i]) % 4
-                loc =  [robot_location[0] + sensor_loc[sid][0],
-                        robot_location[1] + sensor_loc[sid][1]]
-            verbose('sensor location', loc, tag='Handler', pre='  ')
-            
-            # sensor return value
-            # see the criteria on sensor.py
+                # front sensor
+                sensor_direction_idx = direction_ref.index(robot_direction)
+                
+            sensor_direction = direction_ref[sensor_direction_idx]
+            # from index and direction we get the position of the sensor
+            sensor_loc = sensor_offset[robot_direction][i]
+            sensor_loc[0] += robot_location[0]
+            sensor_loc[1] += robot_location[1]
             dis = sensor_data[i]
+            print("sensor", i, sensor_direction, sensor_loc, dis)
+            
+            # negative dis means not obstructed
             if dis < 0:
                 dis *= -1
                 obs = False
             else:
                 obs = True
             # set the free boxes
-            yy = dis_y[ (idx+idx_dire[i]) % 4 ]
-            xx = dis_x[ (idx+idx_dire[i]) % 4 ]
+
+            if sensor_direction == 'N':
+                dx = 0
+                dy = -1
+            elif sensor_direction == 'S':
+                dx = 0
+                dy = 1
+            elif sensor_direction == 'E':
+                dx = 1
+                dy = 0
+            elif sensor_direction == 'W':
+                dx = -1
+                dy = 0
+            else:
+                dx = 0
+                dy = 0
+            
+            # open the map one by one from the location of the sensor
+            loc = sensor_loc[:]
+            
             for i in range(dis):
-                loc[0] += yy
-                loc[1] += xx
+                loc[0] += dy
+                loc[1] += dx
                 self.map.set_map(loc[0], loc[1], 'free')
             # set if obstacle
-            if (obs):
+            if obs:
                 self.map.set_map(loc[0], loc[1], 'obstacle')
 
-
     # ----------------------------------------------------------------------
-
