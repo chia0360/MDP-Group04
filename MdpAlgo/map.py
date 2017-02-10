@@ -14,7 +14,7 @@ from logger import *
 from map import *
 
 class Map:
-    DIRECTIONS = ['N', 'E', 'S', 'W']
+    ORIENTATION = ['N', 'E', 'S', 'W']
 
     def __init__(self):
         self.map_lock = threading.Lock()
@@ -22,7 +22,7 @@ class Map:
         #choose 1
         self.arena = Arena().a[0]
         self.arena = Arena().random_arena
-
+        
         # ----------------------------------------------------------------------
         #   Map Legend:
         #       0 - unexplored
@@ -49,8 +49,8 @@ class Map:
         self.width      = config.map_detail['width']
         self.mapStat    = ['unexplored', 'free', 'obstacle']
         
-        # Initialise robot to take topleft corner as starting position and faces East
-        self.robot_location = [0, 0]
+        # Initialising Robot's location and the direction it is facing
+        self.robot_location = [1, 1]
         self.robot_direction = 'E'
 
 
@@ -64,25 +64,21 @@ class Map:
         return self.robot_direction
 
     def get_robot_direction_right(self):
-        return Map.DIRECTIONS[ (Map.DIRECTIONS.index(self.robot_direction)+1) % 4 ]
-
+        return Map.ORIENTATION[ (Map.ORIENTATION.index(self.robot_direction)+1) % 4 ]
     def get_robot_direction_left(self):
-        return Map.DIRECTIONS[ (Map.DIRECTIONS.index(self.robot_direction)+3) % 4 ]
-
+        return Map.ORIENTATION[ (Map.ORIENTATION.index(self.robot_direction)+3) % 4 ]
     def get_robot_direction_back(self):
-        return Map.DIRECTIONS[ (Map.DIRECTIONS.index(self.robot_direction)+2) % 4 ]
-
+        return Map.ORIENTATION[ (Map.ORIENTATION.index(self.robot_direction)+2) % 4 ]
 
     def set_robot_location(self, loc):
-        if ((0 <= loc[0] < self.height - 1) and
-            (0 <= loc[1] < self.width - 1)):
-            print("location: ", loc)
+        if ((0 <= loc[0] < self.height) and
+            (0 <= loc[1] < self.width )):
             self.robot_location = loc
         else:
             verbose( "Error: Location update out of range", tag="Map", lv='quiet' )
 
     def set_robot_direction(self, direction):
-        if (direction in Map.DIRECTIONS):
+        if (direction in Map.ORIENTATION):
             self.robot_direction = direction
         else:
             verbose( "Error: Direction update invalid!", tag="Map", lv='quiet' )
@@ -113,11 +109,10 @@ class Map:
     #   x   -   coloumn position to be validated of robot
     # ----------------------------------------------------------------------
     def valid_pos(self, y, x):
-        if not (0 <= y <= (self.height - 2) and 0 <= x <= (self.width- 2)):
+        if not (0 < y < 14 and 0 < x < 19):
             return False
-
-        for i in range(y, y+2):
-            for j in range(x, x+2):
+        for i in range(y-1, y+2):
+            for j in range(x-1, x+2):
                 if not self.valid_range(i,j) or self.isObstacle(i,j):
                     return False
         return True
