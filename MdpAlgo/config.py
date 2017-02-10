@@ -56,11 +56,11 @@ robot_detail = dict (
 )
 
 sensor_range = dict (
-    front_middle    = 10,
-    front_left      = 4,
-    front_right     = 4,
-    left            = 6,
-    right           = 6
+    front_middle    = 4,
+    front_left      = 3,
+    front_right     = 3,
+    left            = 3,
+    right           = 3
 )
 
 verbose = dict (
