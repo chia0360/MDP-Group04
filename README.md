@@ -14,4 +14,3 @@ Named Files folders are allocated for Documentations like Progress Reports and W
 -   Check List and Milestones
 -   Project Report and Wiki
 -   Senioor Codes and References
--  test
