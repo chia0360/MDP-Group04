@@ -111,7 +111,7 @@ class Handler:
         sensor_nbr      = 5
 
         # front sensor
-        idx = map.Map.DIRECTIONS.index(robot_direction)
+        idx = map.Map.ORIENTATION.index(robot_direction)
         for i in range(sensor_nbr):
             if idx_disp[i] < 0:
                 # diagonal sensor. front_right, front_left. using sensor_locd

@@ -13,7 +13,7 @@ from copy import deepcopy
 
 
 class Simulator:
-    def __init__(self, title="Map Simulator"):
+    def __init__(self, title="Arena Simulator"):
 
         self.master  = Tk()
         self.master.title(title)
@@ -23,13 +23,16 @@ class Simulator:
 
         t = Toplevel(self.master)
         t.title("Control Panel")
-        t.geometry('180x360+1050+28')
+        t.geometry('230x570+1050+28')
+        widgetFont = font.Font(family='Times', size=12, weight='bold')
+        ttk.Style().configure("TButton", font=widgetFont, padding=6, relief="flat", background="#ccc")
+        ttk.Style().configure("TLabel", font=widgetFont)
 
         # left side map panel
         self.map_pane = ttk.Frame(self.master, borderwidth=0, relief="solid")
         self.map_pane.grid(column=0, row=0, sticky=(N, S, E, W))
         # right side control panel
-        self.control_pane = ttk.Frame(t, padding=(12, 10))
+        self.control_pane = ttk.Frame(t, padding=(24, 20))
         self.control_pane.grid(column=1, row=0, sticky=(N, S, E, W))
 
         # robot size
@@ -66,7 +69,9 @@ class Simulator:
         self.robot_location  = self.map.get_robot_location()
         self.robot_direction = self.map.get_robot_direction()
         self.update_map(init=True)
-
+        #----------------------------------------------------------------------
+        #Control Panel
+        #----------------------------------------------------------------------
         control_pane_window = ttk.Panedwindow(self.control_pane, orient=VERTICAL)
         control_pane_window.grid(column=0, row=0, sticky=(N, S, E, W))
         parameter_pane = ttk.Labelframe(control_pane_window, text='Parameters')
@@ -74,34 +79,53 @@ class Simulator:
         control_pane_window.add(parameter_pane, weight=4)
         control_pane_window.add(action_pane, weight=1)
 
-        explore_button = ttk.Button(action_pane, text='Explore', width=16, command=self.algo.explore)
+        #Control Panel Control Parameters (B3 of checklist)
+        #Speed in Steps/Second
+        speed_label = ttk.Label(parameter_pane, text = "Speed(in Steps Per Second):")
+        speed_label.grid(column=0, row=0, sticky=W)
+        self.speed_status = False
+        self.speed_value = StringVar()
+        speed = ttk.Combobox(parameter_pane, textvariable = self.speed_value)
+        speed['values'] = (1,2,3,4,5)
+        speed.grid(column = 0, row = 1, pady =(0,10))
+        
+        
+        #Coverage Figure in %
+        coverage_label = ttk.Label(parameter_pane, text="Coverage Figure(%):")
+        coverage_label.grid(column=0, row=2, sticky=W)
+        self.coverage_status = False
+        self.coverage_value = StringVar()
+        coverage = ttk.Combobox(parameter_pane, textvariable = self.coverage_value)
+        coverage['values'] = (10,20,30,40,50,60,70,80,90,100)
+        coverage.grid(column=0, row=3, pady=(0, 10))
+
+        #Time Limit in Minutes:Second 
+        time_label = ttk.Label(parameter_pane, text="Time Limit(min:sec):")
+        time_label.grid(column=0, row=4, sticky=W)
+        self.time_status = False
+        self.time_value = StringVar()
+        time = ttk.Combobox(parameter_pane, textvariable = self.time_value)
+        time['values'] = ("0:20","0:40","1:00","1:20","1:40","2:00","2:20","2:40","3:00")
+        time.grid(column=0, row=5, pady=(0, 10))
+
+
+        #Control Panel Action Commands
+        explore_button = ttk.Button(action_pane, text='Explore', width=20, command=self.algo.explore)
         explore_button.grid(column=0, row=0, sticky=(W, E))
+        
         fastest_path_button = ttk.Button(action_pane, text='Fastest Path', command=self.algo.run)
         fastest_path_button.grid(column=0, row=1, sticky=(W, E))
+        
         move_button = ttk.Button(action_pane, text='Move', command=self.move)
         move_button.grid(column=0, row=2, sticky=(W, E))
+        
         left_button = ttk.Button(action_pane, text='Left', command=self.left)
         left_button.grid(column=0, row=3, sticky=(W, E))
+
         right_button = ttk.Button(action_pane, text='Right', command=self.right)
         right_button.grid(column=0, row=4, sticky=(W, E))
 
-        step_per_second = StringVar()
-        step_per_second_label = ttk.Label(parameter_pane, text="Step Per Second:")
-        step_per_second_label.grid(column=0, row=0, sticky=W)
-        step_per_second_entry = ttk.Entry(parameter_pane, textvariable=step_per_second)
-        step_per_second_entry.grid(column=0, row=1, pady=(0, 10))
-
-        coverage_figure = StringVar()
-        coverage_figure_label = ttk.Label(parameter_pane, text="Coverage Figure(%):")
-        coverage_figure_label.grid(column=0, row=2, sticky=W)
-        coverage_figure_entry = ttk.Entry(parameter_pane, textvariable=coverage_figure)
-        coverage_figure_entry.grid(column=0, row=3, pady=(0, 10))
-
-        time_limit = StringVar()
-        time_limit_label = ttk.Label(parameter_pane, text="Time Limit(s):")
-        time_limit_label.grid(column=0, row=4, sticky=W)
-        time_limit_entry = ttk.Entry(parameter_pane, textvariable=time_limit)
-        time_limit_entry.grid(column=0, row=5, pady=(0, 10))
+        
 
         # self.root.columnconfigure(0, weight=1)
         # self.root.rowconfigure(0, weight=1)
@@ -141,6 +165,19 @@ class Simulator:
         self.handler.right()
         self.update_map()
     # ----------------------------------------------------------------------
+    # Special Conditions
+    # ----------------------------------------------------------------------
+    # For situation where user selected a special condition
+    # ----------------------------------------------------------------------
+    def specified_speed(self):
+        if (self.speed_status ==True):
+            self.speed_value = self.speed.get()
+    def specified_coverage(self):
+        if (self.coverage_status ==True):
+            self.coverage_value = self.coverage.get()
+    def specified_time(self):
+        if (self.time_status ==True):
+            self.time_value = self.time.get()
 
 
     # ----------------------------------------------------------------------
@@ -260,3 +297,9 @@ class Simulator:
 
 
 x = Simulator()
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> refs/remotes/origin/Joel
