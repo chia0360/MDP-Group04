@@ -9,7 +9,7 @@ class Handler:
     def __init__(self, simulator):
         self.simulator  = simulator
         self.map        = map.Map()
-        self.algo       = algo.algoFactory(self, algoName='RHR')
+        self.algo       = algo.algoFactory(self, algoName='BF1')
         if config.robot_simulation:
             self.robot = robot_simulator.RobotSimulator(self)
             self.__do_read()
