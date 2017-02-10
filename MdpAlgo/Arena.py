@@ -223,7 +223,7 @@ class Arena:
              [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 			 
     #Array of possible Arenas to choose from
-    a = [arena1, arena2, arena3, arena4, arena5, arena6, arena7, arena8, arena9, arena10, arena11, arena12]
+    a = [arena1, arena2, arena3, arena4, arena5, arena6, arena7, arena8, arena9, arena10, arena11, arena12, arena13]
 
     #Random arena selected
     random_arena = random.choice(a)
