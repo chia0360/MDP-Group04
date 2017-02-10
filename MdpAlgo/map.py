@@ -1,15 +1,20 @@
 # ----------------------------------------------------------------------
 # class definition of Map.
 # 
-#   - self.arena:           2 dimensional array that defines the selected arena to be explored
-#   - self.map:             2 dimensional array that defines the explored part of the map
-#   - self.robot:           A pair of integers (x,y) that contains current position of robot (where x = Row & y = Cloumn)
-#   - self.robot_direction: Direction of robot facing, 1 of either North, East, South, or West
+#   - self.__map_real
+#           2 dimensional array that defines the map
+#   - self.__map
+#           2 dimensional array that defines the eplored part of the map
+# 
+#   - self.robot
+#           A pair of integer that contains current position of robot.
+#           Row and Coloumn respectively
+#   - self.robot_direction
+#           character that contains the direction of robot is heading to
 # ----------------------------------------------------------------------
 
 import config
 import threading
-from Arena import *
 from logger import *
 from map import *
 
@@ -18,18 +23,34 @@ class Map:
 
     def __init__(self):
         self.map_lock = threading.Lock()
-
-        #choose 1
-        self.arena = Arena().a[0]
-        self.arena = Arena().random_arena
-
+        # ----------------------------------------------------------------------
+        #   Map_real Legend:
+        #       0 - free
+        #       1 - obstacle
+        # ----------------------------------------------------------------------
+        self.__map_real =  [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        
         # ----------------------------------------------------------------------
         #   Map Legend:
         #       0 - unexplored
         #       1 - explored; free
         #       2 - explored; obstacle
         # ----------------------------------------------------------------------
-        self.map      =  [[1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        self.__map      =  [[1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -49,41 +70,39 @@ class Map:
         self.width      = config.map_detail['width']
         self.mapStat    = ['unexplored', 'free', 'obstacle']
         
-        # Initialise robot to take topleft corner as starting position and faces East
-        self.robot_location = [0, 0]
-        self.robot_direction = 'E'
+        # ----------------------------------------------------------------------
+        #   Robot
+        # ----------------------------------------------------------------------
+        self.__robot_location = [1, 1]
+        self.__robot_direction = 'E'
 
 
     # ----------------------------------------------------------------------
     #   Encapsulation functions
     # ----------------------------------------------------------------------
     def get_robot_location(self):
-        return self.robot_location
+        return self.__robot_location
 
     def get_robot_direction(self):
-        return self.robot_direction
+        return self.__robot_direction
 
     def get_robot_direction_right(self):
-        return Map.DIRECTIONS[ (Map.DIRECTIONS.index(self.robot_direction)+1) % 4 ]
-
+        return Map.DIRECTIONS[ (Map.DIRECTIONS.index(self.__robot_direction)+1) % 4 ]
     def get_robot_direction_left(self):
-        return Map.DIRECTIONS[ (Map.DIRECTIONS.index(self.robot_direction)+3) % 4 ]
-
+        return Map.DIRECTIONS[ (Map.DIRECTIONS.index(self.__robot_direction)+3) % 4 ]
     def get_robot_direction_back(self):
-        return Map.DIRECTIONS[ (Map.DIRECTIONS.index(self.robot_direction)+2) % 4 ]
-
+        return Map.DIRECTIONS[ (Map.DIRECTIONS.index(self.__robot_direction)+2) % 4 ]
 
     def set_robot_location(self, loc):
-        if ((0 <= loc[0] < self.height - 1) and
-            (0 <= loc[1] < self.width - 1)):
-            print("location: ", loc)
-            self.robot_location = loc
+        if ((0 <= loc[0] < self.height) and
+            (0 <= loc[1] < self.width )):
+            self.__robot_location = loc
         else:
             verbose( "Error: Location update out of range", tag="Map", lv='quiet' )
 
     def set_robot_direction(self, direction):
         if (direction in Map.DIRECTIONS):
-            self.robot_direction = direction
+            self.__robot_direction = direction
         else:
             verbose( "Error: Direction update invalid!", tag="Map", lv='quiet' )
 
@@ -93,15 +112,15 @@ class Map:
             return
 
         if (stat in self.mapStat):
-            self.map[y][x] = self.mapStat.index(stat)
+            self.__map[y][x] = self.mapStat.index(stat)
         else:
             verbose( "Error: set map wrong status!", tag="Map", lv='quiet' )
 
     def get_map(self):
-        return self.map
+        return self.__map
 
     def isSameMap(self, cmpmap):
-        return cmpmap == self.map
+        return cmpmap == self.__map
     # ----------------------------------------------------------------------
 
 
@@ -113,11 +132,10 @@ class Map:
     #   x   -   coloumn position to be validated of robot
     # ----------------------------------------------------------------------
     def valid_pos(self, y, x):
-        if not (0 <= y <= (self.height - 2) and 0 <= x <= (self.width- 2)):
+        if not (0 < y < 14 and 0 < x < 19):
             return False
-
-        for i in range(y, y+2):
-            for j in range(x, x+2):
+        for i in range(y-1, y+2):
+            for j in range(x-1, x+2):
                 if not self.valid_range(i,j) or self.isObstacle(i,j):
                     return False
         return True
@@ -134,20 +152,20 @@ class Map:
     # ----------------------------------------------------------------------
     def isExplored(self, y, x):
         try:
-            return (self.map[y][x] != 0)
+            return (self.__map[y][x] != 0)
         except IndexError:
             print(y,x,sep="; ")
 
     def isObstacle(self, y, x):
-        if (self.map[y][x] == 0):
-            return self.arena[y][x] == 1
-        return self.map[y][x] == 2
+        if (self.__map[y][x] == 0):
+            return self.__map_real[y][x] == 1;
+        return self.__map[y][x] == 2
 
     def isFree(self, y, x):
-        verbose( "isFree({0},{1}): {2}; real:{3}".format(y,x,self.map[y][x],self.arena[y][x]), lv='deepdebug' )
-        if (self.map[y][x] == 0):
-            return self.arena[y][x] == 0
-        return self.map[y][x] == 1
+        verbose( "isFree({0},{1}): {2}; real:{3}".format(y,x,self.__map[y][x],self.__map_real[y][x]), lv='deepdebug' )
+        if (self.__map[y][x] == 0):
+            return self.__map_real[y][x] == 0;
+        return self.__map[y][x] == 1
 
     # to check whether the location is within range
     def valid_range(self, y, x):
@@ -168,11 +186,11 @@ class Map:
         for x in range(self.width):
             for y in range(self.height):
                 part1 <<= 1
-                if (self.map[y][x] != 0) :
+                if (self.__map[y][x] != 0) :
                     part1  |= 1
                     part2 <<= 1
                     cnt += 1
-                    if (self.map[y][x] == 2):
+                    if (self.__map[y][x] == 2):
                         part2 |= 1
         
         
