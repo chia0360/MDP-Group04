@@ -36,24 +36,18 @@ icon_path = dict(
              'images/robot/Robot_W_08.gif',
              'images/robot/Robot_W_09.gif'],
     
-    free  				= 'images/gray.gif',
-    obstacle 			= 'images/gray.gif',
-    explored_free		= 'images/d_blue.gif',
+    free                = 'images/gray.gif',
+    obstacle 		= 'images/gray.gif',
+    explored_free	= 'images/d_blue.gif',
     explored_obstacle	= 'images/d_red.gif',
     start               = 'images/yellow.gif',
     end                 = 'images/l_green.gif',
     size                = 1
 )
 
-map_detail 	= dict(
-    height	= 15,
-    width	= 20
-)
+map_detail  = dict(height = 15, width = 20)
 
-robot_detail = dict (
-    size	= 3,
-    delay   = 500
-)
+robot_detail = dict (size = 3, delay = 500)
 
 sensor_range = dict (
     front_middle    = 4,

@@ -52,4 +52,3 @@ class Connector(Robot):
                 print("[Info] No message received.")
         # else:
         #     print("[Error] Unable to receive message. Connection loss.")
-
