@@ -99,13 +99,13 @@ class Simulator:
         coverage['values'] = (10,20,30,40,50,60,70,80,90,100)
         coverage.grid(column=0, row=3, pady=(0, 10))
 
-        #Time Limit in Minutes:Second 
-        time_label = ttk.Label(parameter_pane, text="Time Limit(min:sec):")
+        #Time Limit in Second 
+        time_label = ttk.Label(parameter_pane, text="Time Limit(s):")
         time_label.grid(column=0, row=4, sticky=W)
         self.time_status = False
         self.time_value = StringVar()
         time = ttk.Combobox(parameter_pane, textvariable = self.time_value)
-        time['values'] = ("0:20","0:40","1:00","1:20","1:40","2:00","2:20","2:40","3:00")
+        time['values'] = (20,40,60,80,100,120,140,160,180,200)
         time.grid(column=0, row=5, pady=(0, 10))
 
 
@@ -297,9 +297,6 @@ class Simulator:
 
 
 x = Simulator()
-<<<<<<< HEAD
-=======
 
 
 
->>>>>>> refs/remotes/origin/Joel

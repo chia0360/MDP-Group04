@@ -1,4 +1,5 @@
 from logger import *
+# import simulator
 import config
 import algo
 import map
@@ -9,7 +10,7 @@ class Handler:
     def __init__(self, simulator):
         self.simulator  = simulator
         self.map        = map.Map()
-        self.algo       = algo.algoFactory(self, algoName='BF1')
+        self.algo       = algo.algoFactory(self, algoName='LHR')
         if config.robot_simulation:
             self.robot = robot_simulator.RobotSimulator(self)
             self.__do_read()
@@ -43,21 +44,38 @@ class Handler:
         self.simulator.update_map()
 
     def left(self):
+        # ===== Threading =====
+        # map_info.map_lock.acquire()
+        # verbose("Locked by "+threading.current_thread(),
+        #     tag='Map Lock', lv='debug')
+        # ===== ========= =====
         verbose("Action: turn left", tag='Handler')
         self.map.set_robot_direction( self.map.get_robot_direction_left() )
         # Send command to robot
-        self.robot.send('L')
+        self.robot.send('R')
         self.__do_read()
         self.simulator.update_map()
+        # ===== Threading =====
+        # map_info.map_lock.release()
+        # print("[Map Lock] Released by ", threading.current_thread())
+        # ===== ========= =====
 
     def right(self):
+        # ===== Threading =====
+        # map_info.map_lock.acquire()
+        # verbose("Locked by "+threading.current_thread(),
+        #     tag='Map Lock', lv='debug')
+        # ===== ========= =====
         verbose("Action: turn right", tag='Handler')
         self.map.set_robot_direction( self.map.get_robot_direction_right() )
         # Send command to robot
         self.robot.send('R')
         self.__do_read()
         self.simulator.update_map()
-
+        # ===== Threading =====
+        # map_info.map_lock.release()
+        # print("[Map Lock] Released by ", threading.current_thread())
+        # ===== ========= =====
     # ----------------------------------------------------------------------
 
 
@@ -67,6 +85,12 @@ class Handler:
     # Sending signal to robot, get the sensors data and process it to map
     # ----------------------------------------------------------------------
     def __do_move(self):
+        # Threading
+        # map_info.map_lock.acquire()
+        # verbose("Locked by "+threading.current_thread(),
+        #     tag='Map Lock', lv='debug')
+        
+        # Getting the next position
         robot_location  = self.map.get_robot_location()
         robot_direction = self.map.get_robot_direction()
         if   robot_direction == 'N':
@@ -91,6 +115,8 @@ class Handler:
             verbose("WARNING: Not moving due to obstacle or out of bound",
                 tag='Handler', pre='    ', lv='debug')
 
+        # map_info.map_lock.release()
+        # print("[Map Lock] Released by ", threading.current_thread())
 
     def __do_read(self):
         sensor_data = None

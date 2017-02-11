@@ -18,33 +18,10 @@ class Map:
 
     def __init__(self):
         self.map_lock = threading.Lock()
-<<<<<<< HEAD
-        # ----------------------------------------------------------------------
-        #   Map_real Legend:
-        #       0 - free
-        #       1 - obstacle
-        # ----------------------------------------------------------------------
-        self.__map_real =  [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-=======
 
         #choose 1
         self.arena = Arena().a[0]
         self.arena = Arena().random_arena
->>>>>>> refs/remotes/origin/Joel
         
         # ----------------------------------------------------------------------
         #   Map Legend:
@@ -157,27 +134,15 @@ class Map:
             print(y,x,sep="; ")
 
     def isObstacle(self, y, x):
-<<<<<<< HEAD
-        if (self.__map[y][x] == 0):
-            return self.__map_real[y][x] == 1
-        return self.__map[y][x] == 2
-
-    def isFree(self, y, x):
-        verbose( "isFree({0},{1}): {2}; real:{3}".format(y,x,self.__map[y][x],self.__map_real[y][x]), lv='deepdebug' )
-        if (self.__map[y][x] == 0):
-            return self.__map_real[y][x] == 0
-        return self.__map[y][x] == 1
-=======
         if (self.map[y][x] == 0):
-            return self.arena[y][x] == 1
+            return self.arena[y][x] == 1;
         return self.map[y][x] == 2
 
     def isFree(self, y, x):
         verbose( "isFree({0},{1}): {2}; real:{3}".format(y,x,self.map[y][x],self.arena[y][x]), lv='deepdebug' )
         if (self.map[y][x] == 0):
-            return self.arena[y][x] == 0
+            return self.arena[y][x] == 0;
         return self.map[y][x] == 1
->>>>>>> refs/remotes/origin/Joel
 
     # to check whether the location is within range
     def valid_range(self, y, x):
