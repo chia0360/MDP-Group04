@@ -11,6 +11,7 @@
 #		robot starts running according shortest path algorithm
 # ----------------------------------------------------------------------
 
+import time
 
 class algoAbstract:
     # def __init__(self):
@@ -65,7 +66,7 @@ class algoFactory:
 
     def run(self):
         self.algo.run()
-
+        
 
 # ----------------------------------------------------------------------
 # class definition of algoBF1.
@@ -75,6 +76,7 @@ class algoBF1(algoAbstract):
     def __init__(self, handler):
         self.handler    = handler
         self.map        = handler.map
+        self.simulator = handler.simulator
         # this steps contain a list of step taken from the original position to the current position
         # data structure of stepsTaken:
         # in each item of the list, we have
@@ -87,7 +89,7 @@ class algoBF1(algoAbstract):
         # when a move is taken from a position, it is recorded so that that move will not be taken again
         # key is position (tuple), and the value is a list of direction it has done.
         self.movesLeft = {}
-
+        
         # we initialize the first row, last row, first col, last col because for example, the first row cannot move north.
         for row in range(1, 14):
             for col in range(1, 19):
@@ -102,7 +104,6 @@ class algoBF1(algoAbstract):
         for row in range(1, 14):
             self.movesLeft[(row, 1)].remove('W')
             self.movesLeft[(row, 18)].remove('E')
-
         print("Init movesLeft", self.movesLeft[(1,1)])
 
     def explore(self):
@@ -120,6 +121,10 @@ class algoBF1(algoAbstract):
         return True
 
     def periodic_check(self):
+        # Speed (no. of steps/sec)
+        self.simulator.specified_speed()
+        if (self.simulator.speed_status == True):
+            time.sleep(1/int(self.simulator.speed.get()))
         # check if the goal is reached
         print("steps taken", self.stepsTaken)
         currentPosition = tuple(self.handler.map.get_robot_location())

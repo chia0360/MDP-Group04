@@ -84,10 +84,10 @@ class Simulator:
         speed_label = ttk.Label(parameter_pane, text = "Speed(in Steps Per Second):")
         speed_label.grid(column=0, row=0, sticky=W)
         self.speed_status = False
-        self.speed_value = StringVar()
-        speed = ttk.Combobox(parameter_pane, textvariable = self.speed_value)
-        speed['values'] = (1,2,3,4,5)
-        speed.grid(column = 0, row = 1, pady =(0,10))
+        self.speed_value = IntVar()
+        self.speed = ttk.Combobox(parameter_pane, textvariable = self.speed_value)
+        self.speed['values'] = (1,2,3,4,5)
+        self.speed.grid(column = 0, row = 1, pady =(0,10))
         
         
         #Coverage Figure in %
@@ -98,7 +98,7 @@ class Simulator:
         coverage = ttk.Combobox(parameter_pane, textvariable = self.coverage_value)
         coverage['values'] = (10,20,30,40,50,60,70,80,90,100)
         coverage.grid(column=0, row=3, pady=(0, 10))
-
+        
         #Time Limit in Second 
         time_label = ttk.Label(parameter_pane, text="Time Limit(s):")
         time_label.grid(column=0, row=4, sticky=W)
@@ -125,23 +125,16 @@ class Simulator:
         right_button = ttk.Button(action_pane, text='Right', command=self.right)
         right_button.grid(column=0, row=4, sticky=(W, E))
 
-        
 
-        # self.root.columnconfigure(0, weight=1)
-        # self.root.rowconfigure(0, weight=1)
         self.control_pane.columnconfigure(0, weight=1)
         self.control_pane.rowconfigure(0, weight=1)
 
-        # for i in range(10):
-        #     map_pane.rowconfigure(i, weight=1)
-        # for j in range(15):
-        #     map_pane.columnconfigure(j, weight=1)
-
+        #Allow Keyboard Control
         self.master.bind("<Left>", lambda e: self.left())
         self.master.bind("<Right>", lambda e: self.right())
         self.master.bind("<Up>", lambda e: self.move())
         self.master.bind("<Down>", lambda e: self.back())
-
+        
         self.master.mainloop()
 
     # ----------------------------------------------------------------------
@@ -170,8 +163,11 @@ class Simulator:
     # For situation where user selected a special condition
     # ----------------------------------------------------------------------
     def specified_speed(self):
-        if (self.speed_status ==True):
-            self.speed_value = self.speed.get()
+        spd = int(self.speed.get())
+        if (spd != 0):
+            self.speed_status = True 
+        
+        return self.speed_value
     def specified_coverage(self):
         if (self.coverage_status ==True):
             self.coverage_value = self.coverage.get()
