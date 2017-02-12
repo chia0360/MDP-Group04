@@ -77,6 +77,7 @@ class algoBF1(algoAbstract):
         self.handler    = handler
         self.map        = handler.map
         self.simulator = handler.simulator
+        
         # this steps contain a list of step taken from the original position to the current position
         # data structure of stepsTaken:
         # in each item of the list, we have
@@ -107,6 +108,8 @@ class algoBF1(algoAbstract):
         print("Init movesLeft", self.movesLeft[(1,1)])
 
     def explore(self):
+        self.start_time = time.time()
+        self.end_time = self.simulator.specified_time()
         self.periodic_check()
 
     def check_complete(self):
@@ -121,10 +124,22 @@ class algoBF1(algoAbstract):
         return True
 
     def periodic_check(self):
-        # Speed (no. of steps/sec)
+        # Speed Set(no. of steps/sec)
         self.simulator.specified_speed()
         if (self.simulator.speed_status == True):
             time.sleep(1/int(self.simulator.speed.get()))
+        # Time Set(min:sec)
+        print(self.simulator.time_status)
+        print(time.time()-self.start_time)
+        if (self.simulator.time_status == True):
+            if (float(self.end_time) <= (time.time()-self.start_time)):
+                #add return to start
+                print("ASdfsadfsdfsdfsd")
+                print("ASdfsadfsdfsdfsd")
+                print("ASdfsadfsdfsdfsd")
+                print("ASdfsadfsdfsdfsd")
+                #end of test
+            
         # check if the goal is reached
         print("steps taken", self.stepsTaken)
         currentPosition = tuple(self.handler.map.get_robot_location())

@@ -104,9 +104,9 @@ class Simulator:
         time_label.grid(column=0, row=4, sticky=W)
         self.time_status = False
         self.time_value = StringVar()
-        time = ttk.Combobox(parameter_pane, textvariable = self.time_value)
-        time['values'] = (20,40,60,80,100,120,140,160,180,200)
-        time.grid(column=0, row=5, pady=(0, 10))
+        self.time = ttk.Combobox(parameter_pane, textvariable = self.time_value)
+        self.time['values'] = ("0:20","0:40","1:00","1:20","1:40","2:00","2:20","2:40","3:00")
+        self.time.grid(column=0, row=5, pady=(0, 10))
 
 
         #Control Panel Action Commands
@@ -166,15 +166,23 @@ class Simulator:
         spd = int(self.speed.get())
         if (spd != 0):
             self.speed_status = True 
-        
-        return self.speed_value
+            return self.speed_value
+    
     def specified_coverage(self):
         if (self.coverage_status ==True):
             self.coverage_value = self.coverage.get()
+            
     def specified_time(self):
-        if (self.time_status ==True):
-            self.time_value = self.time.get()
+        t = str(self.time.get())
+        if (t != ""):
+            time = self.convert_time(t)
+            self.time_status = True
+            return time
+        return 
 
+    def convert_time(self, time):
+        m, s = time.split(':')
+        return int(m) * 60 + int(s)
 
     # ----------------------------------------------------------------------
     # Function put_map
