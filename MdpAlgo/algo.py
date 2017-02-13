@@ -378,7 +378,7 @@ class RightHandRule(algoAbstract):
 
 class AStar:
     """
-    Pass in a map, an origin and a destination to get back the list of tiles for the shortest path
+    Pass in a map, an origin and a destination to get back the list of moves (in 4 directions) for the shortest path 
     """
     def __init__(self):
         self.start = (1,1)
