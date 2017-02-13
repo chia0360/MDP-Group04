@@ -1,12 +1,8 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import font 
 
-# from sensor_simulator import SensorSimulator
-# import threading
-# import queue
-# import time
 
-# import config
 import handler
 from logger import *
 from copy import deepcopy

@@ -77,7 +77,7 @@ class algoBF1(algoAbstract):
         self.handler    = handler
         self.map        = handler.map
         self.simulator = handler.simulator
-        
+        self.ending_moves = []
         # this steps contain a list of step taken from the original position to the current position
         # data structure of stepsTaken:
         # in each item of the list, we have
@@ -90,6 +90,7 @@ class algoBF1(algoAbstract):
         # when a move is taken from a position, it is recorded so that that move will not be taken again
         # key is position (tuple), and the value is a list of direction it has done.
         self.movesLeft = {}
+        self.interval = 20
         
         # we initialize the first row, last row, first col, last col because for example, the first row cannot move north.
         for row in range(1, 14):
@@ -124,6 +125,7 @@ class algoBF1(algoAbstract):
         return True
 
     def periodic_check(self):
+
         # Speed Set(no. of steps/sec)
         self.simulator.specified_speed()
         if (self.simulator.speed_status == True):
@@ -152,11 +154,18 @@ class algoBF1(algoAbstract):
         # check if all the blocks are explored
         if self.check_complete():
             print("done")
+            # create a new astar object to solve the rest 
+            astar = AStar()
             if self.goal_reached:
                 # return to start
+                self.ending_moves = astar.solve(self.map.get_map(), currentPosition, astar.start)
+                self.handler.simulator.master.after(self.interval, self.ending)
                 return
             else:
                 # go to goal then return to start
+                self.ending_moves = astar.solve(self.map.get_map(), currentPosition, astar.goal)
+                self.ending_moves.extend(astar.solve(self.map.get_map(), astar.goal, astar.start))
+                self.handler.simulator.master.after(self.interval, self.ending)
                 return
 
         # if no more movesAvailable for the current posision, take a step backward
@@ -204,7 +213,7 @@ class algoBF1(algoAbstract):
                 self.stepsTaken.append([move, currentPosition])
             # if not we just don't move and wait for next iteration
             
-        self.handler.simulator.master.after(10, self.periodic_check)
+        self.handler.simulator.master.after(self.interval, self.periodic_check)
 
     def findSP(self):
         pass
@@ -222,6 +231,27 @@ class algoBF1(algoAbstract):
         else:
             return False
 
+    def ending(self):
+        # start doing the ending moves
+        direction = self.ending_moves.pop(0)
+        self.moveTo(direction)
+        if len(self.ending_moves) > 0:
+            self.handler.simulator.master.after(self.interval, self.ending)
+
+
+    def moveTo(self, direction):
+        if self.handler.map.get_robot_direction() == direction:
+            self.handler.move()
+        elif self.handler.map.get_robot_direction_right() == direction:
+            self.handler.right()
+            self.handler.move()
+        elif self.handler.map.get_robot_direction_left() == direction:
+            self.handler.left()
+            self.handler.move()
+        else:
+            self.handler.left()
+            self.handler.left()
+            self.handler.move()
 
 class RightHandRule(algoAbstract):
     def __init__(self, handler):
@@ -344,3 +374,177 @@ class RightHandRule(algoAbstract):
             return True
         else:
             return False
+
+
+class AStar:
+    """
+    Pass in a map, an origin and a destination to get back the list of tiles for the shortest path
+    """
+    def __init__(self):
+        self.start = (1,1)
+        self.goal = (13, 18)
+        pass
+    
+    def manhattan_distance(self, position1, position2):
+        # this act as both our cost and heuristics function
+        return abs(position1[0]-position2[0]) + abs(position1[1]-position2[1])
+
+    def solve(self, map, origin, dest):
+        # make a copy of the map
+        local_map = [row[:] for row in map]
+
+        #-----Preprocessing of the map start----
+
+        # if the map is not 100% explored due in case of using RightHandRule
+        # assume all those unexplored tiles are blocked
+        for i in range(20):
+            for j in range(15):
+                if local_map[j][i] == 0:
+                    local_map[j][i] = 2
+    
+        # create a bounding box for all the obstacles and wall
+        # use number 3 to indicate bounding box
+        # for the wall
+        for i in range(20):
+            # row 0
+            if local_map[0][i] != 2:
+                local_map[0][i] = 3
+            # row 14
+            if local_map[14][i] != 2:
+                local_map[14][i] = 3
+
+        for i in range(15):
+            # col 0
+            if local_map[i][0] != 2:
+                local_map[i][0] = 3
+            if local_map[i][19] != 2:
+                local_map[i][19] = 3
+            
+        # for each obstacles
+        for i in range(20):
+            for j in range(15):
+                # turn the 8 surrounding blocks of the current block to 3 if the block is 2
+                if local_map[j][i] == 2:
+                    # top
+                    if j > 0 and local_map[j-1][i] == 1:
+                        local_map[j-1][i] = 3
+                    # top right
+                    if j > 0 and i < 19 and local_map[j-1][i+1] == 1:
+                        local_map[j-1][i+1] = 3
+                    # top left
+                    if j > 0 and i > 0 and local_map[j-1][i-1] == 1:
+                        local_map[j-1][i-1] = 3                   
+                    # bottom
+                    if j < 14 and local_map[j+1][i] == 1:
+                        local_map[j+1][i] = 3
+                    # bottom right
+                    if j < 14 and i < 19 and local_map[j+1][i+1] == 1:
+                        local_map[j+1][i+1] = 3
+                    # bottom left
+                    if j < 14 and i > 0 and local_map[j+1][i-1] == 1:
+                        local_map[j+1][i-1] = 3
+                    # left
+                    if i > 0 and local_map[j][i-1] == 1:
+                        local_map[j][i-1] = 3
+                    # right
+                    if i < 19 and local_map[j][i+1] == 1:
+                        local_map[j][i+1] = 3
+                    
+
+        #----Preprocessing of the map is completed, only those blocks numbered 1 is movable-----
+
+        #----The actual A* algorithms----
+
+        # list contains nodes to be evaluated
+        open_list = {}
+        open_list[origin] = self.manhattan_distance(origin, dest)
+        closed_list = set()
+        came_from = {}
+        # list of node that have not been expanded
+
+        while True:
+            # current node is the node in the open list with lowest f_cost
+            current = min(open_list, key=open_list.get)
+
+            # remove the current node from open list
+            open_list.pop(current)
+
+            # add current node to closed list
+            closed_list.add(current)
+
+            # if current equal dest, we are done
+
+            if current == dest:
+                break
+
+            # open up the surrounding 4 nodes
+            
+            # if the neighbor is not in closed_list, not in open_list, and traversable, we add it into open_list 
+            # with calculated f_cost
+            
+            y, x = current
+            # top 
+            top =  (y-1, x)
+            if top not in closed_list and top not in open_list and local_map[top[0]][top[1]] == 1:
+                f_cost = self.manhattan_distance(top, origin) + self.manhattan_distance(top, dest)
+                open_list[top] = f_cost
+                came_from[top] = current
+
+            # bottom 
+            bottom =  (y+1, x)
+            if bottom not in closed_list and bottom not in open_list and local_map[bottom[0]][bottom[1]] == 1:
+                f_cost = self.manhattan_distance(bottom, origin) + self.manhattan_distance(bottom, dest)
+                open_list[bottom] = f_cost
+                came_from[bottom] = current
+
+            # left 
+            left =  (y, x-1)
+            if left not in closed_list and left not in open_list and local_map[left[0]][left[1]] == 1:
+                f_cost = self.manhattan_distance(left, origin) + self.manhattan_distance(left, dest)
+                open_list[left] = f_cost
+                came_from[left] = current
+
+            # right 
+            right =  (y, x+1)
+            if right not in closed_list and right not in open_list and local_map[right[0]][right[1]] == 1:
+                f_cost = self.manhattan_distance(right, origin) + self.manhattan_distance(right, dest)
+                open_list[right] = f_cost
+                came_from[right] = current
+
+        # found the path, now just need to print the path from the dest node to the origin node
+
+        result = [dest]
+
+        node = came_from[dest]
+        while True:
+            result.insert(0, node)
+            if node in came_from:
+                node = came_from[node]
+                continue
+            else:
+                break
+
+        # result now has the list of tiles to traverse on
+
+        # we need to convert them to a list of moves in ['N', 'S', 'E', 'W']
+        moves = []
+        for i in range(len(result)-1):
+            if result[i][0] < result[i+1][0]:
+                moves.append('S')
+            elif result[i][0] > result[i+1][0]:
+                moves.append('N')
+            else:
+                if result[i][1] < result[i+1][1]:
+                    moves.append('E')
+                else:
+                    moves.append('W')
+        return moves
+            
+
+
+
+
+
+                    
+
+                
