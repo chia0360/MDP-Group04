@@ -12,6 +12,7 @@
 # ----------------------------------------------------------------------
 
 import time
+from math import *
 
 class algoAbstract:
     # def __init__(self):
@@ -91,7 +92,8 @@ class algoBF1(algoAbstract):
         # key is position (tuple), and the value is a list of direction it has done.
         self.movesLeft = {}
         self.interval = 20
-        
+        self.shortest_path_moves = []
+
         # we initialize the first row, last row, first col, last col because for example, the first row cannot move north.
         for row in range(1, 14):
             for col in range(1, 19):
@@ -216,10 +218,20 @@ class algoBF1(algoAbstract):
         self.handler.simulator.master.after(self.interval, self.periodic_check)
 
     def findSP(self):
-        pass
+        # use the generic astar to find the shortest path
+        astar = AStar()
+        self.shortest_path_moves = astar.solve(self.map.get_map(), astar.start, astar.goal)
+        print(self.shortest_path_moves)
 
     def run(self):
-        pass
+        # have not found the shortest path, run findSP to find
+        if not self.shortest_path_moves:
+            self.findSP()
+        direction = self.shortest_path_moves.pop(0)
+        self.moveTo(direction)
+        # still have moves left to go
+        if self.shortest_path_moves:
+            self.handler.simulator.master.after(self.interval, self.run)
 
     def check_front(self):
         sensor_data = self.handler.robot.receive()
@@ -257,6 +269,9 @@ class RightHandRule(algoAbstract):
     def __init__(self, handler):
         self.handler    = handler
         self.map        = handler.map
+        self.shortest_path_moves = []
+        self.done = False
+        self.interval = 20
 
     def explore(self):
         self.periodic_check()
@@ -264,20 +279,50 @@ class RightHandRule(algoAbstract):
     def periodic_check(self):
         if self.check_right():
             # turning and moving is already done
-            self.handler.simulator.master.after(200, self.periodic_check)
+            self.handler.simulator.master.after(self.interval, self.periodic_check)
             return
 
         if self.check_front():
             self.handler.move()
         else:
             self.handler.left()
-        self.handler.simulator.master.after(200, self.periodic_check)
+
+        location = self.handler.map.get_robot_location()
+        if location[0] == 1 and location[1] == 1:
+            self.done = True
+        
+        if not self.done:
+            self.handler.simulator.master.after(self.interval, self.periodic_check)
 
     def findSP(self):
-        pass
+        # use the generic astar to find the shortest path
+        astar = AStar()
+        self.shortest_path_moves = astar.solve(self.map.get_map(), astar.start, astar.goal)
+        print(self.shortest_path_moves)
 
     def run(self):
-        pass
+        # have not found the shortest path, run findSP to find
+        if not self.shortest_path_moves:
+            self.findSP()
+        direction = self.shortest_path_moves.pop(0)
+        self.moveTo(direction)
+        # still have moves left to go
+        if self.shortest_path_moves:
+            self.handler.simulator.master.after(self.interval, self.run)
+
+    def moveTo(self, direction):
+        if self.handler.map.get_robot_direction() == direction:
+            self.handler.move()
+        elif self.handler.map.get_robot_direction_right() == direction:
+            self.handler.right()
+            self.handler.move()
+        elif self.handler.map.get_robot_direction_left() == direction:
+            self.handler.left()
+            self.handler.move()
+        else:
+            self.handler.left()
+            self.handler.left()
+            self.handler.move()
 
     def check_right(self):
         robot_location = self.handler.map.get_robot_location()
@@ -385,9 +430,9 @@ class AStar:
         self.goal = (13, 18)
         pass
     
-    def manhattan_distance(self, position1, position2):
+    def distance(self, position1, position2):
         # this act as both our cost and heuristics function
-        return abs(position1[0]-position2[0]) + abs(position1[1]-position2[1])
+        return sqrt(pow(position1[0]-position2[0],2) + pow(position1[1]-position2[1],2))
 
     def solve(self, map, origin, dest):
         # make a copy of the map
@@ -457,8 +502,8 @@ class AStar:
 
         # list contains nodes to be evaluated
         open_list = {}
-        open_list[origin] = self.manhattan_distance(origin, dest)
-        closed_list = set()
+        open_list[origin] = self.distance(origin, dest)
+        closed_list = []
         came_from = {}
         # list of node that have not been expanded
 
@@ -470,7 +515,7 @@ class AStar:
             open_list.pop(current)
 
             # add current node to closed list
-            closed_list.add(current)
+            closed_list.append(current)
 
             # if current equal dest, we are done
 
@@ -485,31 +530,41 @@ class AStar:
             y, x = current
             # top 
             top =  (y-1, x)
-            if top not in closed_list and top not in open_list and local_map[top[0]][top[1]] == 1:
-                f_cost = self.manhattan_distance(top, origin) + self.manhattan_distance(top, dest)
-                open_list[top] = f_cost
-                came_from[top] = current
+            if local_map[top[0]][top[1]] == 1 and top not in closed_list:
+                f_cost = self.distance(top, origin) + self.distance(top, dest)
+                if top not in open_list or f_cost < open_list[top]:
+                    came_from[top] = current
+                    if top not in open_list:
+                        open_list[top] = f_cost
 
             # bottom 
             bottom =  (y+1, x)
-            if bottom not in closed_list and bottom not in open_list and local_map[bottom[0]][bottom[1]] == 1:
-                f_cost = self.manhattan_distance(bottom, origin) + self.manhattan_distance(bottom, dest)
-                open_list[bottom] = f_cost
-                came_from[bottom] = current
+            if local_map[bottom[0]][bottom[1]] == 1 and bottom not in closed_list:
+                f_cost = self.distance(bottom, origin) + self.distance(bottom, dest)
+                if bottom not in open_list or f_cost < open_list[bottom]:
+                    came_from[bottom] = current
+                    if bottom not in open_list:
+                        open_list[bottom] = f_cost
+
 
             # left 
             left =  (y, x-1)
-            if left not in closed_list and left not in open_list and local_map[left[0]][left[1]] == 1:
-                f_cost = self.manhattan_distance(left, origin) + self.manhattan_distance(left, dest)
-                open_list[left] = f_cost
-                came_from[left] = current
+            if local_map[left[0]][left[1]] == 1 and left not in closed_list:
+                f_cost = self.distance(left, origin) + self.distance(left, dest)
+                if left not in open_list or f_cost < open_list[left]:
+                    came_from[left] = current
+                    if left not in open_list:
+                        open_list[left] = f_cost
 
             # right 
             right =  (y, x+1)
-            if right not in closed_list and right not in open_list and local_map[right[0]][right[1]] == 1:
-                f_cost = self.manhattan_distance(right, origin) + self.manhattan_distance(right, dest)
-                open_list[right] = f_cost
-                came_from[right] = current
+            if local_map[right[0]][right[1]] == 1 and right not in closed_list:
+                f_cost = self.distance(right, origin) + self.distance(right, dest)
+                if right not in open_list or f_cost < open_list[right]:
+                    came_from[right] = current
+                    if right not in open_list:
+                        open_list[right] = f_cost
+
 
         # found the path, now just need to print the path from the dest node to the origin node
 
@@ -527,6 +582,10 @@ class AStar:
         # result now has the list of tiles to traverse on
 
         # we need to convert them to a list of moves in ['N', 'S', 'E', 'W']
+        print("map")
+        for row in local_map: 
+            print(row)
+        print("result", result)
         moves = []
         for i in range(len(result)-1):
             if result[i][0] < result[i+1][0]:

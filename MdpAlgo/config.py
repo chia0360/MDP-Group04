@@ -64,6 +64,6 @@ verbose = dict (
     debug       = 3,
     deepdebug   = 4
 )
-verboseLv = verbose['normal']
+verboseLv = verbose['silent']
 
 robot_simulation = True
