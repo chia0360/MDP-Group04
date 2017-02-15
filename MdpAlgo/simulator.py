@@ -16,7 +16,6 @@ class Simulator:
         self.handler = handler.Handler(self)
         self.map     = self.handler.map
         self.algo    = self.handler.algo
-
         t = Toplevel(self.master)
         t.title("Control Panel")
         t.geometry('230x570+1050+28')
@@ -162,13 +161,13 @@ class Simulator:
         spd = int(self.speed.get())
         if (spd != 0):
             self.speed_status = True 
-            return self.speed_value
+            return 
     
     def specified_coverage(self):
         cov = int(self.coverage.get())
         if (cov != 0):
             self.coverage_status =True
-            return self.coverage_value
+            return 
             
     def specified_time(self):
         t = str(self.time.get())
@@ -214,8 +213,7 @@ class Simulator:
     # ----------------------------------------------------------------------
     def put_map(self, x, y):
         # Start & End box
-        if   ((0 <= y < 3) and
-              (0 <= x < 3)):
+        if   ((0 <= y < 3) and(0 <= x < 3)):
                 map_image = self.map_start
         elif ((self.map.width -3 <= y < self.map.width) and
               (self.map.height-3 <= x < self.map.height)):
@@ -234,7 +232,8 @@ class Simulator:
                 map_image = self.map_obstacle_explored
             else:
                 map_image = self.map_free_explored
-
+            
+            
         # Change map
         cell = ttk.Label(self.map_pane, image=map_image, borderwidth=1)
         try:
@@ -290,13 +289,13 @@ class Simulator:
             self.robot_location  != next_robot_location or
             self.robot_direction != next_robot_direction):
             self.put_robot(next_robot_location[0], next_robot_location[1], next_robot_direction)
+            
         
         # update the change
         self.robot_location  = next_robot_location
         self.robot_direction = next_robot_direction
+    
     # ----------------------------------------------------------------------
-
-
 
 x = Simulator()
 

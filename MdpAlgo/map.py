@@ -29,7 +29,8 @@ class Map:
         #       1 - explored; free
         #       2 - explored; obstacle
         # ----------------------------------------------------------------------
-        self.map      =  [[1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        self.map      =  [
+                            [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -47,13 +48,13 @@ class Map:
 
         self.height     = config.map_detail['height']
         self.width      = config.map_detail['width']
+        self.mapSize    = self.height * self.width
         self.mapStat    = ['unexplored', 'free', 'obstacle']
         
         # Initialising Robot's location and the direction it is facing
         self.robot_location = [1, 1]
         self.robot_direction = 'E'
-
-
+        
     # ----------------------------------------------------------------------
     #   Encapsulation functions
     # ----------------------------------------------------------------------
@@ -122,7 +123,7 @@ class Map:
 
     # ----------------------------------------------------------------------
     # map checking functions
-    #     isExplored, isFree, isObstacle, valid_range
+    #     isExplored, isFree, isObstacle, countExplored, valid_range
     # ----------------------------------------------------------------------
     # parameter:
     #     y, x    - row index and coloumn index respectively
@@ -136,14 +137,24 @@ class Map:
     def isObstacle(self, y, x):
         if (self.map[y][x] == 0):
             return self.arena[y][x] == 1;
-        return self.map[y][x] == 2
+        else:
+            return self.map[y][x] == 2
 
     def isFree(self, y, x):
         verbose( "isFree({0},{1}): {2}; real:{3}".format(y,x,self.map[y][x],self.arena[y][x]), lv='deepdebug' )
         if (self.map[y][x] == 0):
             return self.arena[y][x] == 0;
-        return self.map[y][x] == 1
+        else:
+            return self.map[y][x] == 1
 
+    def countExplored(self):
+        unexplored_cells = 0
+        for y in range (0,self.height):
+            for x in range (0,self.width):
+                if (self.map[y][x] !=0):
+                    unexplored_cells += 1
+        return unexplored_cells
+                
     # to check whether the location is within range
     def valid_range(self, y, x):
         return (0 <= y < self.height) and (0 <= x < self.width)

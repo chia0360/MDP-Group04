@@ -93,7 +93,8 @@ class algoBF1(algoAbstract):
         self.movesLeft = {}
         self.interval = 20
         self.shortest_path_moves = []
-
+        # Robot's current location
+        self.currentPosition = tuple(self.handler.map.get_robot_location())
         # we initialize the first row, last row, first col, last col because for example, the first row cannot move north.
         for row in range(1, 14):
             for col in range(1, 19):
@@ -127,30 +128,40 @@ class algoBF1(algoAbstract):
         return True
 
     def periodic_check(self):
-        
-        
+        astar = AStar()
         # Speed Set(no. of steps/sec)
         self.simulator.specified_speed()
         if (self.simulator.speed_status == True):
             time.sleep(1/int(self.simulator.speed.get()))
+
         # Coverage Figure Set (%)
-        #cov = self.simulator.specified_coverage()
-        #if (self.simulator.coverage_status == True):
+        self.simulator.specified_coverage()
+        cov = int(self.simulator.coverage.get())
+        if (self.simulator.coverage_status == True):
+            print(self.map.countExplored())
+            print(self.map.mapSize)
+            div = self.map.countExplored()/self.map.mapSize
+            if(div*100 >= cov):
+                #Return to start
+                print("Asdfsdafafs")
+                print("Asdfsdafafs")
+                print("Asdfsdafafs")
             
         # Time Set(min:sec)
         if (self.simulator.time_status == True):
             if (float(self.end_time) <= (time.time()-self.start_time)):
                 #add return to start
-                print("asdfasdfs")
+                self.return_to_start(astar)
                 #end of test
             
 
         # check if the goal is reached
         print("steps taken", self.stepsTaken)
+            
         # check the movesLeft for currentPosition
-        currentPosition = tuple(self.handler.map.get_robot_location())
-        movesAvailable = self.movesLeft[currentPosition]
-        if currentPosition == (13, 18):
+        self.currentPosition = tuple(self.handler.map.get_robot_location())
+        movesAvailable = self.movesLeft[self.currentPosition]
+        if self.currentPosition == (13, 18):
             self.goal_reached = True
         # early stopping 
         # check if all the blocks are explored
@@ -158,15 +169,14 @@ class algoBF1(algoAbstract):
             print("done")
             
             # create a new astar object to solve the rest
-            astar = AStar()
+            
             if self.goal_reached:
                 # return to start
-                self.ending_moves = astar.solve(self.map.get_map(), currentPosition, astar.start)
-                self.handler.simulator.master.after(self.interval, self.ending)
+                self.return_to_start(astar)
                 return
             else:
                 # go to goal then return to start
-                self.ending_moves = astar.solve(self.map.get_map(), currentPosition, astar.goal)
+                self.ending_moves = astar.solve(self.map.get_map(), self.currentPosition, astar.goal)
                 self.ending_moves.extend(astar.solve(self.map.get_map(), astar.goal, astar.start))
                 self.handler.simulator.master.after(self.interval, self.ending)
                 return
@@ -213,7 +223,7 @@ class algoBF1(algoAbstract):
                 self.movesLeft[nextPosition].remove(backward)
 
                 # record the step will be taken
-                self.stepsTaken.append([move, currentPosition])
+                self.stepsTaken.append([move, self.currentPosition])
             # if not we just don't move and wait for next iteration
             
         self.handler.simulator.master.after(self.interval, self.periodic_check)
@@ -265,6 +275,11 @@ class algoBF1(algoAbstract):
             self.handler.left()
             self.handler.left()
             self.handler.move()
+    
+    def return_to_start(self,astar):
+        self.ending_moves = astar.solve(self.map.get_map(), self.currentPosition, astar.start)
+        self.handler.simulator.master.after(self.interval, self.ending)
+        return
 
 class RightHandRule(algoAbstract):
     def __init__(self, handler):
