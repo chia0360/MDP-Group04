@@ -90,10 +90,10 @@ class Simulator:
         coverage_label = ttk.Label(parameter_pane, text="Coverage Figure(%):")
         coverage_label.grid(column=0, row=2, sticky=W)
         self.coverage_status = False
-        self.coverage_value = StringVar()
-        coverage = ttk.Combobox(parameter_pane, textvariable = self.coverage_value)
-        coverage['values'] = (10,20,30,40,50,60,70,80,90,100)
-        coverage.grid(column=0, row=3, pady=(0, 10))
+        self.coverage_value = IntVar()
+        self.coverage = ttk.Combobox(parameter_pane, textvariable = self.coverage_value)
+        self.coverage['values'] = (10,20,30,40,50,60,70,80,90,100)
+        self.coverage.grid(column=0, row=3, pady=(0, 10))
         
         #Time Limit in Second 
         time_label = ttk.Label(parameter_pane, text="Time Limit(s):")
@@ -101,7 +101,7 @@ class Simulator:
         self.time_status = False
         self.time_value = StringVar()
         self.time = ttk.Combobox(parameter_pane, textvariable = self.time_value)
-        self.time['values'] = ("0:20","0:40","1:00","1:20","1:40","2:00","2:20","2:40","3:00")
+        self.time['values'] = ("0:05","0:40","1:00","1:20","1:40","2:00","2:20","2:40","3:00")
         self.time.grid(column=0, row=5, pady=(0, 10))
 
 
@@ -165,8 +165,10 @@ class Simulator:
             return self.speed_value
     
     def specified_coverage(self):
-        if (self.coverage_status ==True):
-            self.coverage_value = self.coverage.get()
+        cov = int(self.coverage.get())
+        if (cov != 0):
+            self.coverage_status =True
+            return self.coverage_value
             
     def specified_time(self):
         t = str(self.time.get())

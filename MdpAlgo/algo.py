@@ -127,36 +127,37 @@ class algoBF1(algoAbstract):
         return True
 
     def periodic_check(self):
-
+        
+        
         # Speed Set(no. of steps/sec)
         self.simulator.specified_speed()
         if (self.simulator.speed_status == True):
             time.sleep(1/int(self.simulator.speed.get()))
+        # Coverage Figure Set (%)
+        #cov = self.simulator.specified_coverage()
+        #if (self.simulator.coverage_status == True):
+            
         # Time Set(min:sec)
-        print(self.simulator.time_status)
-        print(time.time()-self.start_time)
         if (self.simulator.time_status == True):
             if (float(self.end_time) <= (time.time()-self.start_time)):
                 #add return to start
-                print("ASdfsadfsdfsdfsd")
-                print("ASdfsadfsdfsdfsd")
-                print("ASdfsadfsdfsdfsd")
-                print("ASdfsadfsdfsdfsd")
+                print("asdfasdfs")
                 #end of test
             
+
         # check if the goal is reached
         print("steps taken", self.stepsTaken)
-        currentPosition = tuple(self.handler.map.get_robot_location())
         # check the movesLeft for currentPosition
+        currentPosition = tuple(self.handler.map.get_robot_location())
         movesAvailable = self.movesLeft[currentPosition]
-
         if currentPosition == (13, 18):
             self.goal_reached = True
         # early stopping 
         # check if all the blocks are explored
         if self.check_complete():
             print("done")
-            # create a new astar object to solve the rest 
+            
+            # create a new astar object to solve the rest
             astar = AStar()
             if self.goal_reached:
                 # return to start
@@ -170,7 +171,7 @@ class algoBF1(algoAbstract):
                 self.handler.simulator.master.after(self.interval, self.ending)
                 return
 
-        # if no more movesAvailable for the current posision, take a step backward
+        # if no more movesAvailable for the current position, take a step backward
         # last item in the stepsTaken has [move, position]
         # turn the robot to the direction of the move previously taken and then take a step backward
         if len(movesAvailable) == 0:
