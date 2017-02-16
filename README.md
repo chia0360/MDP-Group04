@@ -13,5 +13,5 @@ Named File folders are allocated based on the following allocated Team.
 Named Files folders are allocated for Documentations like Progress Reports and Wiki, CheckLists and References
 -   Check List and Milestones
 -   Project Report and Wiki
--   Senioor Codes and References
--   joel test
+-   Senior Codes and References
+-   Joel Test
