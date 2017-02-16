@@ -225,7 +225,7 @@ class algoBF1(algoAbstract):
 
     def findSP(self):
         # use the generic astar to find the shortest path
-        self.shortest_path_moves = self.astar.solve(self.map.get_map(), astar.start, astar.goal)
+        self.shortest_path_moves = self.astar.solve(self.map.get_map(), self.astar.start, self.astar.goal)
         print(self.shortest_path_moves)
 
     def run(self):

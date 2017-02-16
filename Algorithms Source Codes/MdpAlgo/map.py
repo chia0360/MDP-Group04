@@ -20,9 +20,12 @@ class Map:
         self.map_lock = threading.Lock()
 
         #choose 1
-        self.arena = Arena().a[0]
-        self.arena = Arena().random_arena
-        
+        arena = Arena()
+        arena.load("arena_test")
+        self.arena = arena.random_arena
+
+        for row in self.arena:
+            print(row)
         # ----------------------------------------------------------------------
         #   Map Legend:
         #       0 - unexplored
