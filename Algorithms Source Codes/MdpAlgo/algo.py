@@ -153,6 +153,7 @@ class algoBF1(algoAbstract):
                 #add return to start
                 self.return_to_start()
                 #end of test
+                return
 
         # check the movesLeft for currentPosition
         self.currentPosition = tuple(self.handler.map.get_robot_location())
