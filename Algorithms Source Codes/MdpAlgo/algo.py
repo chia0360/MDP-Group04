@@ -256,19 +256,22 @@ class algoBF1(algoAbstract):
             self.handler.simulator.master.after(self.interval, self.ending)
 
 
-    def moveTo(self, direction):
-        if self.handler.map.get_robot_direction() == direction:
-            self.handler.move()
-        elif self.handler.map.get_robot_direction_right() == direction:
-            self.handler.right()
-            self.handler.move()
-        elif self.handler.map.get_robot_direction_left() == direction:
-            self.handler.left()
-            self.handler.move()
-        else:
-            self.handler.left()
-            self.handler.left()
-            self.handler.move()
+    def moveTo(self, directions):
+        for direction in directions:
+            print("moving to", direction)
+            
+            if self.handler.map.get_robot_direction() == direction:
+                self.handler.move()
+            elif self.handler.map.get_robot_direction_right() == direction:
+                self.handler.right()
+                self.handler.move()
+            elif self.handler.map.get_robot_direction_left() == direction:
+                self.handler.left()
+                self.handler.move()
+            else:
+                self.handler.left()
+                self.handler.left()
+                self.handler.move()
     
     def return_to_start(self):
         currentPos = tuple(self.handler.map.get_robot_location())
@@ -323,19 +326,22 @@ class RightHandRule(algoAbstract):
         if self.shortest_path_moves:
             self.handler.simulator.master.after(self.interval, self.run)
 
-    def moveTo(self, direction):
-        if self.handler.map.get_robot_direction() == direction:
-            self.handler.move()
-        elif self.handler.map.get_robot_direction_right() == direction:
-            self.handler.right()
-            self.handler.move()
-        elif self.handler.map.get_robot_direction_left() == direction:
-            self.handler.left()
-            self.handler.move()
-        else:
-            self.handler.left()
-            self.handler.left()
-            self.handler.move()
+    def moveTo(self, directions):
+        for direction in directions:
+            print("moving to", direction)
+            
+            if self.handler.map.get_robot_direction() == direction:
+                self.handler.move()
+            elif self.handler.map.get_robot_direction_right() == direction:
+                self.handler.right()
+                self.handler.move()
+            elif self.handler.map.get_robot_direction_left() == direction:
+                self.handler.left()
+                self.handler.move()
+            else:
+                self.handler.left()
+                self.handler.left()
+                self.handler.move()
 
     def check_right(self):
         robot_location = self.handler.map.get_robot_location()
@@ -441,11 +447,22 @@ class AStar:
     def __init__(self):
         self.start = (1,1)
         self.goal = (13, 18)
+        self.side_cost = 10
+        self.diagonal_cost = 14
         pass
     
     def distance(self, position1, position2):
-        # this act as both our cost and heuristics function
-        return sqrt(pow(position1[0]-position2[0],2) + pow(position1[1]-position2[1],2))
+        # this act as our heuristics function
+        # here we don't straight use the euclidean distance
+        # but a more reasonable estimate
+        d1 = position1[0]-position2[0]
+        d2 = position1[1]-position2[1]
+        # make d1 the smaller number
+        if d1 > d2:
+            d1, d2 = d2, d1
+        diff = d2 - d1
+        dist = diff * 14 + d1 * 10
+        return dist
 
     def solve(self, map, origin, dest):
         # make a copy of the map
@@ -513,17 +530,28 @@ class AStar:
 
         #----The actual A* algorithms----
 
-        # list contains nodes to be evaluated
+        # cost from the origin to the node
+        gScore = {}
+        # cost from start to start is 0
+        gScore[origin] = 0
+        # every time we move to a neighbor node, we 
+        # increase the gScore of the neighbor by 10 
+        # if its on the sides, if its on the diagonal,
+        # increase by 14
+
+        # the open list contains the nodes to be evaluated
+        # as key as the fScore of the node as value
         open_list = {}
+        # here the origin to destination we use the distance
+        # directly since the gScore is 0
         open_list[origin] = self.distance(origin, dest)
         closed_list = []
         came_from = {}
         # list of node that have not been expanded
 
-        while True:
-            # current node is the node in the open list with lowest f_cost
+        while len(open_list) != 0:
+            # current node is the node in the open list with lowest fScore
             current = min(open_list, key=open_list.get)
-
             # remove the current node from open list
             open_list.pop(current)
 
@@ -531,53 +559,112 @@ class AStar:
             closed_list.append(current)
 
             # if current equal dest, we are done
-
             if current == dest:
                 break
 
-            # open up the surrounding 4 nodes
+            # open up the surrounding nodes
             
             # if the neighbor is not in closed_list, not in open_list, and traversable, we add it into open_list 
-            # with calculated f_cost
+            # with calculated fScore
             
             y, x = current
             # top 
             top =  (y-1, x)
             if local_map[top[0]][top[1]] == 1 and top not in closed_list:
-                f_cost = self.distance(top, origin) + self.distance(top, dest)
-                if top not in open_list or f_cost < open_list[top]:
+                # fScore is the cost from start + estimated heuristics 
+                # cost to end
+                # the cost from start will equal the cost from start
+                # of the previous node + either 10 or 14 depends 
+                # on the position
+                fScore = gScore[current] + self.side_cost + self.distance(top, dest)
+                tentative_gScore = gScore[current] + self.side_cost
+                if top not in open_list or tentative_gScore < gScore[top]:
+                    open_list[top] = fScore
+                    gScore[top] = tentative_gScore
                     came_from[top] = current
-                    if top not in open_list:
-                        open_list[top] = f_cost
+                    # best until now or new node
 
             # bottom 
             bottom =  (y+1, x)
             if local_map[bottom[0]][bottom[1]] == 1 and bottom not in closed_list:
-                f_cost = self.distance(bottom, origin) + self.distance(bottom, dest)
-                if bottom not in open_list or f_cost < open_list[bottom]:
+                fScore = gScore[current] + self.side_cost + self.distance(bottom, dest)
+                tentative_gScore = gScore[current] + self.side_cost
+                if bottom not in open_list or tentative_gScore < gScore[bottom]:
                     came_from[bottom] = current
-                    if bottom not in open_list:
-                        open_list[bottom] = f_cost
-
+                    gScore[bottom] = tentative_gScore
+                    open_list[bottom] = fScore
 
             # left 
             left =  (y, x-1)
             if local_map[left[0]][left[1]] == 1 and left not in closed_list:
-                f_cost = self.distance(left, origin) + self.distance(left, dest)
-                if left not in open_list or f_cost < open_list[left]:
+                fScore = gScore[current] + self.side_cost + self.distance(left, dest)
+                tentative_gScore = gScore[current] + self.side_cost
+                if left not in open_list or tentative_gScore < gScore[left]:
                     came_from[left] = current
-                    if left not in open_list:
-                        open_list[left] = f_cost
+                    gScore[left] = tentative_gScore
+                    open_list[left] = fScore
 
             # right 
             right =  (y, x+1)
             if local_map[right[0]][right[1]] == 1 and right not in closed_list:
-                f_cost = self.distance(right, origin) + self.distance(right, dest)
-                if right not in open_list or f_cost < open_list[right]:
+                fScore = gScore[current] + self.side_cost + self.distance(right, dest)
+                tentative_gScore = gScore[current] + self.side_cost
+                if right not in open_list or tentative_gScore < gScore[right]:
                     came_from[right] = current
-                    if right not in open_list:
-                        open_list[right] = f_cost
+                    gScore[right] = tentative_gScore
+                    open_list[right] = fScore
+            
+            # now for the diagonal blocks
+            # we also test like above + test if the move is possible
+            # for example if we want to move to top right
+            # we need to check if top and right blocks are traversable 
+            # topright 
+            topright =  (y-1, x+1)
+            if local_map[topright[0]][topright[1]] == 1 and topright not in closed_list:
+                # check moveable
+                if local_map[right[0]][right[1]] == 1 and local_map[top[0]][top[1]] == 1:
+                    fScore = gScore[current] + self.diagonal_cost + self.distance(topright, dest)
+                    tentative_gScore = gScore[current] + self.diagonal_cost
+                    if topright not in open_list or tentative_gScore < gScore[topright]:
+                        came_from[topright] = current
+                        gScore[topright] = tentative_gScore
+                        open_list[topright] = fScore
 
+            # topleft 
+            topleft =  (y-1, x-1)
+            if local_map[topleft[0]][topleft[1]] == 1 and topleft not in closed_list:
+                # check moveable
+                if local_map[left[0]][left[1]] == 1 and local_map[top[0]][top[1]] == 1:
+                    fScore = gScore[current] + self.diagonal_cost + self.distance(topleft, dest)
+                    tentative_gScore = gScore[current] + self.diagonal_cost
+                    if topleft not in open_list or tentative_gScore < gScore[topleft]:
+                        came_from[topleft] = current
+                        gScore[topleft] = tentative_gScore
+                        open_list[topleft] = fScore
+
+            # bottom right 
+            bottomright =  (y+1, x+1)
+            if local_map[bottomright[0]][bottomright[1]] == 1 and bottomright not in closed_list:
+                # check moveable
+                if local_map[right[0]][right[1]] == 1 and local_map[bottom[0]][bottom[1]] == 1:
+                    fScore = gScore[current] + self.diagonal_cost + self.distance(bottomright, dest)
+                    tentative_gScore = gScore[current] + self.diagonal_cost
+                    if bottomright not in open_list or tentative_gScore < gScore[bottomright]:
+                        came_from[bottomright] = current
+                        gScore[bottomright] = tentative_gScore
+                        open_list[bottomright] = fScore
+            
+            # bottom left 
+            bottomleft =  (y+1, x-1)
+            if local_map[bottomleft[0]][bottomleft[1]] == 1 and bottomleft not in closed_list:
+                # check moveable
+                if local_map[left[0]][left[1]] == 1 and local_map[bottom[0]][bottom[1]] == 1:
+                    fScore = gScore[current] + self.diagonal_cost + self.distance(bottomleft, dest)
+                    tentative_gScore = gScore[current] + self.diagonal_cost
+                    if bottomleft not in open_list or tentative_gScore < gScore[bottomleft]:
+                        came_from[bottomleft] = current
+                        gScore[bottomleft] = tentative_gScore
+                        open_list[bottomleft] = fScore
 
         # found the path, now just need to print the path from the dest node to the origin node
 
@@ -594,7 +681,7 @@ class AStar:
 
         # result now has the list of tiles to traverse on
 
-        # we need to convert them to a list of moves in ['N', 'S', 'E', 'W']
+        # we need to convert them to a list of moves in ['N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW']
         print("map")
         for row in local_map: 
             print(row)
@@ -602,14 +689,25 @@ class AStar:
         moves = []
         for i in range(len(result)-1):
             if result[i][0] < result[i+1][0]:
-                moves.append('S')
+                if result[i][1] == result[i+1][1]:
+                    moves.append('S')
+                elif result[i][1] > result[i+1][1]:
+                    moves.append('SW')
+                else:
+                    moves.append('SE')
             elif result[i][0] > result[i+1][0]:
-                moves.append('N')
+                if result[i][1] == result[i+1][1]:
+                    moves.append('N')
+                elif result[i][1] > result[i+1][1]:
+                    moves.append('NW')
+                else:
+                    moves.append('NE')
             else:
                 if result[i][1] < result[i+1][1]:
                     moves.append('E')
                 else:
                     moves.append('W')
+        print(moves)
         return moves
             
 

@@ -22,7 +22,7 @@ class Map:
         #choose 1
         arena = Arena()
         arena.load("arena_test")
-        self.arena = arena.random_arena
+        self.arena = arena.loaded_arena
 
         for row in self.arena:
             print(row)
