@@ -10,36 +10,43 @@ import com.example.cherr.bluetooth3.R;
 
 public class GridAdapter extends BaseAdapter {
     private String robot_direction = "S";
-    private int[] robot_location = {1, 1};
-    private Context mContext;
+    private Context context;
     private int[] map;
+    private final String STATE_UNEXPLORED = "unexplored";
+    private final String STATE_OBSTACLE = "obstacle";
+    private final String STATE_FREE = "free";
+    private final String DIRECTION_NORTH = "N";
+    private final String DIRECTION_SOUTH = "S";
+    private final String DIRECTION_EAST = "E";
+    private final String DIRECTION_WEST = "W";
 
-    public GridAdapter(Context c) {
-        mContext = c;
+
+    public GridAdapter(Context c, int location_x, int location_y) {
+        context = c;
         map = new int[300];
         for (int i=0; i<15; i++) {
             for (int j=0; j<20; j++) {
-                put_map(i, j, "unexplored");
+                updateMap(i, j, STATE_UNEXPLORED);
             }
         }
-        put_robot(robot_location[0], robot_location[1]);
+        updateRobot(location_x, location_y);
     }
 
-    public void put_map(int x, int y, String state) {
-        if (valid_index(x, y)){
+    public void updateMap(int x, int y, String state) {
+        if (isValidMapIndex(x, y)){
             if (x<3 && y<3) {
-                map[x*20+y] = R.drawable.s_yellow;
+                map[x*20+y] = R.drawable.start;
             }
             else if (x>11 && y>16) {
-                map[x*20+y] = R.drawable.g_yellow;
+                map[x*20+y] = R.drawable.goal;
             }
-            else if (state.equals("free")) {
+            else if (state.equals(STATE_FREE)) {
                 map[x*20+y] = R.drawable.blue;
             }
-            else if (state.equals("obstacle")) {
+            else if (state.equals(STATE_OBSTACLE)) {
                 map[x*20+y] = R.drawable.red;
             }
-            else if (state.equals("unexplored")) {
+            else if (state.equals(STATE_UNEXPLORED)) {
                 map[x*20+y] = R.drawable.gray;
             }
             else {
@@ -49,9 +56,9 @@ public class GridAdapter extends BaseAdapter {
         Log.e("Map", "Invalid index: ("+Integer.toString(x)+","+ Integer.toString(y)+")");
     }
 
-    public void put_robot(int x, int y) {
-        if (valid_index(x-1, y-1) && valid_index(x+1, y+1)) {
-            if (robot_direction.equals("E")) {
+    public void updateRobot(int x, int y) {
+        if (isValidMapIndex(x-1, y-1) && isValidMapIndex(x+1, y+1)) {
+            if (robot_direction.equals(DIRECTION_EAST)) {
                 int image = R.drawable.robot_e_01;
                 for (int i=0; i<3; i++) {
                     for (int j=0; j<3; j++) {
@@ -59,7 +66,7 @@ public class GridAdapter extends BaseAdapter {
                     }
                 }
             }
-            else if (robot_direction.equals("W")) {
+            else if (robot_direction.equals(DIRECTION_WEST)) {
                 int image = R.drawable.robot_w_01;
                 for (int i=0; i<3; i++) {
                     for (int j=0; j<3; j++) {
@@ -67,7 +74,7 @@ public class GridAdapter extends BaseAdapter {
                     }
                 }
             }
-            else if (robot_direction.equals("N")) {
+            else if (robot_direction.equals(DIRECTION_NORTH)) {
                 int image = R.drawable.robot_n_01;
                 for (int i=0; i<3; i++) {
                     for (int j=0; j<3; j++) {
@@ -75,7 +82,7 @@ public class GridAdapter extends BaseAdapter {
                     }
                 }
             }
-            else if (robot_direction.equals("S")) {
+            else if (robot_direction.equals(DIRECTION_SOUTH)) {
                 int image = R.drawable.robot_s_01;
                 for (int i=0; i<3; i++) {
                     for (int j=0; j<3; j++) {
@@ -87,7 +94,7 @@ public class GridAdapter extends BaseAdapter {
 
     }
 
-    public boolean valid_index(int x, int y) {
+    public boolean isValidMapIndex(int x, int y) {
         return (x>=0 && x<15 && y>=0 && y<20);
     }
 
@@ -101,10 +108,10 @@ public class GridAdapter extends BaseAdapter {
 
     public void setItem(int position, String state) {
         int label = R.drawable.gray;
-        if (state.equals("free")) {
+        if (state.equals(STATE_FREE)) {
             label = R.drawable.blue;
         }
-        else if (state.equals("obstacle")) {
+        else if (state.equals(STATE_OBSTACLE)) {
             label = R.drawable.red;
         }
         map[position] = label;
@@ -118,19 +125,20 @@ public class GridAdapter extends BaseAdapter {
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
-        if (convertView == null) {  // if it's not recycled, initialize some attributes
-            imageView = new ImageView(mContext);
-
+        if (convertView == null) {
+            imageView = new ImageView(context);
             imageView.setAdjustViewBounds(true);
-//            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//            imageView.setPadding(1, 0, 1, 0);
         } else {
             imageView = (ImageView) convertView;
         }
-
         imageView.setImageResource(map[position]);
-
         return imageView;
+    }
+
+    public void notifyDataSetChanged(int x, int y)
+    {
+        notifyDataSetChanged();
+        updateRobot(x, y);
     }
 
 }
