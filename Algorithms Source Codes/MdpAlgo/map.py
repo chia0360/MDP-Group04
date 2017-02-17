@@ -165,38 +165,83 @@ class Map:
 
 
 
-    # ----------------------------------------------------------------------
-    # Grading criteria functions
-    #   map to be descripted need to be rotated 90 degrees clockwise
-    # ----------------------------------------------------------------------
-    def descripted_map(self, printThis=False, form='x'):
-        part1 = 3           # the first '11'
-        part2 = 3           # the second '11' - Part 1
-        cnt   = 0           # part 2 bit counter for padding bit
 
-        for x in range(self.width):
-            for y in range(self.height):
-                part1 <<= 1
-                if (self.map[y][x] != 0) :
-                    part1  |= 1
-                    part2 <<= 1
+    # ----------------------------------------------------------------------
+    # Generate map descriptor
+    # ----------------------------------------------------------------------
+    
+    def descriptor_one(self):                   #Mark each unexplored square as 0 and each explored square as 1.
+        rotated = list(zip(*(self.map)))[::-1]  #rotate map 90 degrees counterclockwise
+
+        ret = [1, 1]    #Padding for beginning
+        for row in rotated:
+            for col in row:
+                if col > 0:
+                    ret.append(1)
+                else:
+                    ret.append(0)
+                    
+        ret.append(1)
+        ret.append(1)   #Padding for ending
+
+        
+        #print(ret)
+        
+        hex_ret = []
+        temp = []
+        for bit in ret:
+            if len(temp) < 4:
+                temp.append(bit)
+            else:
+                temp_str = ''.join([str(b) for b in temp])
+                hex_ret.append(str(hex(int(temp_str, 2)))[2:])
+                temp = [bit]
+        if len(temp) > 0:
+            temp_str = ''.join([str(b) for b in temp])
+            hex_ret.append(str(hex(int(temp_str, 2)))[2:])
+        
+        #print(hex_ret)
+        # print(len(hex_ret))
+
+        return ''.join([h for h in hex_ret])        #  converting to hexadecimal for display
+
+    #Part 2
+    
+    def descriptor_two(self):
+        rotated = list(zip(*(self.map)))[::-1]  #rotate map 90 degrees counterclockwise
+        ret = []
+        cnt = 0
+        for row in rotated:
+            for col in row:
+                if col > 0:
                     cnt += 1
-                    if (self.map[y][x] == 2):
-                        part2 |= 1
-        
-        
-        # Padding bits
-        cnt      %= 8
-        part2   <<= 8-cnt
+                    if col == 2:    # grid cells marked as “explored” are represented by a bit, and obstacles are represented by 1
+                        ret.append(1)
+                    else:           # Cells that are known to be empty space are marked with a 0
+                        ret.append(0)
+        while cnt % 8 != 0:
+            ret.append(0)
+            cnt += 1
+            
+        #print(ret)
+        # print(len(ret))
+        hex_ret = []
+        temp = []
+        for bit in ret:
+            if len(temp) < 4:
+                temp.append(bit)
+            else:
+                temp_str = ''.join([str(b) for b in temp])
+                hex_ret.append(str(hex(int(temp_str, 2)))[2:])
+                temp = [bit]
+        if len(temp) > 0:
+            temp_str = ''.join([str(b) for b in temp])
+            hex_ret.append(str(hex(int(temp_str, 2)))[2:])
+            
+        #print(hex_ret)
+        # print(len(hex_ret))
 
-        # Returning accoring format
-        part1 = format(part1,form)
-        part2 = format(part2,form)
-        if printThis:
-            print(part1, part2, sep=';\n')
-
-        return [part1, part2]
-
+        print( ''.join([h for h in hex_ret]))
     # ----------------------------------------------------------------------
 
 #################### End of Class ####################
