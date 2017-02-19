@@ -24,8 +24,8 @@ class Map:
         arena.load("arena_test")
         self.arena = arena.loaded_arena
 
-        for row in self.arena:
-            print(row)
+        #for row in self.arena:
+        #    print(row)
         # ----------------------------------------------------------------------
         #   Map Legend:
         #       0 - unexplored
@@ -185,7 +185,7 @@ class Map:
         ret.append(1)   #Padding for ending
 
         
-        #print(ret)
+        print(ret)
         
         hex_ret = []
         temp = []
@@ -242,6 +242,26 @@ class Map:
         # print(len(hex_ret))
 
         print( ''.join([h for h in hex_ret]))
+
+    def descriptor_joel1(self):
+        print(self.map)
+        rotated = list(zip(*(self.map)))[::-1]
+        print(rotated)
+        ret = "11" #padded
+        for i in range (19,0,-1):
+            for j in range(15):
+               ret += str(rotated[i][j])
+        ret += "11" #padded
+        hexa = ""
+        for i in range(0,len(ret),4):
+            temp = ""
+            temp += ret[i:i+1]
+            temp += ret[i+1:i+2]
+            temp += ret[i+2:i+3]
+            temp += ret[i+3:i+4]
+            hexa += str(hex(int(temp,2)))[2:3]
+        print(hexa)
+        
     # ----------------------------------------------------------------------
 
 #################### End of Class ####################
