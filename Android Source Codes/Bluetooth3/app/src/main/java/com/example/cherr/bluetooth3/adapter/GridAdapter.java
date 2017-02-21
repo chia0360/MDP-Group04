@@ -44,7 +44,7 @@ public class GridAdapter extends BaseAdapter {
                 map[x*20+y] = R.drawable.blue;
             }
             else if (state.equals(STATE_OBSTACLE)) {
-                map[x*20+y] = R.drawable.red;
+                map[x*20+y] = R.drawable.block;
             }
             else if (state.equals(STATE_UNEXPLORED)) {
                 map[x*20+y] = R.drawable.gray;
@@ -112,7 +112,7 @@ public class GridAdapter extends BaseAdapter {
             label = R.drawable.blue;
         }
         else if (state.equals(STATE_OBSTACLE)) {
-            label = R.drawable.red;
+            label = R.drawable.block;
         }
         map[position] = label;
         notifyDataSetChanged();
@@ -134,11 +134,10 @@ public class GridAdapter extends BaseAdapter {
         imageView.setImageResource(map[position]);
         return imageView;
     }
-
-    public void notifyDataSetChanged(int x, int y)
+/*
+    public void notifyDataSetChanged()
     {
         notifyDataSetChanged();
-        updateRobot(x, y);
     }
-
+*/
 }
