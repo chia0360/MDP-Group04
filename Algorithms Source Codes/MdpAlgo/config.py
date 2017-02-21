@@ -47,12 +47,12 @@ icon_path = dict(
              'images/robot/West8.gif',
              'images/robot/West9.gif',],
     
+    start               = 'images/Start.gif',
+    end                 = 'images/Goal.gif',
     free                = 'images/unexplored.gif',
     obstacle 		= 'images/unexplored.gif',
     explored_free	= 'images/free.gif',
     explored_obstacle	= 'images/block.gif',
-    start               = 'images/Start.gif',
-    end                 = 'images/Goal.gif',
     size                = 1
 )
 
