@@ -363,7 +363,7 @@ class RightHandRule(algoAbstract):
             x3 = robot_location[1]+1
             
         elif right_direction == 'S':
-            if robot_location[0] >= self.map.height - 2:
+            if robot_location[0] >= self.map.width - 2:
                 return False
 
             y1 = robot_location[0]+2
@@ -374,7 +374,7 @@ class RightHandRule(algoAbstract):
             x3 = robot_location[1]+1
 
         elif right_direction == 'E':
-            if robot_location[1] >= self.map.width - 2:
+            if robot_location[1] >= self.map.length - 2:
                 return False
 
             y1 = robot_location[0]

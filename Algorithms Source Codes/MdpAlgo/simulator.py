@@ -37,7 +37,7 @@ class Simulator:
         # Simulator Map
         self.map_pane = ttk.Frame(self.master, borderwidth=0, relief="solid")
         self.map_pane.grid(column=0, row=0, sticky=(N, S, E, W))
-        self.map_widget     = [[None]*self.map.width]*self.map.height
+        self.map_widget     = [[None]*self.map.length]*self.map.width
 
         #-----------------------------------------------------------------------
         # Utilizing pictures for the grid visuals
@@ -63,7 +63,7 @@ class Simulator:
         self.map_obstacle_explored          = self.map_load_obstacle_explored.subsample(config.icon_path['size'])
 
         # Pictures for Robot for the various orientation
-        self.robot_size     = config.robot_detail['size']
+        self.robot_size     = config.robot_parameters['size']
         self.robot_n = []
         self.robot_s = []
         self.robot_e = []
@@ -228,8 +228,8 @@ class Simulator:
         # Start & Goal areas
         if   ((0 <= y < 3) and(0 <= x < 3)):
                 map_image = self.map_start
-        elif ((self.map.width -3 <= y < self.map.width) and
-              (self.map.height-3 <= x < self.map.height)):
+        elif ((self.map.length -3 <= y < self.map.length) and
+              (self.map.width-3 <= x < self.map.width)):
                 map_image = self.map_goal
 
         # Area Unexplored
@@ -277,8 +277,8 @@ class Simulator:
                         self.current_map[i][j] = next_map[i][j]
 
         # Map all changed grid and non-Robot area
-        for i in range(self.map.height):
-            for j in range(self.map.width):
+        for i in range(self.map.width):
+            for j in range(self.map.length):
                 if (not (next_robot_location[0]-1 <= i <= next_robot_location[0]+1 and
                          next_robot_location[1]-1 <= j <= next_robot_location[1]+1) and
                         (init or self.current_map[i][j] != next_map[i][j])):

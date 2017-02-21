@@ -1,3 +1,14 @@
+map_dimensions  = dict(width = 15, length = 20)
+
+robot_parameters = dict (size = 3, delay = 500)
+
+sensor_range = dict (
+    front_middle    = 4,
+    front_left      = 3,
+    front_right     = 3,
+    left            = 3,
+    right           = 3
+)
 icon_path = dict(
     north = ['images/robot/North1.gif',
              'images/robot/North2.gif',
@@ -36,26 +47,16 @@ icon_path = dict(
              'images/robot/West8.gif',
              'images/robot/West9.gif',],
     
-    free                = 'images/gray.gif',
-    obstacle 		= 'images/gray.gif',
-    explored_free	= 'images/d_blue.gif',
+    free                = 'images/unexplored.gif',
+    obstacle 		= 'images/unexplored.gif',
+    explored_free	= 'images/free.gif',
     explored_obstacle	= 'images/block.gif',
     start               = 'images/Start.gif',
     end                 = 'images/Goal.gif',
     size                = 1
 )
 
-map_detail  = dict(height = 15, width = 20)
 
-robot_detail = dict (size = 3, delay = 500)
-
-sensor_range = dict (
-    front_middle    = 4,
-    front_left      = 3,
-    front_right     = 3,
-    left            = 3,
-    right           = 3
-)
 
 verbose = dict (
     silent      = 0,
@@ -64,6 +65,7 @@ verbose = dict (
     debug       = 3,
     deepdebug   = 4
 )
+
 verboseLv = verbose['silent']
 
 robot_simulation = True

@@ -49,9 +49,9 @@ class Map:
                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]]
 
-        self.height     = config.map_detail['height']
-        self.width      = config.map_detail['width']
-        self.mapSize    = self.height * self.width
+        self.width     = config.map_dimensions['width']
+        self.length      = config.map_dimensions['length']
+        self.mapSize    = self.length * self.width
         self.mapStat    = ['unexplored', 'free', 'obstacle']
         
         # Initialising Robot's location and the direction it is facing
@@ -75,8 +75,8 @@ class Map:
         return Map.ORIENTATION[ (Map.ORIENTATION.index(self.robot_direction)+2) % 4 ]
 
     def set_robot_location(self, loc):
-        if ((0 <= loc[0] < self.height) and
-            (0 <= loc[1] < self.width )):
+        if ((0 <= loc[0] < self.width) and
+            (0 <= loc[1] < self.length )):
             self.robot_location = loc
         else:
             verbose( "Error: Location update out of range", tag="Map", lv='quiet' )
@@ -152,15 +152,15 @@ class Map:
 
     def countExplored(self):
         unexplored_cells = 0
-        for y in range (0,self.height):
-            for x in range (0,self.width):
+        for y in range (0,self.width):
+            for x in range (0,self.length):
                 if (self.map[y][x] !=0):
                     unexplored_cells += 1
         return unexplored_cells
                 
     # to check whether the location is within range
     def valid_range(self, y, x):
-        return (0 <= y < self.height) and (0 <= x < self.width)
+        return (0 <= y < self.width) and (0 <= x < self.length)
     # ----------------------------------------------------------------------
 
 
