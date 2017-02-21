@@ -102,7 +102,7 @@
 
                     <Button
                         android:layout_width="wrap_content"
-                        android:layout_height="80px"
+                        android:layout_height="60px"
                         android:id="@+id/set_coord_btn"
                         android:background="@drawable/btn_gray"
                         android:textColor="#ffffff"
@@ -132,7 +132,7 @@
                     <ToggleButton
                         android:id="@+id/auto_update_btn"
                         android:layout_width="wrap_content"
-                        android:layout_height="80px"
+                        android:layout_height="60px"
                         android:textSize="16sp"
                         android:background="@drawable/btn_gray"
                         android:textColor="@color/White"
@@ -147,6 +147,45 @@
 
                 </LinearLayout>
 
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="60px"
+                        android:id="@+id/f1"
+                        android:background="@drawable/btn_green"
+                        android:textColor="#ffffff"
+                        android:textAlignment="center"
+                        android:layout_marginRight="5dp"
+                        android:text="F1"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="60px"
+                        android:id="@+id/f2"
+                        android:background="@drawable/btn_green"
+                        android:textColor="#ffffff"
+                        android:textAlignment="center"
+                        android:layout_marginRight="5dp"
+                        android:text="F2"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="60px"
+                        android:id="@+id/configure"
+                        android:background="@drawable/btn_green"
+                        android:textColor="#ffffff"
+                        android:textAlignment="center"
+                        android:layout_marginRight="5dp"
+                        android:text="configure"/>
+
+                </LinearLayout>
+
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="wrap_content"
@@ -155,7 +194,7 @@
 
                     <Button
                         android:layout_width="wrap_content"
-                        android:layout_height="80px"
+                        android:layout_height="70px"
                         android:id="@+id/manual_btn"
                         android:background="@drawable/btn_blue"
                         android:textColor="#ffffff"
@@ -165,7 +204,7 @@
 
                     <Button
                         android:layout_width="wrap_content"
-                        android:layout_height="80px"
+                        android:layout_height="70px"
                         android:id="@+id/explore_btn"
                         android:background="@drawable/btn_blue"
                         android:textColor="#ffffff"
@@ -176,7 +215,7 @@
 
                     <Button
                         android:layout_width="wrap_content"
-                        android:layout_height="80px"
+                        android:layout_height="70px"
                         android:id="@+id/run_btn"
                         android:background="@drawable/btn_blue"
                         android:textColor="#ffffff"
@@ -245,48 +284,28 @@
                 android:layout_height="fill_parent"
                 android:background="@android:color/darker_gray" />
 
-<!--
             <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp">
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="60px"
-                    android:id="@+id/f1"
-                    android:background="@drawable/btn_green"
-                    android:textColor="#ffffff"
-                    android:textAlignment="center"
-                    android:layout_marginRight="5dp"
-                    android:text="F1"/>
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="60px"
-                    android:id="@+id/f2"
-                    android:background="@drawable/btn_green"
-                    android:textColor="#ffffff"
-                    android:textAlignment="center"
-                    android:layout_marginRight="5dp"
-                    android:text="F2"/>
-
-            </LinearLayout> -->
-
-            <LinearLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:id="@+id/sample_main_layout"
-                android:layout_marginLeft="10dp">
+                android:orientation="vertical"
+                android:id="@+id/right_layout"
+                android:paddingLeft="10dp">
 
-                <FrameLayout
-                    android:id="@+id/sample_content_fragment"
-                    android:layout_weight="2"
-                    android:layout_width="match_parent"
-                    android:layout_height="0px" />
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/sample_main_layout"
+                    android:layout_marginLeft="10dp">
+
+                    <FrameLayout
+                        android:id="@+id/chat_message"
+                        android:layout_weight="2"
+                        android:layout_width="match_parent"
+                        android:layout_height="0px" />
+
+                </LinearLayout>
 
             </LinearLayout>
 

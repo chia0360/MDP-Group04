@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -55,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         bluetoothFragment = new BluetoothChatFragment();
-        transaction.replace(R.id.sample_content_fragment, bluetoothFragment);
+        transaction.replace(R.id.chat_message, bluetoothFragment);
         transaction.commit();
 
         Display display = getWindowManager().getDefaultDisplay();
