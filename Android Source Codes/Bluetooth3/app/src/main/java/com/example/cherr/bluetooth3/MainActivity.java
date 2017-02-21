@@ -18,6 +18,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     BluetoothChatFragment bluetoothFragment;
     SensorManager sensorManager;
     Sensor sensor;
+    TextView status;
 
 
     @Override
@@ -80,13 +82,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rightBtn = (Button) findViewById(R.id.right_btn);
         setCoorBtn = (Button) findViewById(R.id.set_coord_btn);
         refreshBtn = (Button) findViewById(R.id.refresh);
-        f1Btn = (Button) findViewById(R.id.f1);
-        f2Btn = (Button) findViewById(R.id.f2);
+        //f1Btn = (Button) findViewById(R.id.f1);
+        //f2Btn = (Button) findViewById(R.id.f2);
         autoUpdateBtn = (ToggleButton) findViewById(R.id.auto_update_btn);
         leftLayout = (LinearLayout) findViewById(R.id.left_layout);
         control = (LinearLayout) findViewById(R.id.control);
         xCoor = (EditText) findViewById(R.id.x_text);
         yCoor = (EditText) findViewById(R.id.y_text);
+        status = (TextView) findViewById(R.id.robotstatus);
 
         exploreBtn.setOnClickListener(this);
         runBtn.setOnClickListener(this);
@@ -97,8 +100,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rightBtn.setOnClickListener(this);
         setCoorBtn.setOnClickListener(this);
         refreshBtn.setOnClickListener(this);
-        f1Btn.setOnClickListener(this);
-        f2Btn.setOnClickListener(this);
+        //f1Btn.setOnClickListener(this);
+        //f2Btn.setOnClickListener(this);
 
 
     }
@@ -200,5 +203,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             refreshBtn.setVisibility(View.GONE);
         else
             refreshBtn.setVisibility(View.VISIBLE);
+    }
+
+    public void onReceiveMessage(String msg){
+        if (msg.contains("moving")) {
+            status.setText("Moving");
+        }
     }
 }
