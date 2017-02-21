@@ -56,7 +56,7 @@ public class GridAdapter extends BaseAdapter {
         Log.e("Map", "Invalid index: ("+Integer.toString(x)+","+ Integer.toString(y)+")");
     }
 
-    public void updateRobot(int x, int y) {
+    public void updateRobot(int y, int x ) {
         if (isValidMapIndex(x-1, y-1) && isValidMapIndex(x+1, y+1)) {
             if (robot_direction.equals(DIRECTION_EAST)) {
                 int image = R.drawable.robot_e_01;

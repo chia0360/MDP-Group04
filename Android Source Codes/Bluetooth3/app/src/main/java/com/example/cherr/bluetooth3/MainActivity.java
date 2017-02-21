@@ -80,8 +80,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         downBtn.setOnClickListener(this);
         rightBtn.setOnClickListener(this);
         setCoorBtn.setOnClickListener(this);
-
-
     }
 
     @Override
@@ -116,8 +114,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 int x_coor_txt = Integer.parseInt(xCoor.getText().toString());
                 int y_coor_txt = Integer.parseInt(yCoor.getText().toString());
                 if(isValidCoor(x_coor_txt, y_coor_txt)){
+                    //send msg via bluetooth
                     bluetoothFragment.sendMessage("Robot starts at (" + Integer.toString(x_coor_txt) + ", "
-                            + Integer.toString(x_coor_txt) + ")");
+                            + Integer.toString(y_coor_txt) + ")");
                     setMapAdapter(x_coor_txt, y_coor_txt);
                     text = "Robot Location Reset";
                 }
@@ -126,6 +125,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();
+        }
+        else if(v == upBtn){
+            bluetoothFragment.sendMessage("f");
+        }
+        else if(v == downBtn){
+            bluetoothFragment.sendMessage("r");
+        }
+        else if(v == leftBtn){
+            bluetoothFragment.sendMessage("tl");
+        }
+        else if(v == rightBtn){
+            bluetoothFragment.sendMessage("tr");
         }
     }
 
