@@ -14,16 +14,20 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.example.cherr.bluetooth3.adapter.GridAdapter;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     ExpandableGridView arena;
-    Button exploreBtn, runBtn, manualBtn, upBtn, downBtn, leftBtn, rightBtn, setCoorBtn;
+    Button exploreBtn, runBtn, manualBtn, upBtn, downBtn, leftBtn, rightBtn, setCoorBtn, refreshBtn, f1Btn, f2Btn;
+    ToggleButton autoUpdateBtn;
     GridAdapter adapter;
     LinearLayout leftLayout, control;
     EditText xCoor, yCoor;
@@ -38,6 +42,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         assignInterfaceVariables();
+
+
+        autoUpdateBtn.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton toggleButton, boolean isChecked) {
+                setRefreshBtn(isChecked) ;
+            }
+        }) ;
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         bluetoothFragment = new BluetoothChatFragment();
@@ -67,6 +79,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         downBtn = (Button) findViewById(R.id.down_btn);
         rightBtn = (Button) findViewById(R.id.right_btn);
         setCoorBtn = (Button) findViewById(R.id.set_coord_btn);
+        refreshBtn = (Button) findViewById(R.id.refresh);
+        f1Btn = (Button) findViewById(R.id.f1);
+        f2Btn = (Button) findViewById(R.id.f2);
+        autoUpdateBtn = (ToggleButton) findViewById(R.id.auto_update_btn);
         leftLayout = (LinearLayout) findViewById(R.id.left_layout);
         control = (LinearLayout) findViewById(R.id.control);
         xCoor = (EditText) findViewById(R.id.x_text);
@@ -80,6 +96,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         downBtn.setOnClickListener(this);
         rightBtn.setOnClickListener(this);
         setCoorBtn.setOnClickListener(this);
+        refreshBtn.setOnClickListener(this);
+        f1Btn.setOnClickListener(this);
+        f2Btn.setOnClickListener(this);
+
+
     }
 
     @Override
@@ -138,6 +159,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else if(v == rightBtn){
             bluetoothFragment.sendMessage("tr");
         }
+        else if(v == refreshBtn){
+
+        }
     }
 
     public Boolean isValidCoor(int x_coor_txt, int y_coor_txt) {
@@ -169,5 +193,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             return true;
         }
+    }
+
+    public void setRefreshBtn(Boolean isChecked){
+        if (isChecked)
+            refreshBtn.setVisibility(View.GONE);
+        else
+            refreshBtn.setVisibility(View.VISIBLE);
     }
 }

@@ -188,6 +188,34 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="80px"
+                        android:id="@+id/f1"
+                        android:background="@drawable/btn_green"
+                        android:textColor="#ffffff"
+                        android:textAlignment="center"
+                        android:layout_marginRight="5dp"
+                        android:text="F1"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="80px"
+                        android:id="@+id/f2"
+                        android:background="@drawable/btn_green"
+                        android:textColor="#ffffff"
+                        android:textAlignment="center"
+                        android:layout_marginRight="5dp"
+                        android:text="F2"/>
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="90dp"
                     android:layout_height="90dp"
