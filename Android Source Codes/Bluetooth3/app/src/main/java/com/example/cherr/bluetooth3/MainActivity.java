@@ -23,6 +23,8 @@ import android.widget.ToggleButton;
 
 import com.example.cherr.bluetooth3.adapter.GridAdapter;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     ExpandableGridView arena;
@@ -162,13 +164,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             bluetoothFragment.sendMessage("tr");
         }
         else if(v == refreshBtn){
-
+            bluetoothFragment.sendMessage("GRID");
         }
     }
 
     public Boolean isValidCoor(int x_coor_txt, int y_coor_txt) {
-        if (x_coor_txt > 0 && x_coor_txt <= 15) {
-            if (y_coor_txt > 0 && y_coor_txt <= 20) {
+        if (x_coor_txt >= 0 && x_coor_txt < 15) {
+            if (y_coor_txt >= 0 && y_coor_txt < 20) {
                 return true;
             }
         }
@@ -204,9 +206,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             refreshBtn.setVisibility(View.VISIBLE);
     }
 
+    public void autoUpdateMap(String msg){
+        String hex = (msg.split(":")[2]).substring(0, -1);
+        String obstacles = Integer.toBinaryString(Integer.parseInt(hex,16));
+        int index = 0;
+        while(index < obstacles.length()){
+            if(obstacles.charAt(index) == '1') {
+                adapter.setItem(index, adapter.STATE_OBSTACLE);
+            }else{
+                adapter.setItem(index, adapter.STATE_FREE);
+            }
+            index++;
+        }
+    }
+
     public void onReceiveMessage(String msg){
-        if (msg.contains("moving")) {
-            status.setText("Moving");
+        if (msg.contains("grid")) {
+            autoUpdateMap(msg);
         }
     }
 }

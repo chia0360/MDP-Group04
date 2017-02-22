@@ -12,9 +12,9 @@ public class GridAdapter extends BaseAdapter {
     private String robot_direction = "S";
     private Context context;
     private int[] map;
-    private final String STATE_UNEXPLORED = "unexplored";
-    private final String STATE_OBSTACLE = "obstacle";
-    private final String STATE_FREE = "free";
+    public final String STATE_UNEXPLORED = "unexplored";
+    public final String STATE_OBSTACLE = "obstacle";
+    public final String STATE_FREE = "free";
     private final String DIRECTION_NORTH = "N";
     private final String DIRECTION_SOUTH = "S";
     private final String DIRECTION_EAST = "E";
@@ -57,12 +57,12 @@ public class GridAdapter extends BaseAdapter {
     }
 
     public void updateRobot(int y, int x ) {
-        if (isValidMapIndex(x-1, y-1) && isValidMapIndex(x+1, y+1)) {
+        if (isValidMapIndex(x, y)) {
             if (robot_direction.equals(DIRECTION_EAST)) {
                 int image = R.drawable.robot_e_01;
                 for (int i=0; i<3; i++) {
                     for (int j=0; j<3; j++) {
-                        map[(x-1+i)*20+(y-1+j)] = image+i*3+j;
+                        map[(x+i)*20+(y+j)] = image+i*3+j;
                     }
                 }
             }
@@ -70,7 +70,7 @@ public class GridAdapter extends BaseAdapter {
                 int image = R.drawable.robot_w_01;
                 for (int i=0; i<3; i++) {
                     for (int j=0; j<3; j++) {
-                        map[(x-1+i)*20+(y-1+j)] = image+i*3+j;
+                        map[(x+i)*20+(y+j)] = image+i*3+j;
                     }
                 }
             }
@@ -78,7 +78,7 @@ public class GridAdapter extends BaseAdapter {
                 int image = R.drawable.robot_n_01;
                 for (int i=0; i<3; i++) {
                     for (int j=0; j<3; j++) {
-                        map[(x-1+i)*20+(y-1+j)] = image+i*3+j;
+                        map[(x+i)*20+(y+j)] = image+i*3+j;
                     }
                 }
             }
@@ -86,7 +86,7 @@ public class GridAdapter extends BaseAdapter {
                 int image = R.drawable.robot_s_01;
                 for (int i=0; i<3; i++) {
                     for (int j=0; j<3; j++) {
-                        map[(x-1+i)*20+(y-1+j)] = image+i*3+j;
+                        map[(x+i)*20+(y+j)] = image+i*3+j;
                     }
                 }
             }
