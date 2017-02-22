@@ -123,7 +123,6 @@ class Map:
     # ----------------------------------------------------------------------
 
 
-
     # ----------------------------------------------------------------------
     # map checking functions
     #     isExplored, isFree, isObstacle, countExplored, valid_range
@@ -165,85 +164,14 @@ class Map:
 
 
 
-
-    # ----------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------
     # Generate map descriptor
-    # ----------------------------------------------------------------------
-    
-    def descriptor_one(self):                   #Mark each unexplored square as 0 and each explored square as 1.
-        rotated = list(zip(*(self.map)))[::-1]  #rotate map 90 degrees counterclockwise
+    # descriptor1: Mark each unexplored square as 0 and each explored square as 1
+    # descriptor2: Only grid cells marked as “explored” in Part 1 are represented here by a bit.
+    # Mark cells known to be empty space with 0, mark cells known to contain an obstacle with 1
+    # -------------------------------------------------------------------------------------------
 
-        ret = [1, 1]    #Padding for beginning
-        for row in rotated:
-            for col in row:
-                if col > 0:
-                    ret.append(1)
-                else:
-                    ret.append(0)
-                    
-        ret.append(1)
-        ret.append(1)   #Padding for ending
-
-        
-        print(ret)
-        
-        hex_ret = []
-        temp = []
-        for bit in ret:
-            if len(temp) < 4:
-                temp.append(bit)
-            else:
-                temp_str = ''.join([str(b) for b in temp])
-                hex_ret.append(str(hex(int(temp_str, 2)))[2:])
-                temp = [bit]
-        if len(temp) > 0:
-            temp_str = ''.join([str(b) for b in temp])
-            hex_ret.append(str(hex(int(temp_str, 2)))[2:])
-        
-        #print(hex_ret)
-        # print(len(hex_ret))
-
-        return ''.join([h for h in hex_ret])        #  converting to hexadecimal for display
-
-    #Part 2
-    
-    def descriptor_two(self):
-        rotated = list(zip(*(self.map)))[::-1]  #rotate map 90 degrees counterclockwise
-        ret = []
-        cnt = 0
-        for row in rotated:
-            for col in row:
-                if col > 0:
-                    cnt += 1
-                    if col == 2:    # grid cells marked as “explored” are represented by a bit, and obstacles are represented by 1
-                        ret.append(1)
-                    else:           # Cells that are known to be empty space are marked with a 0
-                        ret.append(0)
-        while cnt % 8 != 0:
-            ret.append(0)
-            cnt += 1
-            
-        #print(ret)
-        # print(len(ret))
-        hex_ret = []
-        temp = []
-        for bit in ret:
-            if len(temp) < 4:
-                temp.append(bit)
-            else:
-                temp_str = ''.join([str(b) for b in temp])
-                hex_ret.append(str(hex(int(temp_str, 2)))[2:])
-                temp = [bit]
-        if len(temp) > 0:
-            temp_str = ''.join([str(b) for b in temp])
-            hex_ret.append(str(hex(int(temp_str, 2)))[2:])
-            
-        #print(hex_ret)
-        # print(len(hex_ret))
-
-        print( ''.join([h for h in hex_ret]))
-
-    def descriptor_joel1(self):
+    def descriptor1(self):
         print(self.map)
         rotated = list(zip(*(self.map)))[::-1]
         print(rotated)
@@ -261,7 +189,36 @@ class Map:
             temp += ret[i+3:i+4]
             hexa += str(hex(int(temp,2)))[2:3]
         print(hexa)
+                
+    def descriptor2(self):
+        print(self.map)
+        rotated = list(zip(*(self.map)))[::-1]
+        print(rotated)
+        ret = ""
+        cnt = 0
+        for i in range (19,0,-1):
+            for j in range(15):
+                if rotated[i][j] > 0:
+                    cnt += 1
+                    if (rotated[i][j] == 1):      #Explored, free: Mark as 0
+                        ret += "0"
+                    elif (rotated[i][j] == 2):    #Explored, obstacle: Mark as 1
+                        ret += "1"
         
+        while cnt % 8 != 0:
+            ret += "0"
+            cnt += 1
+        print(ret)
+            
+        hexa = ""
+        for i in range(0,len(ret),4):
+            temp = ""
+            temp += ret[i:i+1]
+            temp += ret[i+1:i+2]
+            temp += ret[i+2:i+3]
+            temp += ret[i+3:i+4]
+            hexa += str(hex(int(temp,2)))[2:3]
+        print(hexa)
     # ----------------------------------------------------------------------
 
 #################### End of Class ####################
