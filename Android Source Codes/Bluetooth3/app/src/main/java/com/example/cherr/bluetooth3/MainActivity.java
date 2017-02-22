@@ -23,8 +23,6 @@ import android.widget.ToggleButton;
 
 import com.example.cherr.bluetooth3.adapter.GridAdapter;
 
-import java.util.ArrayList;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     ExpandableGridView arena;
@@ -223,6 +221,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onReceiveMessage(String msg){
         if (msg.contains("grid")) {
             autoUpdateMap(msg);
+        } else if (msg.contains("exploring")) {
+            status.setText("Exploring");
+        } else if (msg.contains("fastest path")) {
+            status.setText("Fastest Path");
+        } else if (msg.contains("turning left")) {
+            status.setText("Turning Left");
+        } else if (msg.contains("turning right")) {
+            status.setText("Turning Right");
+        } else if (msg.contains("moving forward")) {
+            status.setText("Moving Forward");
+        } else if (msg.contains("reversing")) {
+            status.setText("Reversing");
         }
     }
 }
