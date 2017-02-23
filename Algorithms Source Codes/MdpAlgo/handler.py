@@ -7,9 +7,10 @@ import robot_connector
 
 class Handler:
     def __init__(self, simulator):
-        self.map        = map.Map()
-        self.algo       = algo.algoFactory(self, algoName='RHR') #Choose which algorithm to use from algo.py
         self.simulator  = simulator
+        self.map        = map.Map()
+        self.algo       = algo.algoFactory(self, algoName='BF1') #Choose which algorithm to use from algo.py
+        
         
         if config.robot_simulation:     #Simulator/Real-World-Test switch
             self.robot = robot_simulator.RobotSimulator(self)

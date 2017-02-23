@@ -18,12 +18,19 @@ class Map:
 
     def __init__(self):
         self.map_lock = threading.Lock()
-
-        #choose 1
         arena = Arena()
-        arena.load("arena_test")
-        self.arena = arena.loaded_arena
-
+        #Choose what arena to use:
+        select = 2
+        #load from text file
+        if (select == 1):
+            arena.load("arena_test")
+            self.arena = arena.loaded_arena
+        #random arena
+        elif (select == 2):
+            self.arena = arena.random_arena
+        #specified arena
+        else:
+            self.arena = arena.specified_arena
         #for row in self.arena:
         #    print(row)
         # ----------------------------------------------------------------------
