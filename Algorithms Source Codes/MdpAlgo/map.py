@@ -20,7 +20,7 @@ class Map:
         self.map_lock = threading.Lock()
         arena = Arena()
         #Choose what arena to use:
-        select = 2
+        select = 1
         #load from text file
         if (select == 1):
             arena.load("arena_test")
