@@ -44,7 +44,8 @@ class test:
         self.m.map = self.map1
         print(self.m.map)
         self.m.descriptor1()
-        
+        self.m.map = self.map2
+        self.m.descriptor2()
     def print_map(self):
         self.m.map = self.map1
        
