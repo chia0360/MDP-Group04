@@ -268,6 +268,7 @@ public class BluetoothChatService {
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
+
         // Start the service over to restart listening mode
         BluetoothChatService.this.start();
     }

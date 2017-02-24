@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.IntegerRes;
@@ -29,7 +31,7 @@ import com.example.cherr.bluetooth3.adapter.GridAdapter;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener{
 
     ExpandableGridView arena;
     Button exploreBtn, runBtn, manualBtn, upBtn, downBtn, leftBtn, rightBtn, setCoorBtn, refreshBtn, f1Btn, f2Btn, configureBtn, save;
@@ -70,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int width = display.getWidth();
         //leftLayout.setLayoutParams(new LinearLayout.LayoutParams((width / 2), ViewGroup.LayoutParams.FILL_PARENT));
 
-        setMapAdapter(1, 1);
+        setMapAdapter(0,0);
 
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
 
@@ -171,18 +173,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else if(v == upBtn){
             bluetoothFragment.sendMessage("f");
             adapter.moveRobot("f");
+            status.setText("Going Forward");
         }
         else if(v == downBtn){
             bluetoothFragment.sendMessage("r");
             adapter.moveRobot("r");
+            status.setText("Going Backward");
         }
         else if(v == leftBtn){
             bluetoothFragment.sendMessage("tl");
             adapter.moveRobot("tl");
+            status.setText("Turning Left");
         }
         else if(v == rightBtn){
             bluetoothFragment.sendMessage("tr");
             adapter.moveRobot("tr");
+            status.setText("Turning Right");
         }
         else if(v == refreshBtn){
             bluetoothFragment.sendMessage("sendArena");
@@ -192,12 +198,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             bluetoothFragment.sendMessage("beginExplore");
         }
         else if(v == f1Btn){
-            String defaultValue = "f";
+            String defaultValue = "f1old";
             String cmd = sharedPref.getString("C1", defaultValue);
             bluetoothFragment.sendMessage(cmd);
         }
         else if(v == f2Btn){
-            String defaultValue = "r";
+            String defaultValue = "f2old";
             String cmd = sharedPref.getString("C2", defaultValue);
             bluetoothFragment.sendMessage(cmd);
         }
@@ -299,6 +305,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             status.setText("Moving Forward");
         } else if (msg.contains("reversing")) {
             status.setText("Reversing");
+        }else if (msg.contains("connected")) {
+            status.setText("Bluetooth Connected");
+        }else if (msg.contains("disconnect")) {
+            status.setText("Bluetooth Disconnected");
+        }else if (msg.contains("connecting")) {
+            status.setText("Bluetooth Connecting");
         }
     }
 
@@ -316,5 +328,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             bin = pad.concat(bin);
         }
         return bin;
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        int a = sensorManager.AXIS_MINUS_X;
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        int a = sensorManager.AXIS_MINUS_X;
     }
 }
