@@ -15,6 +15,7 @@ class Connector(Robot):
     def connect(self):
         host = '192.168.12.12'
         port = 8008
+        port = 8008
         try:
             self.socket.connect((host, port))
         except Exception:
