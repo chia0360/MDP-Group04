@@ -14,15 +14,9 @@ int frontRightSensorPin = A4;
 
 double kd = 0;
 int count = 0, left = 1, right = 1;
-double sum = 0;
 int MovementCountAvg;
 double totaltick = 0;
 double calibratedFrontCentreDist = 10.5 ;//9.6
-
-double leftSensorArray[arraySize], rightSensorArray[arraySize], frontRightSensorArray[arraySize], frontLeftSensorArray[arraySize];
-double frontCentreSensorArray[arraySize];
-double leftSensorMedian = 0.0, rightSensorMedian = 0.0,  frontRightSensorMedian = 0.0, frontLeftSensorMedian = 0.0;
-double frontCentreSensorMedian = 0.0;
 
 double LeftSensorValue = 0, rightSensorValue = 0, frontRightSensorValue = 0, frontLeftSensorValue = 0, frontCentreSensorValue = 0;
 char commands='m';
@@ -37,15 +31,13 @@ volatile int m1MovementCount = 0, m2MovementCount = 0, avgCount = 0, m1 = 0, m2 
 //PID Parameters
 double curError = 0.0;
 double prevError = 0.0;
-double sumError = 0.0;
-double dError = 0.0;
+
 
 double kP = -6.3;//-3.8;
 double Adjust = 0;
 
 unsigned long prev_ms = 0;
 unsigned long interval = 0;
-unsigned long prev = 0;
 
 double m1Speed = 0, m2Speed = 0;
 
@@ -115,6 +107,7 @@ void Alignment() {
   Adjust = kP * curError;
 
 }
+
 void moveForward(double m1Speed, double m2Speed) {
   unsigned long current_ms= millis() ;
  // Serial.println("FORWARD");
@@ -142,7 +135,7 @@ int inc=0;
   inc=grid/5;
  }
   grid=grid*(280+inc);
-    Serial.print(MovementCountAvg);
+    //Serial.print(MovementCountAvg);
   while (MovementCountAvg < grid) {
  
 moveForward(170,160);//200//190
@@ -173,7 +166,7 @@ kd = 3.25;
      kd = 3.21;
   }
   tick = kd * abs(degree);
-  Serial.println(tick);
+  //Serial.println(tick);
   while(tick>0)
   {
     moveForward(180, 170); 
@@ -282,8 +275,8 @@ void repositionRobotFront() {
 
   md.setBrakes(400, 400);
 delay(300);
-Serial.println(m1Speed);
-Serial.println(m2Speed);
+//Serial.println(m1Speed);
+//Serial.println(m2Speed);
 
 }
 

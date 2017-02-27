@@ -74,35 +74,36 @@ class RobotSimulator(Robot):
         robot_location = self.map_info.get_robot_location()
         direction = self.map_info.get_robot_direction()
         if direction == 'E':
-            sensor_location = [robot_location[0]-1, robot_location[1]]
-            return self.get_sensor_data(sensor_location, 'N', detect_range)
+            sensor_location = [robot_location[0]-1, robot_location[1]+1]
+            ret = self.get_sensor_data(sensor_location, 'N', detect_range)
         elif direction == 'W':
-            sensor_location = [robot_location[0]+1, robot_location[1]]
-            return self.get_sensor_data(sensor_location, 'S', detect_range)
+            sensor_location = [robot_location[0]+1, robot_location[1]-1]
+            ret = self.get_sensor_data(sensor_location, 'S', detect_range)
         elif direction == 'S':
-            sensor_location = [robot_location[0], robot_location[1]+1]
-            return self.get_sensor_data(sensor_location, 'E', detect_range)
+            sensor_location = [robot_location[0]+1, robot_location[1]+1]
+            ret = self.get_sensor_data(sensor_location, 'E', detect_range)
         elif direction == 'N':
-            sensor_location = [robot_location[0], robot_location[1]-1]
-            return self.get_sensor_data(sensor_location, 'W', detect_range)
+            sensor_location = [robot_location[0]-1, robot_location[1]-1]
+            ret = self.get_sensor_data(sensor_location, 'W', detect_range)
         else:
             print("    [ERROR] Invalid direction!")
-
+        return ret
+        
     def get_right(self):
         detect_range = config.sensor_range['right']
         robot_location = self.map_info.get_robot_location()
         direction = self.map_info.get_robot_direction()
         if direction == 'E':
-            sensor_location = [robot_location[0]+1, robot_location[1]]
+            sensor_location = [robot_location[0]+1, robot_location[1]+1]
             return self.get_sensor_data(sensor_location, 'S', detect_range)
         elif direction == 'W':
-            sensor_location = [robot_location[0]-1, robot_location[1]]
+            sensor_location = [robot_location[0]-1, robot_location[1]-1]
             return self.get_sensor_data(sensor_location, 'N', detect_range)
         elif direction == 'S':
-            sensor_location = [robot_location[0], robot_location[1]-1]
+            sensor_location = [robot_location[0]+1, robot_location[1]-1]
             return self.get_sensor_data(sensor_location, 'W', detect_range)
         elif direction == 'N':
-            sensor_location = [robot_location[0], robot_location[1]+1]
+            sensor_location = [robot_location[0]-1, robot_location[1]+1]
             return self.get_sensor_data(sensor_location, 'E', detect_range)
         else:
             print("    [ERROR] Invalid direction!")
