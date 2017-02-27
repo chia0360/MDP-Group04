@@ -16,9 +16,16 @@ class descriptor:
         rotated = list(zip(*(self.map)))[::-1]
         print(rotated)
         ret = "11" #padded
+        
         for i in range (19,-1,-1):
             for j in range(15):
-               ret += str(rotated[i][j])
+                if (rotated[i][j] == 0):
+                    ret+="0"
+                elif (rotated[i][j] == 1):
+                    ret += "1"
+                elif (rotated[i][j] == 2):
+                    ret += "1"
+            
         ret += "11" #padded
         hexa = ""
         for i in range(0,len(ret),4):
