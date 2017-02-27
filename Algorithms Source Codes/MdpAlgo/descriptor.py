@@ -16,7 +16,7 @@ class descriptor:
         rotated = list(zip(*(self.map)))[::-1]
         print(rotated)
         ret = "11" #padded
-        for i in range (19,0,-1):
+        for i in range (19,-1,-1):
             for j in range(15):
                ret += str(rotated[i][j])
         ret += "11" #padded
@@ -36,7 +36,7 @@ class descriptor:
         print(rotated)
         ret = ""
         cnt = 0
-        for i in range (19,0,-1):
+        for i in range (19,-1,-1):
             for j in range(15):
                 if rotated[i][j] > 0:
                     cnt += 1
