@@ -3,7 +3,6 @@ package com.mdpgrp4.mdp;
 /**
  * Created by Cherr on 10/2/2017.
  */
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -35,12 +34,10 @@ public class BluetoothChatService {
     private static final String NAME_INSECURE = "BluetoothChatInsecure";
 
     // Unique UUID for this application
-    // private static final UUID MY_UUID_SECURE =
-    //        UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
-    private static final UUID MY_UUID_SECURE = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    private static final UUID MY_UUID_INSECURE = UUID.fromString("94f39d29-7d6d-437d-973b-fba39e49d4ee");
-    // private static final UUID MY_UUID_INSECURE =
-    //         UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+    private static final UUID MY_UUID_SECURE =
+            UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private static final UUID MY_UUID_INSECURE =
+            UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
 
     // Member fields
     private final BluetoothAdapter mAdapter;
@@ -50,6 +47,7 @@ public class BluetoothChatService {
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
+    private int mNewState;
 
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
@@ -66,20 +64,20 @@ public class BluetoothChatService {
     public BluetoothChatService(Context context, Handler handler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
+        mNewState = mState;
         mHandler = handler;
     }
 
     /**
-     * Set the current state of the chat connection
-     *
-     * @param state An integer defining the current connection state
+     * Update UI title according to the current state of the chat connection
      */
-    private synchronized void setState(int state) {
-        Log.d(TAG, "setState() " + mState + " -> " + state);
-        mState = state;
+    private synchronized void updateUserInterfaceTitle() {
+        mState = getState();
+        Log.d(TAG, "updateUserInterfaceTitle() " + mNewState + " -> " + mState);
+        mNewState = mState;
 
         // Give the new state to the Handler so the UI Activity can update
-        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
+        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, mNewState, -1).sendToTarget();
     }
 
     /**
@@ -108,8 +106,6 @@ public class BluetoothChatService {
             mConnectedThread = null;
         }
 
-        setState(STATE_LISTEN);
-
         // Start the thread to listen on a BluetoothServerSocket
         if (mSecureAcceptThread == null) {
             mSecureAcceptThread = new AcceptThread(true);
@@ -119,6 +115,8 @@ public class BluetoothChatService {
             mInsecureAcceptThread = new AcceptThread(false);
             mInsecureAcceptThread.start();
         }
+        // Update UI title
+        updateUserInterfaceTitle();
     }
 
     /**
@@ -147,7 +145,8 @@ public class BluetoothChatService {
         // Start the thread to connect with the given device
         mConnectThread = new ConnectThread(device, secure);
         mConnectThread.start();
-        setState(STATE_CONNECTING);
+        // Update UI title
+        updateUserInterfaceTitle();
     }
 
     /**
@@ -192,8 +191,8 @@ public class BluetoothChatService {
         bundle.putString(Constants.DEVICE_NAME, device.getName());
         msg.setData(bundle);
         mHandler.sendMessage(msg);
-
-        setState(STATE_CONNECTED);
+        // Update UI title
+        updateUserInterfaceTitle();
     }
 
     /**
@@ -221,7 +220,9 @@ public class BluetoothChatService {
             mInsecureAcceptThread.cancel();
             mInsecureAcceptThread = null;
         }
-        setState(STATE_NONE);
+        mState = STATE_NONE;
+        // Update UI title
+        updateUserInterfaceTitle();
     }
 
     /**
@@ -253,6 +254,10 @@ public class BluetoothChatService {
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
+        mState = STATE_NONE;
+        // Update UI title
+        updateUserInterfaceTitle();
+
         // Start the service over to restart listening mode
         BluetoothChatService.this.start();
     }
@@ -268,6 +273,9 @@ public class BluetoothChatService {
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
+        mState = STATE_NONE;
+        // Update UI title
+        updateUserInterfaceTitle();
 
         // Start the service over to restart listening mode
         BluetoothChatService.this.start();
@@ -300,6 +308,7 @@ public class BluetoothChatService {
                 Log.e(TAG, "Socket Type: " + mSocketType + "listen() failed", e);
             }
             mmServerSocket = tmp;
+            mState = STATE_LISTEN;
         }
 
         public void run() {
@@ -387,6 +396,7 @@ public class BluetoothChatService {
                 Log.e(TAG, "Socket Type: " + mSocketType + "create() failed", e);
             }
             mmSocket = tmp;
+            mState = STATE_CONNECTING;
         }
 
         public void run() {
@@ -456,6 +466,7 @@ public class BluetoothChatService {
 
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
+            mState = STATE_CONNECTED;
         }
 
         public void run() {
@@ -475,8 +486,6 @@ public class BluetoothChatService {
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     connectionLost();
-                    // Start the service over to restart listening mode
-                    BluetoothChatService.this.start();
                     break;
                 }
             }
@@ -508,3 +517,5 @@ public class BluetoothChatService {
         }
     }
 }
+
+

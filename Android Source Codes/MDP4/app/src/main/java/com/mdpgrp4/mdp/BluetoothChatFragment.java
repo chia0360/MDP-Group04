@@ -271,17 +271,17 @@ public class BluetoothChatFragment extends Fragment {
                 case Constants.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
                         case BluetoothChatService.STATE_CONNECTED:
-                            setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                            //setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                             mConversationArrayAdapter.clear();
                             ((MainActivity)getActivity()).onReceiveMessage("connected");
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
-                            setStatus(R.string.title_connecting);
+                            //setStatus(R.string.title_connecting);
                             ((MainActivity)getActivity()).onReceiveMessage("connecting");
                             break;
                         case BluetoothChatService.STATE_LISTEN:
                         case BluetoothChatService.STATE_NONE:
-                            setStatus(R.string.title_not_connected);
+                            //setStatus(R.string.title_not_connected);
                             ((MainActivity)getActivity()).onReceiveMessage("disconnect");
                             break;
                     }
