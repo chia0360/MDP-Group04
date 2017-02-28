@@ -4,6 +4,7 @@ import algo
 import map
 import robot_simulator
 import robot_connector
+import descriptor
 
 class Handler:
     def __init__(self, simulator):
@@ -14,9 +15,40 @@ class Handler:
         
         if config.robot_simulation:     #Simulator/Real-World-Test switch
             self.robot = robot_simulator.RobotSimulator(self)
-            self.do_read()
         else:
             self.robot = robot_connector.Connector()
+        self.des = descriptor.descriptor()
+        # receive the command from the android then do accordingly
+        self.map_descriptor = None
+        self.do_read()
+
+    def loop(self):
+        while True:
+            # get command
+            # command = self.robot.receive()
+            # for testing
+            data = input()
+            print("Receiving :", data)
+            # check command
+
+            # this set of command comes from android
+            if data == 'explore':
+                self.algo.explore(True)
+            elif data == 'run':
+                self.algo.run()
+            elif data == 'f':
+                self.move()
+            elif data == 'tr':
+                self.right()
+            elif data == 'tl':
+                self.left()
+            elif data == 'stop':
+                pass
+            else: 
+                # if its not a command from android, its probably the sensors'
+                self.do_read(data)
+                self.algo.explore(True)
+
 
     #Defining Robot's location on map and orientation
     def get_robot_direction(self):
@@ -46,24 +78,24 @@ class Handler:
         # Next position check and sending command
         if self.map.valid_pos(robot_next[0], robot_next[1]):
             self.map.set_robot_location( robot_next )
-            self.robot.send('F')
+            self.robot.send('f')
         else:
             verbose("WARNING: Can't move (obstacle/out-of-bounds)",
                 tag='Handler', pre='    ', lv='debug')
 
-    def do_read(self):
-        sensor_data = None
+    def do_read(self, sensor = None):
+        sensor_data = sensor
         while not sensor_data:
             # this sensor data is in the the following order
             sensor_data = self.robot.receive()
             # left,         front-left, front-middle, front-right, right for real data
             # front_middle, front-left, front-right,  left,        right for simulation
 
-            if not config.robot_simulation:
-                sensor_data = map(int, list(sensor_data))
-                # swap 0 with 2, then 2 with 3 
-                sensor_data[0], sensor_data[2] = sensor_data[2], sensor_data[0]
-                sensor_data[3], sensor_data[2] = sensor_data[2], sensor_data[3]
+        if not config.robot_simulation:
+            sensor_data = map(int, list(sensor_data))
+            # swap 0 with 2, then 2 with 3 
+            sensor_data[0], sensor_data[2] = sensor_data[2], sensor_data[0]
+            sensor_data[3], sensor_data[2] = sensor_data[2], sensor_data[3]
                  
         robot_direction = self.map.get_robot_direction()
         robot_location  = self.map.get_robot_location()
@@ -141,7 +173,6 @@ class Handler:
     # ----------------------------------------------------------------------
     def move(self):
         verbose("Action: move forward", tag='Handler')
-        self.robot.send('F')
         self.do_move()
         self.do_read()
         self.simulator.update_map()
@@ -159,7 +190,7 @@ class Handler:
         verbose("Action: turn left", tag='Handler')
         self.map.set_robot_direction( self.map.get_robot_direction_left() )
         # Send command to robot
-        self.robot.send('L')
+        self.robot.send('l')
         self.do_read()
         self.simulator.update_map()
 
@@ -167,7 +198,7 @@ class Handler:
         verbose("Action: turn right", tag='Handler')
         self.map.set_robot_direction( self.map.get_robot_direction_right() )
         # Send command to robot
-        self.robot.send('R')
+        self.robot.send('r')
         self.do_read()
         self.simulator.update_map()
    

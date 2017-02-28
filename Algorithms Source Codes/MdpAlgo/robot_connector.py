@@ -23,6 +23,8 @@ class Connector(Robot):
             print("[Info] Connection established.")
 
     def send(self, msg):
+        print("[Info] Sending message: ", msg)
+
         if not self.connected:
             self.connect()
         if self.connected:
@@ -34,6 +36,8 @@ class Connector(Robot):
                 # self.connected = False
 
     def receive(self):
+        print("[Info] Received: ", msg_decoded)
+        
         if not self.connected:
             self.connect()
         if self.connected:

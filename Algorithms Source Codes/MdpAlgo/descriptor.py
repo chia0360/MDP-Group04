@@ -10,11 +10,12 @@ import map
 class descriptor:
     def __init__(self):
         self.map = map.Map().get_map()
-        print(self.map)
+        # print(self.map)
+
     def descriptor1(self):
-        print(self.map)
+        # print(self.map)
         rotated = list(zip(*(self.map)))[::-1]
-        print(rotated)
+        # print(rotated)
         ret = "11" #padded
         
         for i in range (19,-1,-1):
@@ -38,9 +39,9 @@ class descriptor:
         return (hexa)
                 
     def descriptor2(self):
-        print(self.map)
+        # print(self.map)
         rotated = list(zip(*(self.map)))[::-1]
-        print(rotated)
+        # print(rotated)
         ret = ""
         cnt = 0
         for i in range (19,-1,-1):
@@ -55,7 +56,7 @@ class descriptor:
         while cnt % 8 != 0:
             ret += "0"
             cnt += 1
-        print(ret)
+        # print(ret)
             
         hexa = ""
         for i in range(0,len(ret),4):

@@ -61,7 +61,7 @@ class algoFactory:
         else:
             raise NameError('algoName not found')
 
-    def explore(self):
+    def explore(self, real):
         self.algo.explore()
 
     def findSP(self):
@@ -97,8 +97,6 @@ class algoBF1(algoAbstract):
         self.shortest_path_moves = []
 
         self.astar = AStar()
-
-        
 
         # we initialize the first row, last row, first col, last col because for example, the first row cannot move north.
         for row in range(1, 14):
@@ -294,14 +292,19 @@ class RightHandRule(algoAbstract):
         self.interval = 20
         self.m = map.Map()
         self.des = descriptor.descriptor()
-        
-    def explore(self):
+        self.real = False
+
+    def explore(self, real=False):
+        # periodic check is for the simulation
+        self.real = real
         self.periodic_check()
+        # for real run just call this once when receive the command
 
     def periodic_check(self):
         if self.check_right():
             # turning and moving is already done
-            self.handler.simulator.master.after(self.interval, self.periodic_check)
+            if not self.real:
+                self.handler.simulator.master.after(self.interval, self.periodic_check)
             return
 
         if self.check_front():
@@ -313,7 +316,7 @@ class RightHandRule(algoAbstract):
         if location[0] == 1 and location[1] == 1:
             self.done = True
             
-        if not self.done:
+        if not self.done and not self.real:
             self.handler.simulator.master.after(self.interval, self.periodic_check)
             
 #print Descriptor with every move
@@ -321,10 +324,7 @@ class RightHandRule(algoAbstract):
         self.des.map = explored
         a = self.des.descriptor1()
         b = self.des.descriptor2()
-        print("Descriptor 1")
-        print(a)
-        print("Descriptor 2")
-        print(b)
+
         
     def findSP(self):
         # use the generic astar to find the shortest path
@@ -698,10 +698,10 @@ class AStar:
         # result now has the list of tiles to traverse on
 
         # we need to convert them to a list of moves in ['N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW']
-        print("map")
-        for row in local_map: 
-            print(row)
-        print("result", result)
+        # print("map")
+        # for row in local_map: 
+        #     print(row)
+        # print("result", result)
         moves = []
         for i in range(len(result)-1):
             if result[i][0] < result[i+1][0]:
@@ -723,5 +723,5 @@ class AStar:
                     moves.append('E')
                 else:
                     moves.append('W')
-        print(moves)
+        # print(moves)
         return moves

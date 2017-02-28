@@ -241,7 +241,7 @@ class Arena:
             for col in range(19, -1, -1):
                 # each col is one line in the lines
                 line = lines[19-col]
-                print(line)
+                # print(line)
                 for row in range(15):
                     # get 1 bit from the bit_string
                     self.loaded_arena[row][col] = int(line[row])
