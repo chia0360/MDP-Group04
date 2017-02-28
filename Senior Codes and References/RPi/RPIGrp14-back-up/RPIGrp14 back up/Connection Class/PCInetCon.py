@@ -4,14 +4,12 @@ Created on Wed Sep 28 15:29:56 2016
 
 @author: lwh92
 """
-
-import serial
 import threading
 import socket
 class PCInetCon(object):
     def __init__(self):
-        self.port = 3004
-        self.host = "192.168.14.14"
+        self.port = 5281
+        self.host = "192.168.4.16"
         self.socket = None
         self.client = None
         self.address = None
@@ -65,9 +63,9 @@ if(PC.connectPc()):
             PC.sendPc(data)
     PC.disconnect()
 """
-"""
+
 PC = PCInetCon()
 if(PC.connectPc()):
         while 1:
             print(PC.receivePc())
-"""
+

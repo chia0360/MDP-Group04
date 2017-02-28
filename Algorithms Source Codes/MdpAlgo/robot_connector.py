@@ -1,7 +1,6 @@
 import socket
 from robot import *
 
-
 class Connector(Robot):
     def __init__(self):
 
@@ -13,9 +12,8 @@ class Connector(Robot):
         self.connect()
 
     def connect(self):
-        host = '192.168.12.12'
-        port = 8008
-        port = 8008
+        host = '192.168.4.1'
+        port = 8888
         try:
             self.socket.connect((host, port))
         except Exception:
@@ -53,3 +51,9 @@ class Connector(Robot):
                 print("[Info] No message received.")
         # else:
         #     print("[Error] Unable to receive message. Connection loss.")
+
+if __name__ == "__main__":
+	crobot = Connector()
+	crobot.connect()
+	while True:
+		crobot.send("fine")
