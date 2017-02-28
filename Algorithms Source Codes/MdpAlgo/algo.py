@@ -12,7 +12,9 @@
 # ----------------------------------------------------------------------
 
 import time
+import map
 from math import *
+import descriptor
 
 class algoAbstract:
     # def __init__(self):
@@ -95,6 +97,8 @@ class algoBF1(algoAbstract):
         self.shortest_path_moves = []
 
         self.astar = AStar()
+
+        
 
         # we initialize the first row, last row, first col, last col because for example, the first row cannot move north.
         for row in range(1, 14):
@@ -288,7 +292,9 @@ class RightHandRule(algoAbstract):
         self.shortest_path_moves = []
         self.done = False
         self.interval = 20
-
+        self.m = map.Map()
+        self.des = descriptor.descriptor()
+        
     def explore(self):
         self.periodic_check()
 
@@ -306,10 +312,20 @@ class RightHandRule(algoAbstract):
         location = self.handler.map.get_robot_location()
         if location[0] == 1 and location[1] == 1:
             self.done = True
-        
+            
         if not self.done:
             self.handler.simulator.master.after(self.interval, self.periodic_check)
-
+            
+#print Descriptor with every move
+        explored = self.map.get_map()
+        self.des.map = explored
+        a = self.des.descriptor1()
+        b = self.des.descriptor2()
+        print("Descriptor 1")
+        print(a)
+        print("Descriptor 2")
+        print(b)
+        
     def findSP(self):
         # use the generic astar to find the shortest path
         astar = AStar()
@@ -709,12 +725,3 @@ class AStar:
                     moves.append('W')
         print(moves)
         return moves
-            
-
-
-
-
-
-                    
-
-                
