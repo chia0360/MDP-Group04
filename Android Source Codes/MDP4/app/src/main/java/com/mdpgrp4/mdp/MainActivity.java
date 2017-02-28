@@ -188,7 +188,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //send msg via bluetooth
                     bluetoothFragment.sendMessage("Robot starts at (" + Integer.toString(x_coor_txt) + ", "
                             + Integer.toString(y_coor_txt) + ")");
-                    adapter.updateRobot(x_coor_txt, y_coor_txt);
+                    setMapAdapter(x_coor_txt, y_coor_txt);
+                    //adapter.updateRobot(x_coor_txt, y_coor_txt);
                     text = "Robot Location Reset";
                 }
             }
@@ -313,9 +314,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         while(index < obstacles.length()){
             if(obstacles.charAt(index) == '1') {
                 adapter.setItem(index, adapter.STATE_OBSTACLE);
-            }else{
+            }/*else{
                 adapter.setItem(index, adapter.STATE_UNEXPLORED);
-            }
+            }*/
             index++;
         }
     }
