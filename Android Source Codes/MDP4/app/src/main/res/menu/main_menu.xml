@@ -22,6 +22,11 @@
         app:showAsAction="ifRoom"
         android:title="@string/secure_connect"/>
 
+    <item
+        android:id="@+id/rst_btn"
+        app:showAsAction="never"
+        android:title="reset"/>
+
     <!--
 
         <item

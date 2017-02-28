@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GridAdapter extends BaseAdapter {
-    private String robot_direction = "S";
+    private String robot_direction = "E";
     private Context context;
     private int[] map;
     public final String STATE_UNEXPLORED = "unexplored";
@@ -73,7 +73,7 @@ public class GridAdapter extends BaseAdapter {
             int image = R.drawable.robot_s_01;
             for(int i = 0; i<3; i++) {
                 for(int j=0; j<3; j++) {
-                    updateMap( robot_curr_y + j, robot_curr_x + i, STATE_UNEXPLORED);
+                    updateMap( robot_curr_y + j, robot_curr_x + i, STATE_FREE);
                 }
             }
             if (robot_direction.equals(DIRECTION_EAST))
@@ -89,8 +89,51 @@ public class GridAdapter extends BaseAdapter {
                     map[(x+i)*20+(y+j)] = image+i*3+j;
                 }
             }
+
             robot_curr_x = y;
             robot_curr_y = x;
+
+            if(robot_direction.equals(DIRECTION_EAST)) {
+                for (int i = 0; i < 2; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        updateMap(robot_curr_y + j, robot_curr_x + 3 + i, STATE_FREE);
+                    }
+                }
+                for (int j = 0; j < 2; j++) {
+                    updateMap(robot_curr_y + 3 + j, robot_curr_x + 2, STATE_FREE);
+                    updateMap(robot_curr_y - 1 - j, robot_curr_x + 2, STATE_FREE);
+                }
+            }else if(robot_direction.equals(DIRECTION_WEST)) {
+                for (int i = 0; i < 2; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        updateMap(robot_curr_y + j, robot_curr_x - 1 - i, STATE_FREE);
+                    }
+                }
+                for (int j = 0; j < 2; j++) {
+                    updateMap(robot_curr_y + 3 + j, robot_curr_x, STATE_FREE);
+                    updateMap(robot_curr_y - 1 - j, robot_curr_x, STATE_FREE);
+                }
+            }else if(robot_direction.equals(DIRECTION_SOUTH)) {
+                for (int i = 0; i < 2; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        updateMap(robot_curr_y  + 3 + i, robot_curr_x + j, STATE_FREE);
+                    }
+                }
+                for (int j = 0; j < 2; j++) {
+                    updateMap(robot_curr_y + 2, robot_curr_x + 3 + j, STATE_FREE);
+                    updateMap(robot_curr_y + 2, robot_curr_x - 1 - j, STATE_FREE);
+                }
+            }else if(robot_direction.equals(DIRECTION_NORTH)) {
+                for (int i = 0; i < 2; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        updateMap(robot_curr_y - 1 - i, robot_curr_x + j, STATE_FREE);
+                    }
+                }
+                for (int j = 0; j < 2; j++) {
+                    updateMap(robot_curr_y, robot_curr_x + 3 + j, STATE_FREE);
+                    updateMap(robot_curr_y, robot_curr_x - 1 - j, STATE_FREE);
+                }
+            }
             notifyDataSetChanged();
         }
 
@@ -141,14 +184,22 @@ public class GridAdapter extends BaseAdapter {
 
     public void moveRobot(String command){
         if(command.equals(FORWARD)){
-            if (robot_direction.equals(DIRECTION_NORTH))
-                updateRobot(robot_curr_x, robot_curr_y-1);
-            else if (robot_direction.equals(DIRECTION_SOUTH))
-                updateRobot(robot_curr_x, robot_curr_y+1);
-            else if (robot_direction.equals(DIRECTION_EAST))
-                updateRobot(robot_curr_x+1, robot_curr_y);
-            else if (robot_direction.equals(DIRECTION_WEST))
-                updateRobot(robot_curr_x-1, robot_curr_y);
+            if (robot_direction.equals(DIRECTION_NORTH)) {
+                if (isValidMapIndex(robot_curr_y - 1, robot_curr_x))
+                    updateRobot(robot_curr_x, robot_curr_y - 1);
+            }
+            else if (robot_direction.equals(DIRECTION_SOUTH)) {
+                if (isValidMapIndex(robot_curr_y + 3, robot_curr_x))
+                    updateRobot(robot_curr_x, robot_curr_y + 1);
+            }
+            else if (robot_direction.equals(DIRECTION_EAST)) {
+                if (isValidMapIndex(robot_curr_y, robot_curr_x + 3))
+                    updateRobot(robot_curr_x + 1, robot_curr_y);
+            }
+            else if (robot_direction.equals(DIRECTION_WEST)) {
+                if (isValidMapIndex(robot_curr_y, robot_curr_x - 1))
+                    updateRobot(robot_curr_x - 1, robot_curr_y);
+            }
         }
         else if(command.equals(REVERSE)){
             if (robot_direction.equals(DIRECTION_NORTH))

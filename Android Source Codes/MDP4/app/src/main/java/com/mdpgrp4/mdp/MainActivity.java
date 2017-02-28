@@ -2,6 +2,7 @@ package com.mdpgrp4.mdp;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -32,8 +33,8 @@ import java.math.BigInteger;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener{
 
     ExpandableGridView arena;
-    Button exploreBtn, runBtn, manualBtn, upBtn, downBtn, leftBtn, rightBtn, setCoorBtn, refreshBtn, f1Btn, f2Btn, configureBtn, save;
-    ToggleButton autoUpdateBtn;
+    Button manualBtn, upBtn, downBtn, leftBtn, rightBtn, setCoorBtn, refreshBtn, f1Btn, f2Btn, configureBtn, save;
+    ToggleButton autoUpdateBtn, exploreBtn, runBtn;
     GridAdapter adapter;
     LinearLayout leftLayout, control;
     EditText xCoor, yCoor;
@@ -73,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setMapAdapter(0,0);
 
+        exploreBtn.setText("Explore");
+
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
 
         //extension for c10
@@ -83,8 +86,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void assignInterfaceVariables(){
         arena = (ExpandableGridView) findViewById(R.id.arena_grid_view);
-        exploreBtn = (Button) findViewById(R.id.explore_btn);
-        runBtn = (Button) findViewById(R.id.run_btn);
+        exploreBtn = (ToggleButton) findViewById(R.id.explore_btn);
+        runBtn = (ToggleButton) findViewById(R.id.run_btn);
         manualBtn = (Button) findViewById(R.id.manual_btn);
         leftBtn = (Button) findViewById(R.id.left_btn);
         upBtn = (Button) findViewById(R.id.up_btn);
@@ -125,19 +128,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         save.setOnClickListener(this);
     }
 
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean  onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.secure_connect_scan:
+                Intent intent = new Intent(this, DeviceListActivity.class);
+                startActivityForResult(intent, 1);
+                return true;
+            case R.id.rst_btn:
+                setMapAdapter(0,0);
+                return true;
+            /*case R.id.insecure_connect_scan: {
+                // Launch the DeviceListActivity to see devices and do scan
+                Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
+                return true;
+            }
+            case R.id.discoverable: {
+                // Ensure this device is discoverable by others
+                ensureDiscoverable();
+                return true;
+            }*/
+        }
+        return false;
     }
 
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -196,7 +222,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             update = true;
         }
         else if(v == exploreBtn){
-            bluetoothFragment.sendMessage("beginExplore");
+            if(!runBtn.isChecked()) {
+                if (exploreBtn.isChecked()) {
+                    exploreBtn.setText("Stop");
+                    bluetoothFragment.sendMessage("beginExplore");
+                } else {
+                    exploreBtn.setText("Explore");
+                    bluetoothFragment.sendMessage("stop");
+                }
+            }
+        }
+        else if(v == runBtn) {
+            if(!exploreBtn.isChecked()) {
+                if (runBtn.isChecked()) {
+                    runBtn.setText("Stop");
+                    bluetoothFragment.sendMessage("run");
+                } else {
+                    runBtn.setText("Run");
+                    bluetoothFragment.sendMessage("stop");
+                }
+            }
         }
         else if(v == f1Btn){
             String defaultValue = "f1old";
