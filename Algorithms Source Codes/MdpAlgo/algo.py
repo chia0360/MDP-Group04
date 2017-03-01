@@ -12,9 +12,10 @@
 # ----------------------------------------------------------------------
 
 import time
-import map
+import mapclass
 from math import *
 import descriptor
+import config
 
 class algoAbstract:
     # def __init__(self):
@@ -61,7 +62,7 @@ class algoFactory:
         else:
             raise NameError('algoName not found')
 
-    def explore(self, real):
+    def explore(self):
         self.algo.explore()
 
     def findSP(self):
@@ -290,13 +291,12 @@ class RightHandRule(algoAbstract):
         self.shortest_path_moves = []
         self.done = False
         self.interval = 20
-        self.m = map.Map()
+        self.m = mapclass.Map()
         self.des = descriptor.descriptor()
-        self.real = False
+        self.real = config.robot_simulation
 
-    def explore(self, real=False):
+    def explore(self):
         # periodic check is for the simulation
-        self.real = real
         self.periodic_check()
         # for real run just call this once when receive the command
 
@@ -446,7 +446,23 @@ class RightHandRule(algoAbstract):
         
 
     def check_front(self):
-        sensor_data = self.handler.robot.receive()
+        data = self.handler.robot.receive()
+        if not config.robot_simulation and data is not None:
+            data.replace("\n", "")
+            sensor_array = list(data.split(","))
+            try:
+                sensor_data = list(map(int, sensor_array))
+            except Exception:
+                # first type of malformed string 
+                return self.check_front()
+            # swap 0 with 2, then 2 with 3 
+            if len(sensor_data) != 5:
+                # malformed sensors' values
+                return self.check_front
+            sensor_data[0], sensor_data[2] = sensor_data[2], sensor_data[0]
+            sensor_data[3], sensor_data[2] = sensor_data[2], sensor_data[3]
+        else:
+            return self.check_front
         print('Sensor data: ', sensor_data)
         if (sensor_data[0] > 1 or sensor_data[0] < 0) and \
             (sensor_data[1] > 1 or sensor_data[1] < 0) and \

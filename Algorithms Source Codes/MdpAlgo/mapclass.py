@@ -11,7 +11,7 @@ import config
 import threading
 from Arena import *
 from logger import *
-from map import *
+from mapclass import *
 
 class Map:
     ORIENTATION = ['N', 'E', 'S', 'W']

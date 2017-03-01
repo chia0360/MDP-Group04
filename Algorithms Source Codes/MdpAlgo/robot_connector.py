@@ -13,7 +13,7 @@ class Connector(Robot):
 
     def connect(self):
         host = '192.168.4.1'
-        port = 8888
+        port = 8765
         try:
             self.socket.connect((host, port))
         except Exception:
@@ -36,8 +36,6 @@ class Connector(Robot):
                 # self.connected = False
 
     def receive(self):
-        print("[Info] Received: ", msg_decoded)
-        
         if not self.connected:
             self.connect()
         if self.connected:
@@ -45,6 +43,7 @@ class Connector(Robot):
                 msg = self.socket.recv(1024)
                 if msg:
                     msg_decoded = msg.decode()
+                    # msg_decoded = "-2,-2,-2,-2,-2"
                     print("[Info] Received: ", msg_decoded)
                     # sensor_data_in_str = msg.split(',')
                     # sensor_data = []

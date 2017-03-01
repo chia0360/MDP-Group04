@@ -6,10 +6,10 @@
 # Mark cells known to be empty space with 0, mark cells known to contain an obstacle with 1
 # -------------------------------------------------------------------------------------------
 import config
-import map
+import mapclass
 class descriptor:
     def __init__(self):
-        self.map = map.Map().get_map()
+        self.map = mapclass.Map().get_map()
         # print(self.map)
 
     def descriptor1(self):

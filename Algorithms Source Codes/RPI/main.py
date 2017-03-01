@@ -22,6 +22,7 @@ def start_communications():
 
     """
     arduino = ArduinoSerialCon()
+    # arduino.connect()
 
     bluetooth = AndroidBTCon()
     bluetooth.connectBluetooth()
@@ -29,7 +30,7 @@ def start_communications():
     pc = PCInetCon()
     pc.connectPc()
 
-    t1 = threading.Thread(target=arduinoToPC, args=(arduino, pc))
+    t1 = threading.Thread(target=androidToPC, args=(bluetooth, pc))
     t1.daemon = True
     t1.start()
 
@@ -44,21 +45,26 @@ def start_communications():
 
 def androidToPC(bluetooth, pc):
     # android send command to pc
-    while True:
-        command = bluetooth.readBluetooth()
-        pc.sendPc(command)
-
+    try:
+        # while True:
+        print "Android To PC"
+        while True:
+            command = bluetooth.readBluetooth()
+            pc.sendPc(command)
+    except:    
+        bt.closeBt()
 
 def arduinoToPC(arduino, pc):
     while True:
         data = arduino.readArduino()
-        print ("Back to PC "+ data)
+        print "Back to PC " + data
         pc.sendPc(data)
-
+        
 
 def pcToArduinoNAndroid(arduino, pc, bluetooth):
     while True:
-        data = pc.receivePc()
+        # data = pc.receivePc()
+        data = 'f,0303030'
         # data here consists of 2 strings separated by comma the first one is the command, 
         # second one is the map description
         print(data)
@@ -79,11 +85,38 @@ def pcToArduinoNAndroid(arduino, pc, bluetooth):
 
         arduino.writeArduino(command)
 
-        androidData = ",".join([status, map_des])
-        bluetooth.writeBluetooth(androidData)
+        # androidData = ",".join([status, map_des])
+        # bluetooth.writeBluetooth(androidData)
 
 
 
 
 if __name__ == "__main__":
-    start_communications()
+
+
+    pc = PCInetCon()
+    pc.connectPc()
+
+    arduino = ArduinoSerialCon()
+    # arduino.connect()
+
+    bluetooth = AndroidBTCon()
+    # bluetooth.connectBluetooth()
+
+    pc = PCInetCon()
+    pc.connectPc()
+
+    # androidToPC(bluetooth, pc)
+    # arduinoToPC(arduino, pc)
+    # t1 = threading.Thread(target=androidToPC, args=(bluetooth, pc))
+    # t1.daemon = True
+    # t1.start()
+
+    # t2 = threading.Thread(target=arduinoToPC, args=(arduino, pc))
+    # t2.daemon = True
+    # t2.start()
+    pcToArduinoNAndroid(arduino, pc, bluetooth)
+    # t3 = threading.Thread(target=pcToArduinoNAndroid, args=(arduino, pc, bluetooth))
+    # t3.daemon = True
+    # t3.start()     
+    # start_communications()

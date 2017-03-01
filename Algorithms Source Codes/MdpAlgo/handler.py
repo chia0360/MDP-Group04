@@ -1,7 +1,7 @@
 from logger import *
 import config
 import algo
-import map
+import mapclass
 import robot_simulator
 import robot_connector
 import descriptor
@@ -9,7 +9,7 @@ import descriptor
 class Handler:
     def __init__(self, simulator):
         self.simulator  = simulator
-        self.map        = map.Map()
+        self.map        = mapclass.Map()
         self.algo       = algo.algoFactory(self, algoName='RHR') #Choose which algorithm to use from algo.py
         
         
@@ -23,6 +23,7 @@ class Handler:
         self.do_read()
         self.status = "stop"
 
+
     def loop(self):
         while True:
             # get command
@@ -35,7 +36,7 @@ class Handler:
 
             # this set of command comes from android
             if data == 'explore':
-                self.algo.explore(True)
+                self.algo.explore()
                 self.status = "exploring"
             elif data == 'run':
                 self.algo.run()
@@ -67,7 +68,7 @@ class Handler:
     def do_move(self):
         robot_direction = self.map.get_robot_direction()
         robot_location  = self.map.get_robot_location()
-        
+        print("moving")
         if   robot_direction == 'N':
                 robot_next = [robot_location[0]-1, robot_location[1]]
         elif robot_direction == 'E':
@@ -89,25 +90,34 @@ class Handler:
                 tag='Handler', pre='    ', lv='debug')
 
     def do_read(self, sensor = None):
-        sensor_data = sensor
+        data = sensor
 
         # the loop to wait for sensor is here
-        while not sensor_data:
+        while not data:
             # this sensor data is in the the following order
-            sensor_data = self.robot.receive()
+            data = self.robot.receive()
             # left,         front-left, front-middle, front-right, right for real data
             # front_middle, front-left, front-right,  left,        right for simulation
-
+        
+        print("sensor is")
+        print (data)
         if not config.robot_simulation:
-            sensor_data = list(map(int, list(sensor_data.split(","))))
+            data.replace("\n", "")
+            sensor_array = list(data.split(","))
+            try:
+                sensor_data = list(map(int, sensor_array))
+            except Exception:
+                # first type of malformed string 
+                return
             # swap 0 with 2, then 2 with 3 
+            if len(sensor_data) != 5:
+                # malformed sensors' values
+                return
             sensor_data[0], sensor_data[2] = sensor_data[2], sensor_data[0]
             sensor_data[3], sensor_data[2] = sensor_data[2], sensor_data[3]
                  
         robot_direction = self.map.get_robot_direction()
         robot_location  = self.map.get_robot_location()
-
-        verbose('do_read from sensor', sensor_data, tag='Handler', lv='debug')
 
         direction_ref   = ['N', 'E', 'S', 'W']
 
@@ -179,13 +189,11 @@ class Handler:
     #   Action Commands that robot can receive and carry out
     # ----------------------------------------------------------------------
     def move(self):
-        verbose("Action: move forward", tag='Handler')
         self.do_move()
         self.do_read()
         self.simulator.update_map()
 
     def back(self):
-        verbose("Action: move backward", tag='Handler')
         cur_dir = self.map.get_robot_direction()
         self.map.set_robot_direction( self.map.get_robot_direction_back() )
         self.do_move()
@@ -194,7 +202,6 @@ class Handler:
         self.simulator.update_map()
 
     def left(self):
-        verbose("Action: turn left", tag='Handler')
         self.map.set_robot_direction( self.map.get_robot_direction_left() )
         # Send command to robot
         self.robot.send('l')
@@ -202,7 +209,6 @@ class Handler:
         self.simulator.update_map()
 
     def right(self):
-        verbose("Action: turn right", tag='Handler')
         self.map.set_robot_direction( self.map.get_robot_direction_right() )
         # Send command to robot
         self.robot.send('r')

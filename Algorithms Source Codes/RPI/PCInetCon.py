@@ -1,42 +1,39 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Sep 28 15:29:56 2016
 
-@author: lwh92
-"""
 import threading
 import socket
 class PCInetCon(object):
     def __init__(self):
-        self.port = 5281
-        self.host = "192.168.4.16"
+        self.port = 8765
+        self.host = "192.168.4.1"
         self.socket = None
         self.client = None
         self.address = None
 
     def connectPc(self):
+        print "using connectPC"
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.bind((self.host, self.port))
             self.socket.listen(5)
-            print ("Waiting for incomming connection")
+            print "Waiting for incomming connection"
             self.client, self.address = self.socket.accept()
-            print ("Connected to: ", self.address)
+            print "Connected to: ", self.address
             return True
-        except Exception as e:
-            print ("Fail to open socket connection", str(e))
+        except Exception, e:
+            print "Fail to open socket connection", str(e)
+            self.socket.close()
 
     def sendPc(self,outData):
         try:
             self.client.send(outData)
-        except Exception as e:
-            print ("Fail to send data", str(e))
+        except Exception, e:
+            print "Fail to send data", str(e)
 
     def receivePc(self):
         try:
             return self.client.recv(1024)
-        except Exception as e:
-            print ("Fail to receive data", str(e))
+        except Exception, e:
+            print "Fail to receive data", str(e)
       
       
     def disconnect(self):
@@ -44,7 +41,7 @@ class PCInetCon(object):
             self.socket.close()
         if self.client:
             self.client.close()
-        print ("Disconnected")
+        print "Disconnected"
 
 """
 Steps to syncronize the disconnect
@@ -64,8 +61,8 @@ if(PC.connectPc()):
     PC.disconnect()
 """
 
-PC = PCInetCon()
-if(PC.connectPc()):
-    while 1:
-        print(PC.receivePc())
+# PC = PCInetCon()
+# if(PC.connectPc()):
+#     while 1:
+#         print(PC.receivePc())
 
