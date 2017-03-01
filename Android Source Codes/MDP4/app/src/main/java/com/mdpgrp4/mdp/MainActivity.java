@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setMapAdapter(0,0);
 
         exploreBtn.setText("Explore");
+        runBtn.setText("Run");
 
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
 
@@ -227,9 +228,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (exploreBtn.isChecked()) {
                     exploreBtn.setText("Stop");
                     bluetoothFragment.sendMessage("beginExplore");
+                    runBtn.setClickable(false);
                 } else {
                     exploreBtn.setText("Explore");
                     bluetoothFragment.sendMessage("stop");
+                    runBtn.setClickable(true);
                 }
             }
         }
@@ -238,9 +241,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (runBtn.isChecked()) {
                     runBtn.setText("Stop");
                     bluetoothFragment.sendMessage("run");
+                    exploreBtn.setClickable(false);
                 } else {
                     runBtn.setText("Run");
                     bluetoothFragment.sendMessage("stop");
+                    exploreBtn.setClickable(true);
                 }
             }
         }
