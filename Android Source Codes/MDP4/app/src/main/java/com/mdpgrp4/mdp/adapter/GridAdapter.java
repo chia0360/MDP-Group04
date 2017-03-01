@@ -160,7 +160,8 @@ public class GridAdapter extends BaseAdapter {
             } else if (state.equals(STATE_OBSTACLE)) {
                 label = R.drawable.block;
             }
-            map[position] = label;
+            // map[position] = label;
+            updateMap(position%15, position/15, state);
             notifyDataSetChanged();
         }
     }
