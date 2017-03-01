@@ -33,11 +33,11 @@ def start_communications():
     t1.daemon = True
     t1.start()
 
-    t2 = threading.Thread(target=pcToArduino, args=(arduino, pc))
+    t2 = threading.Thread(target=arduinoToPC, args=(arduino, pc))
     t2.daemon = True
     t2.start()
 
-    t3 = threading.Thread(target=rpiToAndroid, args=())
+    t3 = threading.Thread(target=pcToArduinoNAndroid, args=(arduino, pc, bluetooth))
     t3.daemon = True
     t3.start()     
 
@@ -79,7 +79,8 @@ def pcToArduinoNAndroid(arduino, pc, bluetooth):
 
         arduino.writeArduino(command)
 
-        bluetooth.writeBluetooth(status, map_des)
+        androidData = ",".join([status, map_des])
+        bluetooth.writeBluetooth(androidData)
 
 
 
