@@ -142,8 +142,8 @@ class Simulator:
         back_button = ttk.Button(action_pane, text='Back', command=self.back)
         back_button.grid(column=1, row=5, sticky=(W, E))
 
-        back_button = ttk.Button(action_pane, text='Actual Run', command=self.handler.loop)
-        back_button.grid(column=1, row=6, sticky=(W, E))
+        actual_run_button = ttk.Button(action_pane, text='Actual Run', command=self.handler.loop)
+        actual_run_button.grid(column=1, row=6, sticky=(W, E))
 
         self.control_pane.columnconfigure(0, weight=1)
         self.control_pane.rowconfigure(0, weight=1)
