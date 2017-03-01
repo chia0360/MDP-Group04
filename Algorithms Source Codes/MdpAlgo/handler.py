@@ -21,6 +21,7 @@ class Handler:
         # receive the command from the android then do accordingly
         self.map_descriptor = None
         self.do_read()
+        self.status = "stop"
 
     def loop(self):
         while True:
@@ -30,6 +31,11 @@ class Handler:
             data = input()
             print("Receiving :", data)
             # check command
+
+            if self.status == "exploring":
+                self.do_read(data)
+                self.algo.explore(True)
+                continue
 
             # this set of command comes from android
             if data == 'explore':
@@ -43,7 +49,7 @@ class Handler:
             elif data == 'tl':
                 self.left()
             elif data == 'stop':
-                pass
+                self.status = "stop"
             elif ',' in data: 
                 # if its not a command from android, its probably the sensors'
                 self.do_read(data)
@@ -87,6 +93,8 @@ class Handler:
 
     def do_read(self, sensor = None):
         sensor_data = sensor
+
+        # the loop to wait for sensor is here
         while not sensor_data:
             # this sensor data is in the the following order
             sensor_data = self.robot.receive()
