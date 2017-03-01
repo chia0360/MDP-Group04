@@ -32,14 +32,11 @@ class Handler:
             print("Receiving :", data)
             # check command
 
-            if self.status == "exploring":
-                self.do_read(data)
-                self.algo.explore(True)
-                continue
 
             # this set of command comes from android
             if data == 'explore':
                 self.algo.explore(True)
+                self.status = "exploring"
             elif data == 'run':
                 self.algo.run()
             elif data == 'f':
@@ -50,7 +47,7 @@ class Handler:
                 self.left()
             elif data == 'stop':
                 self.status = "stop"
-            elif ',' in data: 
+            elif ',' in data and self.status == "exploring": 
                 # if its not a command from android, its probably the sensors'
                 self.do_read(data)
                 self.algo.explore(True)
