@@ -145,14 +145,13 @@ class Map:
 
     def isObstacle(self, y, x):
         if (self.map[y][x] == 0):
-            return self.arena[y][x] == 1;
+            return self.arena[y][x] == 1
         else:
             return self.map[y][x] == 2
 
     def isFree(self, y, x):
-        verbose( "isFree({0},{1}): {2}; real:{3}".format(y,x,self.map[y][x],self.arena[y][x]), lv='deepdebug' )
         if (self.map[y][x] == 0):
-            return self.arena[y][x] == 0;
+            return self.arena[y][x] == 0
         else:
             return self.map[y][x] == 1
 

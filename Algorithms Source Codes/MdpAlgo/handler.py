@@ -44,10 +44,12 @@ class Handler:
                 self.left()
             elif data == 'stop':
                 pass
-            else: 
+            elif ',' in data: 
                 # if its not a command from android, its probably the sensors'
                 self.do_read(data)
                 self.algo.explore(True)
+            else:
+                pass
 
 
     #Defining Robot's location on map and orientation
@@ -92,7 +94,7 @@ class Handler:
             # front_middle, front-left, front-right,  left,        right for simulation
 
         if not config.robot_simulation:
-            sensor_data = map(int, list(sensor_data))
+            sensor_data = list(map(int, list(sensor_data.split(","))))
             # swap 0 with 2, then 2 with 3 
             sensor_data[0], sensor_data[2] = sensor_data[2], sensor_data[0]
             sensor_data[3], sensor_data[2] = sensor_data[2], sensor_data[3]

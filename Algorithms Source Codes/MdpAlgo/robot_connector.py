@@ -46,11 +46,11 @@ class Connector(Robot):
                 if msg:
                     msg_decoded = msg.decode()
                     print("[Info] Received: ", msg_decoded)
-                    sensor_data_in_str = msg.split(',')
-                    sensor_data = []
-                    for data in sensor_data_in_str:
-                        sensor_data.append(int(data))
-                    return sensor_data
+                    # sensor_data_in_str = msg.split(',')
+                    # sensor_data = []
+                    # for data in sensor_data_in_str:
+                    #    sensor_data.append(int(data))
+                    return msg_decoded
             except socket.timeout:
                 print("[Info] No message received.")
         # else:
