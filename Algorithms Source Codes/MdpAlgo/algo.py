@@ -301,18 +301,24 @@ class RightHandRule(algoAbstract):
         # for real run just call this once when receive the command
 
     def periodic_check(self):
+        input()
+        print("periodic check")
         if self.check_right():
+            print("right free, turing right")
             # turning and moving is already done
             if not self.real:
                 self.handler.simulator.master.after(self.interval, self.periodic_check)
             return
 
         if self.check_front():
+            print("front free, moving front")
             self.handler.move()
         else:
+            print("left free, moving left")
             self.handler.left()
-
+        
         location = self.handler.map.get_robot_location()
+        print("robot location")
         if location[0] == 1 and location[1] == 1:
             self.done = True
             
@@ -363,6 +369,8 @@ class RightHandRule(algoAbstract):
         robot_location = self.handler.map.get_robot_location()
         right_direction = self.handler.map.get_robot_direction_right()
         map_explored = self.map.get_map()
+        print ("robot location", robot_location)
+        
         if right_direction == 'N':
             # already touching the wall
             if robot_location[0] <= 1:
@@ -427,9 +435,11 @@ class RightHandRule(algoAbstract):
             turned = True
 
         # now check if all those blocks are free
+        print("checking blocks on the right are free")
         if map_explored[y1][x1] == 1 and \
             map_explored[y2][x2] == 1 and \
             map_explored[y3][x3] == 1:
+            print("they are free")
             # no need to turn back
             # move forward 1 step return True
             if not turned:
@@ -447,22 +457,25 @@ class RightHandRule(algoAbstract):
 
     def check_front(self):
         data = self.handler.robot.receive()
-        if not config.robot_simulation and data is not None:
-            data.replace("\n", "")
-            sensor_array = list(data.split(","))
-            try:
-                sensor_data = list(map(int, sensor_array))
-            except Exception:
-                # first type of malformed string 
-                return self.check_front()
+
+        # the loop to wait for sensor is here
+        while not data:
+            # this sensor data is in the the following order
+            data = self.handler.robot.receive()
+            # left,         front-left, front-middle, front-right, right for real data
+            # front_middle, front-left, front-right,  left,        right for simulation
+        
+        print("sensor is")
+        print (data)
+        sensor_data = data
+        if not config.robot_simulation:
             # swap 0 with 2, then 2 with 3 
-            if len(sensor_data) != 5:
-                # malformed sensors' values
-                return self.check_front
             sensor_data[0], sensor_data[2] = sensor_data[2], sensor_data[0]
             sensor_data[3], sensor_data[2] = sensor_data[2], sensor_data[3]
-        else:
-            return self.check_front
+            sensor_data = [int(x) for x in sensor_data]
+            
+            print("turned to int", sensor_data)
+
         print('Sensor data: ', sensor_data)
         if (sensor_data[0] > 1 or sensor_data[0] < 0) and \
             (sensor_data[1] > 1 or sensor_data[1] < 0) and \

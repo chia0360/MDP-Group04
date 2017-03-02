@@ -1,6 +1,8 @@
 
 import threading
 import socket
+import time
+
 class PCInetCon(object):
     def __init__(self):
         self.port = 8765
@@ -10,7 +12,6 @@ class PCInetCon(object):
         self.address = None
 
     def connectPc(self):
-        print "using connectPC"
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.bind((self.host, self.port))
@@ -22,19 +23,27 @@ class PCInetCon(object):
         except Exception, e:
             print "Fail to open socket connection", str(e)
             self.socket.close()
+            if self.client is not None:
+                self.client.close()
 
     def sendPc(self,outData):
+        time.sleep(.05)
+        
         try:
             self.client.send(outData)
         except Exception, e:
             print "Fail to send data", str(e)
+            self.connectPc()
 
     def receivePc(self):
+        time.sleep(.05)
         try:
-            return self.client.recv(1024)
+            message = self.client.recv(1024)
+            print("receivePC", message)
+            return message
         except Exception, e:
             print "Fail to receive data", str(e)
-      
+            self.connectPc()
       
     def disconnect(self):
         if self.socket:

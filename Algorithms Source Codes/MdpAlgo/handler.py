@@ -20,7 +20,6 @@ class Handler:
         self.des = descriptor.descriptor()
         # receive the command from the android then do accordingly
         self.map_descriptor = None
-        self.do_read()
         self.status = "stop"
 
 
@@ -82,6 +81,7 @@ class Handler:
                 tag='Handler', pre='   >> ', lv='quiet')
 
         # Next position check and sending command
+        print("check for valid position")
         if self.map.valid_pos(robot_next[0], robot_next[1]):
             self.map.set_robot_location( robot_next )
             self.robot.send('f')
@@ -101,21 +101,15 @@ class Handler:
         
         print("sensor is")
         print (data)
+        sensor_data = data
         if not config.robot_simulation:
-            data.replace("\n", "")
-            sensor_array = list(data.split(","))
-            try:
-                sensor_data = list(map(int, sensor_array))
-            except Exception:
-                # first type of malformed string 
-                return
             # swap 0 with 2, then 2 with 3 
-            if len(sensor_data) != 5:
-                # malformed sensors' values
-                return
             sensor_data[0], sensor_data[2] = sensor_data[2], sensor_data[0]
             sensor_data[3], sensor_data[2] = sensor_data[2], sensor_data[3]
-                 
+            sensor_data = [int(x) for x in sensor_data]
+
+            print("turned to int", sensor_data)
+
         robot_direction = self.map.get_robot_direction()
         robot_location  = self.map.get_robot_location()
 
