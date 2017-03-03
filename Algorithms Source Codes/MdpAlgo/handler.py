@@ -29,6 +29,7 @@ class Handler:
 
     def loop(self):
         start_time = time.time()
+        counter = 0       #repositioning counter
     # while True:
         # get command
         # command = self.robot.receive()
@@ -38,7 +39,6 @@ class Handler:
         print("Receiving :", command)
         # check command
 
-        
         # this set of command comes from android
         if command == 'explore':
             self.do_read()
@@ -47,6 +47,14 @@ class Handler:
             time.sleep(2)
             self.do_read()
             self.simulator.update_map()
+            counter = counter + 1
+        #Reposition robot
+        if (counter >= 5):
+            if (sensor_data[4] == 1):
+                self.robot.send('p')
+            elif (sensor_data[0] == 1)
+                self.robot.send('w')
+            counter = 0
         # elif command == 'run':
         #     self.algo.run()
         # elif command == 'f':
@@ -202,6 +210,7 @@ class Handler:
             # set if obstacle
             if obs:
                 self.map.set_map(loc[0], loc[1], 'obstacle')
+        return sensor_data
 
     # ----------------------------------------------------------------------
     #   Action Commands that robot can receive and carry out
