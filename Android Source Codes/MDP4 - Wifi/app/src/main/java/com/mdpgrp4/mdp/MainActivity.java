@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText f2command;
     SharedPreferences sharedPref;
     static final int SocketServerPORT = 8765;
-    static final String SocketServerADD = "192.168.4.17";
+    static final String SocketServerADD = "192.168.4.1";
 
     LinearLayout chatPanel;
 
@@ -64,6 +64,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button buttonSend;
 
     String msgLog = "";
+    String statusLog = "";
+    String mapLog = "";
+    boolean mapUpdateLog = false;
 
     ChatClientThread chatClientThread = null;
 
@@ -250,17 +253,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             status.setText("Going Forward");
         }
         else if(v == downBtn){
-            sendMessage("r");
+           /* sendMessage("r");
             adapter.moveRobot("r");
-            status.setText("Going Backward");
+            status.setText("Going Backward");*/
         }
         else if(v == leftBtn){
-            sendMessage("tl");
+            sendMessage("l");
             adapter.moveRobot("tl");
             status.setText("Turning Left");
         }
         else if(v == rightBtn){
-            sendMessage("tr");
+            sendMessage("r");
             adapter.moveRobot("tr");
             status.setText("Turning Right");
         }
@@ -272,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(!runBtn.isChecked()) {
                 if (exploreBtn.isChecked()) {
                     exploreBtn.setText("Stop");
-                    sendMessage("beginExplore");
+                    sendMessage("startexplore");
                     runBtn.setClickable(false);
                 } else {
                     exploreBtn.setText("Explore");
@@ -285,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(!exploreBtn.isChecked()) {
                 if (runBtn.isChecked()) {
                     runBtn.setText("Stop");
-                    sendMessage("run");
+                    sendMessage("fastestpath");
                     exploreBtn.setClickable(false);
                 } else {
                     runBtn.setText("Run");
@@ -393,15 +396,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             status.setText("Exploring");
         } else if (msg.contains("fastest path")) {
             status.setText("Fastest Path");
-        } else if (msg.contains("turning left")) {
+        } else if (msg.equals("l")) {
             status.setText("Turning Left");
-        } else if (msg.contains("turning right")) {
+            adapter.moveRobot("tl");
+        } else if (msg.equals("r")) {
             status.setText("Turning Right");
-        } else if (msg.contains("moving forward")) {
+            adapter.moveRobot("tr");
+        } else if (msg.equals("f")) {
             status.setText("Moving Forward");
-        } else if (msg.contains("reversing")) {
+            adapter.moveRobot("f");
+        } /*else if (msg.contains("reversing")) {
             status.setText("Reversing");
-        }else if (msg.contains("connected")) {
+        }*/else if (msg.contains("connected")) {
             status.setText("Bluetooth Connected");
         }else if (msg.contains("disconnect")) {
             status.setText("Bluetooth Disconnected");
@@ -428,7 +434,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+        //sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -441,23 +447,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.e("Tilting", "X: " + axisX + " Y: " + axisY + " Z: " + axisZ);
 
         if(tilt == true){
-            if(axisY > 5){
+            /*if(axisY > 5){
                 sendMessage("r");
                 adapter.moveRobot("r");
                 status.setText("Moving Backward");
             }
-            else if(axisY < -5){
+            else */
+            if(axisY < -5){
                 sendMessage("f");
                 adapter.moveRobot("f");
                 status.setText("Moving Forward");
             }
             else if(axisX > 5){
-                sendMessage("tl");
+                sendMessage("l");
                 adapter.moveRobot("tl");
                 status.setText("Turning Left");
             }
             else if(axisX < -5 ){
-                sendMessage("tr");
+                sendMessage("r");
                 adapter.moveRobot("tr");
                 status.setText("Turning Right");
             }
@@ -544,24 +551,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 dataOutputStream = new DataOutputStream(
                         socket.getOutputStream());
                 dataInputStream = new DataInputStream(socket.getInputStream());
-                dataOutputStream.writeUTF(name);
-                dataOutputStream.flush();
+                //dataOutputStream.writeUTF(name);
+                //dataOutputStream.flush();
 
                 while (!goOut) {
                     if (dataInputStream.available() > 0) {
-                        msgLog += dataInputStream.readUTF();
+                        int count = dataInputStream.available();
+                        byte[] bs = new byte[count];
+                        dataInputStream.read(bs);
+                        for (byte b:bs) {
+                            // convert byte into character
+                            char c = (char)b;
+                            msgLog+=c;
+                            if(c == 'f'){
+                                statusLog = "f";
+                            }else if(c == 'r'){
+                                statusLog = "r";
+                            }else if(c == 'l'){
+                                statusLog = "l";
+                            }else if(c == 'm'){
+                                statusLog = "m";
+                                mapUpdateLog = true;
+                            }
+                            if(mapUpdateLog == true){
+                                if(c == '1' || c == '0'){
+                                    mapLog += c + "";
+                                }else{
+                                    mapUpdateLog = false;
+                                }
+                            }
+                        }
+                        //msgLog += dataInputStream.readUTF();
 
                         MainActivity.this.runOnUiThread(new Runnable() {
 
                             @Override
                             public void run() {
                                 chatMsg.setText(msgLog);
+                                if(statusLog != "") {
+                                    onReceiveMessage(statusLog);
+                                }
                             }
                         });
                     }
 
                     if(!msgToSend.equals("")){
-                        dataOutputStream.writeUTF(msgToSend);
+                        dataOutputStream.writeBytes(msgToSend);
                         dataOutputStream.flush();
                         msgToSend = "";
                     }

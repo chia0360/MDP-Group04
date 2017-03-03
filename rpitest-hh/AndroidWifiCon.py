@@ -1,3 +1,4 @@
+
 import threading
 import socket
 import time
@@ -15,7 +16,7 @@ class AndroidWifiCon(object):
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.bind((self.host, self.port))
             self.socket.listen(5)
-            print "Waiting for incomming connection"
+            print "Waiting for android incomming connection"
             self.client, self.address = self.socket.accept()
             print "Connected to: ", self.address
             return True
@@ -27,10 +28,9 @@ class AndroidWifiCon(object):
 
     def sendAndroid(self,outData):
         time.sleep(.05)
-        print("write to android", outData)
-        outData += '\n'
         try:
-            self.client.send(outData.encode())
+            print("sendAndroid", outData)
+            self.client.send(outData)
         except Exception, e:
             print "Fail to send data", str(e)
             self.connectAndroid()
@@ -39,31 +39,20 @@ class AndroidWifiCon(object):
         time.sleep(.05)
         try:
             message = self.client.recv(1024)
-            print("receiveAndroid", message)
-            return message
+            print("receiveAndroid", message[:-1])
+            return message[:-1]
         except Exception, e:
             print "Fail to receive data", str(e)
             self.connectAndroid()
-
-   def disconnect(self):
+      
+    def disconnect(self):
         if self.socket:
             self.socket.close()
         if self.client:
             self.client.close()
         print "Disconnected"
-
-
-PC = AndroidWifiCon()
-data = "1"
-if(PC.connectAndroid()):
-        #PC.write_to_socket("Hello, talk to me")
-    while(data != '-1'):
-        print (data)
-        data = PC.receiveAndroid()
-        print (data)
-        if (data != '-1' or data == None):
-            print data
-            data = "I received: " + data
-            PC.sendAndroid(data)
-
-
+		
+android = AndroidWifiCon()
+android.connectAndroid()
+while True:
+	android.receiveAndroid()

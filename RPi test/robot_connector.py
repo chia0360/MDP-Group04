@@ -1,7 +1,7 @@
 import socket
-from robot import *
+#from robot import *
 
-class Connector(Robot):
+class Connector():
     def __init__(self):
 
         family = socket.AF_INET
@@ -13,7 +13,7 @@ class Connector(Robot):
 
     def connect(self):
         host = '192.168.4.1'
-        port = 8765
+        port = 8888
         try:
             self.socket.connect((host, port))
         except Exception:
@@ -40,16 +40,15 @@ class Connector(Robot):
             self.connect()
         if self.connected:
             try:
-                msg = self.socket.recv(1024)
+                msg = self.socket.recv(1024).decode(encoding="UTF-8")
                 if msg:
-                    msg_decoded = msg.decode()
                     # msg_decoded = "-2,-2,-2,-2,-2"
-                    print("[Info] Received: ", msg_decoded)
+                    print (msg)
                     # sensor_data_in_str = msg.split(',')
                     # sensor_data = []
                     # for data in sensor_data_in_str:
                     #    sensor_data.append(int(data))
-                    return msg_decoded
+                    return msg
             except socket.timeout:
                 print("[Info] No message received.")
         # else:
@@ -59,4 +58,4 @@ if __name__ == "__main__":
 	crobot = Connector()
 	crobot.connect()
 	while True:
-		crobot.send("fine")
+		crobot.receive()

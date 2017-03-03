@@ -343,7 +343,7 @@ class RightHandRule(algoAbstract):
         self.shortest_path_moves = astar.solve(self.map.get_map(), astar.start, astar.goal)
         print(self.shortest_path_moves)
         return self.shortest_path_moves
-
+        
     def run(self):
         # have not found the shortest path, run findSP to find
         if not self.shortest_path_moves:
@@ -751,24 +751,30 @@ class AStar:
         # print("result", result)
         moves = []
         for i in range(len(result)-1):
+            
             if result[i][0] < result[i+1][0]:
                 if result[i][1] == result[i+1][1]:
                     moves.append('S')
                 elif result[i][1] > result[i+1][1]:
-                    moves.append('SW')
+                    moves.append('S')
+                    moves.append('W')
                 else:
-                    moves.append('SE')
+                    moves.append('S')
+                    moves.append('E')
             elif result[i][0] > result[i+1][0]:
                 if result[i][1] == result[i+1][1]:
                     moves.append('N')
                 elif result[i][1] > result[i+1][1]:
-                    moves.append('NW')
+                    moves.append('N')
+                    moves.append('W')
                 else:
-                    moves.append('NE')
+                    moves.append('N')
+                    moves.append('E')
             else:
                 if result[i][1] < result[i+1][1]:
                     moves.append('E')
                 else:
                     moves.append('W')
+
         # print(moves)
         return moves

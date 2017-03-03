@@ -1,46 +1,52 @@
+
+import threading
 import socket
 import time
 
-class AndroidWifiCon():
+class AndroidWifiCon(object):
+    def __init__(self):
+        self.port = 8765
+        self.host = "10.27.252.17"
+        self.socket = None
+        self.client = None
+        self.address = None
 
-        def __init__ (self):
-                self.connection = None
-                self.s = None
-
-        def write_Rpi(self,msg):
-                print ("Write to RPi ", msg)
-                msg += '\n'
-                self.connection.send(msg.encode())
-
-        def read_Rpi(self):
-                msg = self.connection.recv(1024).decode(encoding="UTF-8")
-                print "Received from Rpi", msg
-                return msg
-
-        def start_Rpi(self):
-                self.s = socket.socket()
-                host = '192.168.4.1'
-                portnumber = 8765
-                self.s.bind((host, portnumber))
-                self.s.listen(5)
-
-                print "Awaiting Client Connection..."
-                self.connection, addr = self.s.accept()
-
-                print "Client from", addr, host, "at port number", portnumber, "connected", time.ctime()
-                print "Android to Rpi connection started"
-
-        def stop_pc(self):
-                self.s.stop()
-
-
-if __name__ == "__main__":
-
+    def connectAndroid(self):
         try:
-                pibot = AndroidWifiCon()
-                pibot.start_Rpi()
-                while True:
-                        pibot.read_Rpi()
-        except KeyboardInterrupt:
-                pibot.stop_R()
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.bind((self.host, self.port))
+            self.socket.listen(5)
+            print "Waiting for incomming connection"
+            self.client, self.address = self.socket.accept()
+            print "Connected to: ", self.address
+            return True
+        except Exception, e:
+            print "Fail to open socket connection", str(e)
+            self.socket.close()
+            if self.client is not None:
+                self.client.close()
 
+    def sendAndroid(self,outData):
+        time.sleep(.05)
+        try:
+			self.client.send(outData)
+        except Exception, e:
+            print "Fail to send data", str(e)
+            self.connectAndroid()
+
+    def receiveAndroid(self):
+        time.sleep(.05)
+        try:
+            message = self.client.recv(1024)
+            print("receiveAndroid", message)
+            return message
+        except Exception, e:
+            print "Fail to receive data", str(e)
+            self.connectAndroid()
+      
+    def disconnect(self):
+        if self.socket:
+            self.socket.close()
+        if self.client:
+            self.client.close()
+        print "Disconnected"
