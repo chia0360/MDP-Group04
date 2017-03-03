@@ -1,4 +1,3 @@
-
 import threading
 import socket
 class PCInetCon(object):
@@ -43,23 +42,23 @@ class PCInetCon(object):
             self.client.close()
         print "Disconnected"
 
-"""
-Steps to syncronize the disconnect
-
-PC = PCInetCon()
-data = "1"
-if(PC.connectPc()):
-	#PC.write_to_socket("Hello, talk to me")
-    while(data != '-1'):
-        print (data)
-        data = PC.receivePc()
-        print (data)
-        if (data != '-1' or data == None):
-            print data
-            data = "I received: " + data
-            PC.sendPc(data)
-    PC.disconnect()
-"""
+#"""
+#Steps to syncronize the disconnect
+#
+#PC = PCInetCon()
+#data = "1"
+#if(PC.connectPc()):
+#	#PC.write_to_socket("Hello, talk to me")
+#    while(data != '-1'):
+#        print (data)
+#        data = PC.receivePc()
+#        print (data)
+#        if (data != '-1' or data == None):
+#            print data
+#            data = "I received: " + data
+#            PC.sendPc(data)
+#    PC.disconnect()
+#"""
 
 # PC = PCInetCon()
 # if(PC.connectPc()):

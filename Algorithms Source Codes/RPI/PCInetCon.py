@@ -5,7 +5,7 @@ import time
 
 class PCInetCon(object):
     def __init__(self):
-        self.port = 8765
+        self.port = 8888
         self.host = "192.168.4.1"
         self.socket = None
         self.client = None
@@ -70,8 +70,8 @@ if(PC.connectPc()):
     PC.disconnect()
 """
 
-# PC = PCInetCon()
-# if(PC.connectPc()):
-#     while 1:
-#         print(PC.receivePc())
+PC = PCInetCon()
+if(PC.connectPc()):
+	while 1:         
+		print(PC.receivePc())
 

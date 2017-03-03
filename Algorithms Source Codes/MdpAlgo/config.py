@@ -68,4 +68,4 @@ verbose = dict (
 
 verboseLv = verbose['silent']
 
-robot_simulation = True
+robot_simulation = False
