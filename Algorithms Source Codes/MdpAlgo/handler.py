@@ -22,6 +22,8 @@ class Handler:
         self.des = descriptor.descriptor()
         self.map_descriptor = None
         self.status = "stop"
+        self.recal_counter = 0
+
 
     def printMap(self):
         for row in self.map.map:
@@ -37,7 +39,18 @@ class Handler:
         # sensor = self.robot.receive() # this will be the sensors
         print("Receiving :", command)
         # check command
+        #reposition robot
 
+        # print("counter is", self.recal_counter)
+        # if(self.recal_counter >= 3):
+        #     self.robot.send('m')
+        #     sensor_data = self.robot.receive()
+        #     while not sensor_data:
+        #         sensor_data = self.robot.receive()
+        #     if sensor_data[4]==1:
+        #         self.robot.send('p')
+        #     self.recal_counter = 0
+        #     return
         
         # this set of command comes from android
         if command == 'explore':
@@ -75,8 +88,6 @@ class Handler:
         #     # then update the simulator
         #     self.simulator.update_map()
         #     # this will update robot position
-
-
         # for empty command from android, we just continue exploring
         elif self.status == "exploring":
             print("exploring")
@@ -88,6 +99,7 @@ class Handler:
             print("second reading of sensor (after algo)")
             self.do_read()
             self.simulator.update_map()
+        self.recal_counter += 1
         print("printing map")
         self.printMap()
         print("handler loop takes", time.time() - start_time)

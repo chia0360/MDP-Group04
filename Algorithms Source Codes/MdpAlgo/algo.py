@@ -319,7 +319,7 @@ class RightHandRule(algoAbstract):
             print("front free, moving front")
             self.handler.move()
         else:
-            print("left free, moving left")
+            print("top and right not free, turn left")
             self.handler.left()
         
         location = self.handler.map.get_robot_location()
@@ -485,9 +485,16 @@ class RightHandRule(algoAbstract):
                 data = self.handler.robot.receive()
             # left,         front-left, front-middle, front-right, right for real data
             # front_middle, front-left, front-right,  left,        right for simulation
-        
+
         sensor_data = data
 
+    
+        if not self.simulation:
+            # swap 0 with 2, then 2 with 3 
+            sensor_data[0], sensor_data[2] = sensor_data[2], sensor_data[0]
+            sensor_data[3], sensor_data[2] = sensor_data[2], sensor_data[3]
+            sensor_data = [int(x) for x in sensor_data]
+            
         print('Sensor data: ', sensor_data)
         if (sensor_data[0] > 1 or sensor_data[0] < 0) and \
             (sensor_data[1] > 1 or sensor_data[1] < 0) and \
