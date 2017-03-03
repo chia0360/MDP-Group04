@@ -31,7 +31,7 @@ class Handler:
 
     def loop(self):
         start_time = time.time()
-        counter = 0       #repositioning counter
+        # counter = 0       #repositioning counter
     # while True:
         # get command
         # command = self.robot.receive()
@@ -64,14 +64,13 @@ class Handler:
             print("second reading of sensor (after algo)")
             self.do_read()
             self.simulator.update_map()
-            counter = counter + 1
-        #Reposition robot
-        if (counter >= 5):
-            if (sensor_data[4] == 1):
-                self.robot.send('p')
-            elif (sensor_data[0] == 1)
-                self.robot.send('w')
-            counter = 0
+        # #Reposition robot
+        # if (counter >= 5):
+        #     if (sensor_data[4] == 1):
+        #         self.robot.send('p')
+        #     elif (sensor_data[0] == 1)
+        #         self.robot.send('w')
+        #     counter = 0
         # elif command == 'run':
         #     self.algo.run()
         # elif command == 'f':
