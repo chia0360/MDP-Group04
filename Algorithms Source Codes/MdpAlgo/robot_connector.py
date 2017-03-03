@@ -37,6 +37,8 @@ class Connector(Robot):
                 # self.connected = False
 
     def receive(self):
+        # robot connector will only interface with rpi, receiving sensor's value
+        # android will be connected to pc to send command through another interface
         if not self.connected:
             self.connect()
         if self.connected:
@@ -65,8 +67,8 @@ class Connector(Robot):
         # else:
         #     print("[Error] Unable to receive message. Connection loss.")
 
-if __name__ == "__main__":
-	crobot = Connector()
-	crobot.connect()
-	while True:
-		crobot.send("fine")
+# if __name__ == "__main__":
+# 	crobot = Connector()
+# 	crobot.connect()
+# 	while True:
+# 		crobot.send("fine")

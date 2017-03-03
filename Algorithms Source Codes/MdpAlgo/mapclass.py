@@ -63,7 +63,7 @@ class Map:
         
         # Initialising Robot's location and the direction it is facing
         self.robot_location = [1, 1]
-        self.robot_direction = 'E'
+        self.robot_direction = 'S'
         
     # ----------------------------------------------------------------------
     #   Encapsulation functions

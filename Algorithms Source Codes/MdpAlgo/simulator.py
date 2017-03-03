@@ -5,7 +5,7 @@ from tkinter import font
 
 from copy import deepcopy
 from logger import *
-
+import time
 import handler
 
 class Simulator:
@@ -142,7 +142,7 @@ class Simulator:
         back_button = ttk.Button(action_pane, text='Back', command=self.back)
         back_button.grid(column=1, row=5, sticky=(W, E))
 
-        actual_run_button = ttk.Button(action_pane, text='Actual Run', command=self.handler.loop)
+        actual_run_button = ttk.Button(action_pane, text='Actual Run', command=self.actual_run)
         actual_run_button.grid(column=1, row=6, sticky=(W, E))
 
         self.control_pane.columnconfigure(0, weight=1)
@@ -155,6 +155,10 @@ class Simulator:
         self.master.bind("<Down>", lambda e: self.back())
         
         self.master.mainloop()
+
+    def actual_run(self):
+        self.handler.loop()
+        self.master.after(200, self.actual_run)
 
     # ----------------------------------------------------------------------
     #   Actions received by robot
@@ -260,15 +264,14 @@ class Simulator:
 
     # Updating the map
     def update_map(self, init=False):
+        print ("updating map")
+        start_time= time.time()
         if init:
             next_map = self.current_map
         else:
             next_map = self.map.get_map()
         next_robot_location  = self.map.get_robot_location()
         next_robot_direction = self.map.get_robot_direction()
-
-        verbose('Update map robo loc:', next_robot_location, self.robot_location,
-            tag='Simulator', lv='debug')
 
         # if Robot position changed, change the space it was previously occupying back to map
         if self.robot_location != next_robot_location:
@@ -293,12 +296,11 @@ class Simulator:
             self.robot_location  != next_robot_location or
             self.robot_direction != next_robot_direction):
             self.replace(next_robot_location[0], next_robot_location[1], next_robot_direction)
-            
         
         # Update change
         self.robot_location  = next_robot_location
         self.robot_direction = next_robot_direction
-    
+        print("updating map in", time.time()- start_time)
     # ----------------------------End of Class--------------------------------------------
 #start simulator
 sim = Simulator()

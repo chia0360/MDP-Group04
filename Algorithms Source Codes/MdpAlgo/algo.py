@@ -297,12 +297,13 @@ class RightHandRule(algoAbstract):
 
     def explore(self):
         # periodic check is for the simulation
+        if self.done:
+            return
         self.periodic_check()
         # for real run just call this once when receive the command
 
     def periodic_check(self):
-        input()
-        print("periodic check")
+        # print("periodic check")
         if self.check_right():
             print("right free, turing right")
             # turning and moving is already done
@@ -318,7 +319,7 @@ class RightHandRule(algoAbstract):
             self.handler.left()
         
         location = self.handler.map.get_robot_location()
-        print("robot location")
+        print("robot location", location)
         if location[0] == 1 and location[1] == 1:
             self.done = True
             
@@ -328,15 +329,16 @@ class RightHandRule(algoAbstract):
 #print Descriptor with every move
         explored = self.map.get_map()
         self.des.map = explored
-        a = self.des.descriptor1()
-        b = self.des.descriptor2()
-
+        # a = self.des.descriptor1()
+        # b = self.des.descriptor2()
+        # print("end periodic_check")
         
     def findSP(self):
         # use the generic astar to find the shortest path
         astar = AStar()
         self.shortest_path_moves = astar.solve(self.map.get_map(), astar.start, astar.goal)
         print(self.shortest_path_moves)
+        return self.shortest_path_moves
 
     def run(self):
         # have not found the shortest path, run findSP to find
@@ -366,6 +368,7 @@ class RightHandRule(algoAbstract):
                 self.handler.move()
 
     def check_right(self):
+        print("start check right")
         robot_location = self.handler.map.get_robot_location()
         right_direction = self.handler.map.get_robot_direction_right()
         map_explored = self.map.get_map()
@@ -374,6 +377,7 @@ class RightHandRule(algoAbstract):
         if right_direction == 'N':
             # already touching the wall
             if robot_location[0] <= 1:
+                print("touching north")
                 return False
             # ensure the 3 blocks have been explore, if not turn to explore them
             # 0 means not explored
@@ -388,6 +392,7 @@ class RightHandRule(algoAbstract):
             
         elif right_direction == 'S':
             if robot_location[0] >= self.map.width - 2:
+                print("touching south")
                 return False
 
             y1 = robot_location[0]+2
@@ -399,6 +404,7 @@ class RightHandRule(algoAbstract):
 
         elif right_direction == 'E':
             if robot_location[1] >= self.map.length - 2:
+                print("touching east")
                 return False
 
             y1 = robot_location[0]
@@ -409,7 +415,8 @@ class RightHandRule(algoAbstract):
             x3 = robot_location[1]+2    
 
         elif right_direction == 'W':
-            if robot_location[1] <= 2:
+            if robot_location[1] <= 1:
+                print("touching west")
                 return False
 
             y1 = robot_location[0]
@@ -424,34 +431,40 @@ class RightHandRule(algoAbstract):
             return False
 
         # set this variable to check if the robot needed to turn to explore, we use this to decide whether we need to turn back
-        turned = False
+        # turned = False
 
         # common logic
         # check if the blocks on the robot's right are explored, if not explore then turn right to explore those
-        if map_explored[y1][x1] == 0 or \
-            map_explored[y2][x2] == 0 or \
-            map_explored[y3][x3] == 0:
-            self.handler.right()
-            turned = True
+        # if map_explored[y1][x1] == 0 or \
+        #     map_explored[y2][x2] == 0 or \
+        #     map_explored[y3][x3] == 0:
+        #     self.handler.right()
+        #     # wait for robot to turn then we read the map
+        #     time.sleep(1)
+        #     self.handler.do_read()
+        #     self.handler.simulator.update_map()
+        #     turned = True
 
         # now check if all those blocks are free
-        print("checking blocks on the right are free")
+        # print("checking blocks on the right are free")
+        # we can assume all blocks on the right are explored
+        # print()
         if map_explored[y1][x1] == 1 and \
             map_explored[y2][x2] == 1 and \
             map_explored[y3][x3] == 1:
-            print("they are free")
+            # print("they are free")
             # no need to turn back
             # move forward 1 step return True
-            if not turned:
+            # if not turned:
                 # haven't turned because map already explored robot didn't need to turn to explore the map
                 # so robot need to turn now
-                self.handler.right()
+            self.handler.right()
             self.handler.move()
             return True
         else:
-            if turned:
+            # if turned:
                 # turn back
-                self.handler.left()
+                # self.handler.left()
             return False
         
 
@@ -465,16 +478,7 @@ class RightHandRule(algoAbstract):
             # left,         front-left, front-middle, front-right, right for real data
             # front_middle, front-left, front-right,  left,        right for simulation
         
-        print("sensor is")
-        print (data)
         sensor_data = data
-        if not config.robot_simulation:
-            # swap 0 with 2, then 2 with 3 
-            sensor_data[0], sensor_data[2] = sensor_data[2], sensor_data[0]
-            sensor_data[3], sensor_data[2] = sensor_data[2], sensor_data[3]
-            sensor_data = [int(x) for x in sensor_data]
-            
-            print("turned to int", sensor_data)
 
         print('Sensor data: ', sensor_data)
         if (sensor_data[0] > 1 or sensor_data[0] < 0) and \
@@ -483,7 +487,6 @@ class RightHandRule(algoAbstract):
             return True
         else:
             return False
-
 
 class AStar:
     """
