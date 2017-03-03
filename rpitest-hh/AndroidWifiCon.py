@@ -6,7 +6,7 @@ import time
 class AndroidWifiCon(object):
     def __init__(self):
         self.port = 8765
-        self.host = "10.27.252.17"
+        self.host = "192.168.4.1"
         self.socket = None
         self.client = None
         self.address = None
