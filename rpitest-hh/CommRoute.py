@@ -4,7 +4,7 @@ import Queue
 import threading
 
 from AndroidWifiCon import *
-# from ArduinoSerialCon import *
+from ArduinoSerialCon import *
 # import serial
 from PCInetCon import *
 
@@ -14,7 +14,7 @@ class RPI(threading.Thread):
         threading.Thread.__init__(self)
         self.android = AndroidWifiCon()
         self.pc = PCInetCon()
-        #self.arduino = ArduinoSerialCon()
+        self.arduino = ArduinoSerialCon()
 
         # Create a queue for each connection
         # maxsize=0 => infinite size queue
