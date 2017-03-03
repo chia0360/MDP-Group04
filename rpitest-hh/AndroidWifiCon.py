@@ -39,8 +39,8 @@ class AndroidWifiCon(object):
         time.sleep(.05)
         try:
             message = self.client.recv(1024)
-            print("receiveAndroid", message)
-            return message
+            print("receiveAndroid", message[:-1])
+            return message[:-1]
         except Exception, e:
             print "Fail to receive data", str(e)
             self.connectAndroid()
@@ -51,3 +51,8 @@ class AndroidWifiCon(object):
         if self.client:
             self.client.close()
         print "Disconnected"
+		
+android = AndroidWifiCon()
+android.connectAndroid()
+while True:
+	android.receiveAndroid()
