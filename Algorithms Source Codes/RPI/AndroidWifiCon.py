@@ -29,7 +29,7 @@ class AndroidWifiCon(object):
     def sendAndroid(self,outData):
         time.sleep(.05)
         try:
-            self.client.send(outData + "/n")
+			self.client.send(outData)
         except Exception, e:
             print "Fail to send data", str(e)
             self.connectAndroid()
@@ -50,13 +50,3 @@ class AndroidWifiCon(object):
         if self.client:
             self.client.close()
         print "Disconnected"
-
-Android = AndroidWifiCon()
-data = "1"
-if(Android.connectAndroid()):
-    while(data != '-1'):
-		print("reading from android")
-		data = Android.receiveAndroid()
-		if (data != '-1' or data == None):
-			print("writing to android")
-			Android.sendAndroid(data)
