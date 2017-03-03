@@ -40,6 +40,8 @@ class RPI(threading.Thread):
         while True:
             print("arduino_to_pc")
             data = self.arduino.readArduino()
+            if data is not None and data != "":
+                self.pc.sendPc(data)
             # all_data = data.split(" ")
             # print("after splitting", all_data)
             # print("taking in the second last data")
@@ -47,7 +49,6 @@ class RPI(threading.Thread):
             # if len(all_data) > 1:
             #     new_data = all_data[-2]
             # # sensor values
-            self.pc.sendPc(data)
             # time.sleep(.1)    
 
     # def read_from_pc(self):

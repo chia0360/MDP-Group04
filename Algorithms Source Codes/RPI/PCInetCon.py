@@ -28,7 +28,6 @@ class PCInetCon(object):
 
     def sendPc(self,outData):
         time.sleep(.05)
-        
         try:
             self.client.send(outData)
         except Exception, e:

@@ -293,7 +293,7 @@ class RightHandRule(algoAbstract):
         self.interval = 20
         self.m = mapclass.Map()
         self.des = descriptor.descriptor()
-        self.real = config.robot_simulation
+        self.simulation = config.robot_simulation
 
     def explore(self):
         # periodic check is for the simulation
@@ -303,14 +303,18 @@ class RightHandRule(algoAbstract):
         # for real run just call this once when receive the command
 
     def periodic_check(self):
-        # print("periodic check")
+        print("periodic check")
+        # input()
+        # read to update the right blocks
         if self.check_right():
             print("right free, turing right")
             # turning and moving is already done
-            if not self.real:
+            if self.simulation:
                 self.handler.simulator.master.after(self.interval, self.periodic_check)
             return
 
+        # inside check front we read again to check the block in front
+        # may not be necessary
         if self.check_front():
             print("front free, moving front")
             self.handler.move()
@@ -323,7 +327,7 @@ class RightHandRule(algoAbstract):
         if location[0] == 1 and location[1] == 1:
             self.done = True
             
-        if not self.done and not self.real:
+        if not self.done and self.simulation:
             self.handler.simulator.master.after(self.interval, self.periodic_check)
             
 #print Descriptor with every move
@@ -369,6 +373,7 @@ class RightHandRule(algoAbstract):
 
     def check_right(self):
         print("start check right")
+        self.handler.do_read()
         robot_location = self.handler.map.get_robot_location()
         right_direction = self.handler.map.get_robot_direction_right()
         map_explored = self.map.get_map()
@@ -469,12 +474,15 @@ class RightHandRule(algoAbstract):
         
 
     def check_front(self):
+        print("check front")
         data = self.handler.robot.receive()
 
         # the loop to wait for sensor is here
         while not data:
             # this sensor data is in the the following order
-            data = self.handler.robot.receive()
+            self.handler.robot.send('m')
+            while not data:
+                data = self.handler.robot.receive()
             # left,         front-left, front-middle, front-right, right for real data
             # front_middle, front-left, front-right,  left,        right for simulation
         

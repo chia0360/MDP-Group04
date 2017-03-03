@@ -41,10 +41,13 @@ class Handler:
         
         # this set of command comes from android
         if command == 'explore':
+            print("exploring")
+            print("first reading of sensor (before algo)")
             self.do_read()
             self.algo.explore()
-            self.status = "exploring"
-            time.sleep(2)
+            print("sleeping for 2s")
+            time.sleep(1)
+            print("second reading of sensor (after algo)")
             self.do_read()
             self.simulator.update_map()
         # elif command == 'run':
@@ -76,11 +79,17 @@ class Handler:
 
         # for empty command from android, we just continue exploring
         elif self.status == "exploring":
+            print("exploring")
+            print("first reading of sensor (before algo)")
             self.do_read()
             self.algo.explore()
-            time.sleep(2)
+            print("sleeping for 2s")
+            time.sleep(1)
+            print("second reading of sensor (after algo)")
             self.do_read()
             self.simulator.update_map()
+        print("printing map")
+        self.printMap()
         print("handler loop takes", time.time() - start_time)
 
     #Defining Robot's location on map and orientation
@@ -109,6 +118,7 @@ class Handler:
         print("check for valid position")
         if self.map.valid_pos(robot_next[0], robot_next[1]):
             self.map.set_robot_location( robot_next )
+            print("sending f")
             self.robot.send('f')
             
             
@@ -118,15 +128,16 @@ class Handler:
 
         # the loop to wait for sensor is here
         # this will not execute in actual run
-        while not data:
+        if not data:
             print("robot.receive in do_read")
             # this sensor data is in the the following order
-            data = self.robot.receive()
+            self.robot.send('m')
+            while not data:
+                data = self.robot.receive()
             # left,         front-left, front-middle, front-right, right for real data
             # front_middle, front-left, front-right,  left,        right for simulation
         
-        print("sensor is")
-        print (data)
+
         sensor_data = data
         if not config.robot_simulation:
             # swap 0 with 2, then 2 with 3 
@@ -136,6 +147,11 @@ class Handler:
 
         robot_direction = self.map.get_robot_direction()
         robot_location  = self.map.get_robot_location()
+        print("do read here")
+        print("sensor is")
+        print (data)
+        print("robot current location", robot_location)
+        print("robot current direction", robot_direction)
 
         direction_ref   = ['N', 'E', 'S', 'W']
 
@@ -203,6 +219,7 @@ class Handler:
             if obs:
                 self.map.set_map(loc[0], loc[1], 'obstacle')
 
+        print("end do_read")
     # ----------------------------------------------------------------------
     #   Action Commands that robot can receive and carry out
     # ----------------------------------------------------------------------

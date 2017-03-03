@@ -120,6 +120,7 @@ class Map:
     #   x   -   coloumn position to be validated of robot
     # ----------------------------------------------------------------------
     def valid_pos(self, y, x):
+        print("the position is ", y, x)
         if not (0 < y < 14 and 0 < x < 19):
             return False
         for i in range(y-1, y+2):
