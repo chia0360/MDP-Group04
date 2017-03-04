@@ -4,10 +4,8 @@ import Queue
 import threading
 
 from AndroidWifiCon import *
-from ArduinoSerialCon import *
-# import serial
 from PCInetCon import *
-
+from ArduinoSerialCon import *
 
 class RPI(threading.Thread):
     def __init__(self):
@@ -17,22 +15,19 @@ class RPI(threading.Thread):
         self.arduino = ArduinoSerialCon()
 
         # Create a queue for each connection
-        # maxsize=0 => infinite size queue
         self.toPC_q = Queue.Queue(maxsize=0)
         self.toArduino_q = Queue.Queue(maxsize=0)
         self.toAndroid_q = Queue.Queue(maxsize=0)
 
-        # try to acquire connections
+        # Establish connections
         self.pc.connectPc()
         self.arduino.connect()
         self.android.connectAndroid()
 
-        # before the thread to actually start
-        # since we are calling create_threads() right after this in main()
         time.sleep(2)
 
     def read_from_pc(self):
-        # what is read from pc will be passed to toArduino_q 
+        # what is read from pc will be added to toArduino_q and toAndroid_q
         while True:
             data = self.pc.receivePc()
             if data is not None:
@@ -42,7 +37,7 @@ class RPI(threading.Thread):
                 time.sleep(2)
 
     def read_from_android(self):
-        # what is read from android will be passed to  
+        # what is read from android will be added to toPC_q
         while True:
             data = self.android.receiveAndroid()
             if data is not None:
@@ -51,7 +46,7 @@ class RPI(threading.Thread):
                 time.sleep(2)
 
     def read_from_arduino(self):
-        # what is read from arduino will be passed to toPC_q 
+        # what is read from arduino will be added to toPC_q 
         while True:
             data = self.arduino.readArduino()
             if data is not None:
@@ -61,26 +56,24 @@ class RPI(threading.Thread):
 
 
     def write_to_pc(self):
-        # consume the data from the queue
         while True:	
             if not self.toPC_q.empty():
-				print("writing to PC")
 				data = self.toPC_q.get_nowait()
 				self.pc.sendPc(data)
+                # wait a while between writes
 				time.sleep(2)
 
 
     def write_to_android(self):
-        # consume the data from the queue
         while True:
             if not self.toAndroid_q.empty():
 				print("writing to android")
 				data = self.toAndroid_q.get_nowait()
 				self.android.sendAndroid(data+'\n')
+                # wait a while between writes
 				time.sleep(2)
 
     def write_to_arduino(self):
-        # consume the data from the queue
         while True:
             if not self.toArduino_q.empty():
                 data = self.toArduino_q.get_nowait()
@@ -111,7 +104,6 @@ class RPI(threading.Thread):
         t3.start()
         t4.start()
 
-        print "All threads initialized"
         print "All threads started"
 
     def keep_alive(self):
