@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText f2command;
     SharedPreferences sharedPref;
     static final int SocketServerPORT = 8765;
-    static final String SocketServerADD = "192.168.0.102";
+    static final String SocketServerADD = "192.168.4.1";
 
     LinearLayout chatPanel;
 
