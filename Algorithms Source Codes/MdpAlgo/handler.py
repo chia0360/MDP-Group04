@@ -28,23 +28,29 @@ class Handler:
             print(row)
 
     def loop(self):
-        start_time = time.time()
         command = "startexplore" # this will be the command from android
-        # sensor = self.robot.receive() # this will be the sensors
+        # uncomment the line below to do integration
+        # command = self.robot.receive() 
         print("Receiving :", command)
-        print("counter is", self.recal_counter)
         if(self.recal_counter >= 6):
             self.robot.send('m')
             sensor_data = self.robot.receive()
-            while not sensor_data and len(sensor_data) != 5:
+            while not sensor_data or len(sensor_data) != 5:
                 sensor_data = self.robot.receive()
-            # if sensor_data[1] == 1 and sensor_data[3] == 1 and sensor_data[4] == 1:
-            #     self.robot.send('c')
-            # else:
-            self.robot.send('p')
+            if sensor_data[1] == 1 and sensor_data[3] == 1 and sensor_data[4] == 1:
+                # front left, front right and right
+                if sensor_data[0] == 1:
+                    # and left
+                    self.robot.send('d')
+                else:
+                    self.robot.send('c')
+            else:
+                self.robot.send('p')
             self.recal_counter = 0
+            # do recalibration will take up 1 turn
             return
 
+        # first reading before the algo works
         self.do_read()
         self.simulator.update_map()
         # this set of command comes from android
@@ -52,8 +58,16 @@ class Handler:
             self.status = "exploring"
             self.algo.explore()
         elif command == 'fastestPath':
+            # stop so that the thing will not be affected by the exploration (maybe)
             self.status = "stop"
-            self.algo.run()
+            # this should send a string to the robot
+            shortest_path_moves = self.algo.run()
+            # will send everything to the arduino in this turn.
+            for move in shortest_path_moves:
+                self.robot.send(move)
+            self.robot.send('\n')
+        # the 4 cases below require setting the status of the robot to stop
+        # since android is taking over the movement of the robot
         elif command == 'f':
             self.status = "stop"
             self.move()
@@ -66,18 +80,21 @@ class Handler:
         elif command == 'stop':
             self.status = "stop"
         elif ',' in command and self.status == "exploring": 
-            self.algo.explore(True)
-        elif self.status == "exploring":
-            print("exploring")
-            self.do_read()
             self.algo.explore()
 
         print("sleeping for 2s")
+        # delay for some amount of time before doing the reading again to update the map
+        # after the robot has moved
         time.sleep(self.delay)
         self.do_read()
         self.simulator.update_map()
+
+        # send the map to android, starting with g'xxx'
+        # commentted out to test robot movement first
+        # self.robot.send("g"+self.algo.des.descriptor2())
+        # remind the rpi to change code to take care of this map thingy
+
         self.recal_counter += 1
-        print("handler loop takes", time.time() - start_time)
 
     #Defining Robot's location on map and orientation
     def get_robot_direction(self):
@@ -133,7 +150,6 @@ class Handler:
 
         robot_direction = self.map.get_robot_direction()
         robot_location  = self.map.get_robot_location()
-        print("do read here")
         print("sensor is")
         print (data)
         print("robot current location", robot_location)

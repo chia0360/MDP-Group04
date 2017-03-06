@@ -1,16 +1,3 @@
-# ----------------------------------------------------------------------
-# class definition of algoAbstract.
-# 
-#   - explore()
-#		robot starts doing exploration
-# 
-#   - findSP()
-#		Finding Shortest Path, based on the known maps.
-# 
-#   - run()
-#		robot starts running according shortest path algorithm
-# ----------------------------------------------------------------------
-
 import time
 import mapclass
 from math import *
@@ -41,18 +28,6 @@ class algoDum(algoAbstract):
 # ----------------------------------------------------------------------
 
 
-# ----------------------------------------------------------------------
-# class definition of algoFactory.
-# 
-#   - explore()
-#		robot starts doing exploration
-# 
-#   - findSP()
-#		Finding Shortest Path, based on the known maps.
-# 
-#   - run()
-#		robot starts running according shortest path algorithm
-# ----------------------------------------------------------------------
 class algoFactory:
     def __init__(self, handler, algoName="RHR"):
         if (algoName == "BF1"):
@@ -72,10 +47,6 @@ class algoFactory:
         self.algo.run()
         
 
-# ----------------------------------------------------------------------
-# class definition of algoBF1.
-# Implementation class of algoAbstract using algorithm Brute Force #1
-# ----------------------------------------------------------------------
 class algoBF1(algoAbstract):
     def __init__(self, handler):
         self.handler    = handler
@@ -346,16 +317,19 @@ class RightHandRule(algoAbstract):
         # have not found the shortest path, run findSP to find
         if not self.shortest_path_moves:
             self.findSP()
-        direction = self.shortest_path_moves.pop(0)
-        self.moveTo(direction)
-        # still have moves left to go
-        if self.shortest_path_moves:
-            self.handler.simulator.master.after(self.interval, self.run)
+
+        if self.simulation:
+            direction = self.shortest_path_moves.pop(0)
+            self.moveTo(direction)
+            # still have moves left to go
+            if self.shortest_path_moves:
+                self.handler.simulator.master.after(self.interval, self.run)
+        else:
+            return convert(shortest_path_moves)
 
     def moveTo(self, directions):
         for direction in directions:
             print("moving to", direction)
-            
             if self.handler.map.get_robot_direction() == direction:
                 self.handler.move()
             elif self.handler.map.get_robot_direction_right() == direction:
@@ -499,7 +473,6 @@ class RightHandRule(algoAbstract):
         # check using sensor
         data = None
         self.handler.robot.send('m')
-
         # the loop to wait for sensor is here
         while not data:
             # this sensor data is in the the following order
@@ -797,3 +770,43 @@ class AStar:
 
         # print(moves)
         return moves
+
+    
+    def convert (msg):
+        new_list = ['l','l']
+        #cur_dir = self.map.get_robot_direction()
+        cur_dir = 'S'
+        if ((msg[0] == 'N') and(cur_dir == 'S')):
+            new_list = ['l','l','f']
+        elif ((msg[0] == 'N') and(cur_dir == 'W')):
+            new_list = ['r','f']
+        elif ((msg[0] == 'E') and(cur_dir == 'S')):
+            new_list = ['l','f']
+        elif ((msg[0] == 'E') and(cur_dir == 'W')):
+            new_list = ['l','l','f']    
+        for i in range (1,len(msg)):
+            if (msg[i] == msg[i-1]):
+                new_list.append('f')
+            elif (\
+                (msg[i-1]== 'N' and msg[i] == 'S') or\
+                (msg[i-1]== 'E' and msg[i] == 'W') or\
+                (msg[i-1]== 'S' and msg[i] == 'N') or\
+                (msg[i-1]== 'W' and msg[i] == 'E')):
+                new_list.append ('l')
+                new_list.append ('l')
+                new_list.append ('f')
+            elif (\
+                (msg[i-1]== 'N' and msg[i] == 'E') or\
+                (msg[i-1]== 'E' and msg[i] == 'S') or\
+                (msg[i-1]== 'S' and msg[i] == 'W') or\
+                (msg[i-1]== 'W' and msg[i] == 'N')):
+                new_list.append ('r')
+                new_list.append ('f')
+            elif (\
+                (msg[i-1]== 'N' and msg[i] == 'W') or\
+                (msg[i-1]== 'E' and msg[i] == 'N') or\
+                (msg[i-1]== 'S' and msg[i] == 'E') or\
+                (msg[i-1]== 'W' and msg[i] == 'S')):
+                new_list.append ('l')
+                new_list.append ('f')
+        return new_list

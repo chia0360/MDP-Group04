@@ -36,7 +36,6 @@ def convert (msg):
             (msg[i-1]== 'W' and msg[i] == 'S')):
             new_list.append ('l')
             new_list.append ('f')
-
     return new_list
-print("['N','S','S','E','W','N']")
-print (convert(['N','S','S','E','W','N']))
+# print("['N','S','S','E','W','N']")
+# print (convert(['N','S','S','E','W','N']))
