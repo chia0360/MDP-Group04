@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String msgLog = "";
     String statusLog = "";
     String mapLog = "";
+    String maphexLog = "";
+    String manualmap = "";
     boolean mapUpdateLog = false;
 
     ChatClientThread chatClientThread = null;
@@ -268,8 +270,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             status.setText("Turning Right");
         }
         else if(v == refreshBtn){
-            sendMessage("sendArena");
-            update = true;
+            if( !manualmap.equals(""))
+                updateMap(manualmap.substring(1));
         }
         else if(v == exploreBtn){
             if(!runBtn.isChecked()) {
@@ -360,16 +362,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             refreshBtn.setVisibility(View.VISIBLE);
     }
 
-    public void updateMap(String msg){
-        String hex = msg.substring(11, msg.length() - 2);
+    public void updateMap(String hex){
         String obstacles = hexToBinary(hex);
         int index = 0;
         while(index < obstacles.length()){
             if(obstacles.charAt(index) == '1') {
                 adapter.setItem(index, adapter.STATE_OBSTACLE);
-            }/*else{
-                adapter.setItem(index, adapter.STATE_UNEXPLORED);
-            }*/
+            }
             index++;
         }
     }
@@ -387,10 +386,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void onReceiveMessage(String msg){
-        if (msg.contains("grid")) {
-            if(autoUpdateBtn.isChecked() || update == true) {
-                updateMap(msg);
-                update = false;
+        if (msg.indexOf("g")==0) {
+            if(autoUpdateBtn.isChecked() && !maphexLog.equals("")) {
+                updateMap(maphexLog.substring(1));
+            }else{
+                manualmap = maphexLog;
             }
         } else if (msg.contains("exploring")) {
             status.setText("Exploring");
@@ -569,17 +569,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 statusLog = "r";
                             }else if(c == 'l'){
                                 statusLog = "l";
-                            }else if(c == 'm'){
-                                statusLog = "m";
+                            }else if(c == 'g'){
                                 mapUpdateLog = true;
                             }
                             if(mapUpdateLog == true){
-                                if(c == '1' || c == '0'){
-                                    mapLog += c + "";
-                                }else{
+                                mapLog += c + "";
+                                if(mapLog.length() == 76){
                                     mapUpdateLog = false;
+                                    maphexLog = mapLog;
+                                    mapLog="";
                                 }
                             }
+
                         }
                         //msgLog += dataInputStream.readUTF();
 
@@ -588,8 +589,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             @Override
                             public void run() {
                                 chatMsg.setText(msgLog);
-                                if(statusLog != "") {
+                                if(!statusLog.equals("")) {
                                     onReceiveMessage(statusLog);
+                                    statusLog = "";
+                                }
+                                if(maphexLog.length() == 76){
+                                    onReceiveMessage(maphexLog);
+                                    maphexLog = "";
                                 }
                             }
                         });

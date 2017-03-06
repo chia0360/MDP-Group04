@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GridAdapter extends BaseAdapter {
-    private String robot_direction = "E";
+    private String robot_direction = "S";
     private Context context;
     private int[] map;
     public final String STATE_UNEXPLORED = "unexplored";
@@ -29,7 +29,7 @@ public class GridAdapter extends BaseAdapter {
     private final String TURN_LEFT = "tl";
     private int robot_curr_x;
     private int robot_curr_y;
-
+    private List<Integer> obstacles = new ArrayList<>();
 
     public GridAdapter(Context c, int location_x, int location_y) {
         context = c;
@@ -53,10 +53,13 @@ public class GridAdapter extends BaseAdapter {
                 map[x*20+y] = R.drawable.goal;
             }
             else if (state.equals(STATE_FREE)) {
-                map[x*20+y] = R.drawable.blue;
+                if(!obstacles.contains(x*20+y)) {
+                    map[x * 20 + y] = R.drawable.blue;
+                }
             }
             else if (state.equals(STATE_OBSTACLE)) {
                 map[x*20+y] = R.drawable.block;
+                obstacles.add(x*20+y);
             }
             else if (state.equals(STATE_UNEXPLORED)) {
                 map[x*20+y] = R.drawable.gray;
@@ -65,7 +68,6 @@ public class GridAdapter extends BaseAdapter {
                 Log.e("Map", "Invalid state: " + state);
             }
         }
-        Log.e("Map", "Invalid index: ("+Integer.toString(x)+","+ Integer.toString(y)+")");
     }
 
     public void updateRobot(int y, int x ) {
