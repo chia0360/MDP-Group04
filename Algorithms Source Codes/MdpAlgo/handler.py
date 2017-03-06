@@ -13,8 +13,6 @@ class Handler:
         self.simulator  = simulator
         self.map        = mapclass.Map()
         self.algo       = algo.algoFactory(self, algoName='RHR') #Choose which algorithm to use from algo.py
-        
-        
         if config.robot_simulation:     #Simulator/Real-World-Test switch
             self.robot = robot_simulator.RobotSimulator(self)
         else:
@@ -23,7 +21,7 @@ class Handler:
         self.map_descriptor = None
         self.status = "stop"
         self.recal_counter = 0
-
+        self.delay = 1
 
     def printMap(self):
         for row in self.map.map:
@@ -31,85 +29,54 @@ class Handler:
 
     def loop(self):
         start_time = time.time()
-        # counter = 0       #repositioning counter
-    # while True:
-        # get command
-        # command = self.robot.receive()
-        # for testing
-        command = "explore" # this will be the command from android
+        command = "startexplore" # this will be the command from android
         # sensor = self.robot.receive() # this will be the sensors
         print("Receiving :", command)
-        # check command
-        #reposition robot
+        print("counter is", self.recal_counter)
+        if(self.recal_counter >= 6):
+            self.robot.send('m')
+            sensor_data = self.robot.receive()
+            while not sensor_data and len(sensor_data) != 5:
+                sensor_data = self.robot.receive()
+            # if sensor_data[1] == 1 and sensor_data[3] == 1 and sensor_data[4] == 1:
+            #     self.robot.send('c')
+            # else:
+            self.robot.send('p')
+            self.recal_counter = 0
+            return
 
-        # print("counter is", self.recal_counter)
-        # if(self.recal_counter >= 3):
-        #     self.robot.send('m')
-        #     sensor_data = self.robot.receive()
-        #     while not sensor_data:
-        #         sensor_data = self.robot.receive()
-        #     if sensor_data[4]==1:
-        #         self.robot.send('p')
-        #     self.recal_counter = 0
-        #     return
-        
+        self.do_read()
+        self.simulator.update_map()
         # this set of command comes from android
-        if command == 'explore':
-            print("exploring")
-            print("first reading of sensor (before algo)")
-            self.do_read()
+        if command == 'startexplore':
+            self.status = "exploring"
             self.algo.explore()
-            print("sleeping for 2s")
-            time.sleep(1)
-            print("second reading of sensor (after algo)")
-            self.do_read()
-            self.simulator.update_map()
-        # #Reposition robot
-        # if (counter >= 5):
-        #     if (sensor_data[4] == 1):
-        #         self.robot.send('p')
-        #     elif (sensor_data[0] == 1)
-        #         self.robot.send('w')
-        #     counter = 0
-        # elif command == 'run':
-        #     self.algo.run()
-        # elif command == 'f':
-        #     self.move()
-        # elif command == 'tr':
-        #     self.right()
-        # elif command == 'tl':
-        #     self.left()
+        elif command == 'fastestPath':
+            self.status = "stop"
+            self.algo.run()
+        elif command == 'f':
+            self.status = "stop"
+            self.move()
+        elif command == 'l':
+            self.status = "stop"
+            self.right()
+        elif command == 'r':
+            self.status = "stop"
+            self.left()
         elif command == 'stop':
             self.status = "stop"
-        # elif ',' in command and self.status == "exploring": 
-        #     # if its not a command from android, its probably the sensors' data
-        #     self.do_read(command) 
-        #     # read the sensors when the robot stop.
-        #     self.simulator.update_map()
-        #     print("before explore")
-        #     self.algo.explore(True)
-        #     # from the sensors' values determine the step to move
-        #     # the algo will send command to robot in this step
-        #     print("sleep 1")
-        #     time.sleep(1)
-        #     # we need to wait for the robot to execute the command
-        #     # then update the simulator
-        #     self.simulator.update_map()
-        #     # this will update robot position
-        # for empty command from android, we just continue exploring
+        elif ',' in command and self.status == "exploring": 
+            self.algo.explore(True)
         elif self.status == "exploring":
             print("exploring")
-            print("first reading of sensor (before algo)")
             self.do_read()
             self.algo.explore()
-            print("sleeping for 2s")
-            time.sleep(1)
-            print("second reading of sensor (after algo)")
-            self.do_read()
-            self.simulator.update_map()
+
+        print("sleeping for 2s")
+        time.sleep(self.delay)
+        self.do_read()
+        self.simulator.update_map()
         self.recal_counter += 1
-        print("printing map")
-        self.printMap()
         print("handler loop takes", time.time() - start_time)
 
     #Defining Robot's location on map and orientation
@@ -138,22 +105,21 @@ class Handler:
         print("check for valid position")
         if self.map.valid_pos(robot_next[0], robot_next[1]):
             self.map.set_robot_location( robot_next )
-            print("sending f")
             self.robot.send('f')
             
             
     def do_read(self):
         # in the actual run, the sensor data will be passed from the main loop to do_read
-        data = self.robot.receive()
+        data = None#self.robot.receive()
 
         # the loop to wait for sensor is here
         # this will not execute in actual run
-        if not data:
+        self.robot.send('m')
+        while not data:
             print("robot.receive in do_read")
             # this sensor data is in the the following order
-            self.robot.send('m')
-            while not data:
-                data = self.robot.receive()
+            # while not data:
+            data = self.robot.receive()
             # left,         front-left, front-middle, front-right, right for real data
             # front_middle, front-left, front-right,  left,        right for simulation
         
@@ -247,33 +213,20 @@ class Handler:
     def move(self):
         # sending the command in do_move()
         self.do_move()
-        # not necessary to update map here in actual run
-        # because the loop will get the next value of the sensor 
-        # self.do_read()
-        # self.simulator.update_map()
 
     def back(self):
         cur_dir = self.map.get_robot_direction()
         self.map.set_robot_direction( self.map.get_robot_direction_back() )
         self.do_move()
         self.map.set_robot_direction( cur_dir )
-        # self.do_read()
-        # self.simulator.update_map()
 
     def left(self):
         self.map.set_robot_direction( self.map.get_robot_direction_left() )
-        # Send command to robot
         self.robot.send('l')
-        # self.do_read()
-        # self.simulator.update_map()
 
     def right(self):
         self.map.set_robot_direction( self.map.get_robot_direction_right() )
-        # Send command to robot
         self.robot.send('r')
-        # self.do_read()
-        # self.simulator.update_map()
-   
 
 
     # ---------------------------------End of Class-------------------------------------

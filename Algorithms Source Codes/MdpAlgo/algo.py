@@ -167,7 +167,6 @@ class algoBF1(algoAbstract):
         # check if all the blocks are explored
         if self.check_complete():
             print("done")
-            
             # check if the goal is reached
             if self.goal_reached:
                 # return to start
@@ -244,6 +243,7 @@ class algoBF1(algoAbstract):
     def check_front(self):
         sensor_data = self.handler.robot.receive()
         print('Sensor data: ', sensor_data)
+        
         if (sensor_data[0] > 1 or sensor_data[0] < 0) and \
             (sensor_data[1] > 1 or sensor_data[1] < 0) and \
             (sensor_data[2] > 1 or sensor_data[2] < 0):
@@ -262,7 +262,6 @@ class algoBF1(algoAbstract):
     def moveTo(self, directions):
         for direction in directions:
             print("moving to", direction)
-            
             if self.handler.map.get_robot_direction() == direction:
                 self.handler.move()
             elif self.handler.map.get_robot_direction_right() == direction:
@@ -304,7 +303,6 @@ class RightHandRule(algoAbstract):
 
     def periodic_check(self):
         print("periodic check")
-        # input()
         # read to update the right blocks
         if self.check_right():
             print("right free, turing right")
@@ -373,7 +371,6 @@ class RightHandRule(algoAbstract):
 
     def check_right(self):
         print("start check right")
-        self.handler.do_read()
         robot_location = self.handler.map.get_robot_location()
         right_direction = self.handler.map.get_robot_direction_right()
         map_explored = self.map.get_map()
@@ -454,6 +451,7 @@ class RightHandRule(algoAbstract):
         # print("checking blocks on the right are free")
         # we can assume all blocks on the right are explored
         # print()
+        
         if map_explored[y1][x1] == 1 and \
             map_explored[y2][x2] == 1 and \
             map_explored[y3][x3] == 1:
@@ -467,28 +465,49 @@ class RightHandRule(algoAbstract):
             self.handler.move()
             return True
         else:
-            # if turned:
-                # turn back
-                # self.handler.left()
             return False
-        
 
     def check_front(self):
-        print("check front")
-        data = self.handler.robot.receive()
+        print("check front using walls")
+        robot_location = self.handler.map.get_robot_location()
+        direction = self.handler.map.get_robot_direction()
+        map_explored = self.map.get_map()
+
+        # using the wall to check first        
+        if direction == 'N':
+            # already touching the wall
+            if robot_location[0] <= 1:
+                print("touching north")
+                return False
+            
+        elif direction == 'S':
+            if robot_location[0] >= self.map.width - 2:
+                print("touching south")
+                return False
+
+        elif direction == 'E':
+            if robot_location[1] >= self.map.length - 2:
+                print("touching east")
+                return False
+
+        elif direction == 'W':
+            if robot_location[1] <= 1:
+                print("touching west")
+                return False
+        
+        print("check front using sensors")
+        # check using sensor
+        data = None
+        self.handler.robot.send('m')
 
         # the loop to wait for sensor is here
         while not data:
             # this sensor data is in the the following order
-            self.handler.robot.send('m')
-            while not data:
-                data = self.handler.robot.receive()
+            data = self.handler.robot.receive()
             # left,         front-left, front-middle, front-right, right for real data
             # front_middle, front-left, front-right,  left,        right for simulation
-
         sensor_data = data
 
-    
         if not self.simulation:
             # swap 0 with 2, then 2 with 3 
             sensor_data[0], sensor_data[2] = sensor_data[2], sensor_data[0]
