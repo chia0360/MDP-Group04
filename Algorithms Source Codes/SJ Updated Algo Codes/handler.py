@@ -54,6 +54,16 @@ class Handler:
         #     return
         
         # this set of command comes from android
+		
+##############################################################################################
+# Android Request Commands:                                                                  #
+# move_forward = "f"                                                                         #
+# move_left = "l"                                                                            #
+# move_right = "r"                                                                           #
+# immediate_stop = "stop"                                                                    #
+# start exploration = "startexplore"                                                         #
+# start fastest path = "fastestpath"                                                         #
+# map format = g01110001000100001000010000010000100.....                                     #
 ##############################################################################################
         if command == 'startexplore':
             print("exploring")
@@ -111,7 +121,6 @@ class Handler:
 			self.do_read()
 			self.simulator.update_map()
 ##############################################################################################
-		
         elif self.status == "exploring":
             print("exploring")
             print("first reading of sensor (before algo)")
@@ -127,8 +136,6 @@ class Handler:
         self.printMap()
         print("handler loop takes", time.time() - start_time)
 		
-		
-
     #Defining Robot's location on map and orientation
     def get_robot_direction(self):
         return self.map.get_robot_direction()
