@@ -2,10 +2,8 @@ import sys
 import time
 import Queue
 # from AndroidBTCon import *
-# from ArduinoSerialCon import *
+from ArduinoSerialCon import *
 from PCInetCon import *
-from PCInet1Con import *
-from PCInet2Con import *
 from AndroidWifiCon import *
 import threading
 import serial
