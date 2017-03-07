@@ -39,7 +39,7 @@ class Handler:
 
         print("Position", self.map.get_robot_location())
         print("Sensors:", sensor_data)
-        if sensor_data[1] == 1 and sensor_data[3] == 1 and sensor_data[4] == 1:
+        if sensor_data[1] == 1 and sensor_data[3] == 1 and sensor_data[4] == 1 and self.recal_counter > 0:
             # front left, front right and right
             if sensor_data[0] == 1:
                 # and left
