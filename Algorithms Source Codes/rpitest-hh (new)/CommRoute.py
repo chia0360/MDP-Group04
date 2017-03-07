@@ -54,7 +54,6 @@ class RPI(threading.Thread):
                 # wait a while between reads
                 time.sleep(2)
 
-
     def write_to_pc(self):
         while True:	
             if not self.toPC_q.empty():
@@ -63,11 +62,9 @@ class RPI(threading.Thread):
                 # wait a while between writes
 				time.sleep(2)
 
-
     def write_to_android(self):
         while True:
             if not self.toAndroid_q.empty():
-				print("writing to android")
 				data = self.toAndroid_q.get_nowait()
 				self.android.sendAndroid(data+'\n')
                 # wait a while between writes
@@ -80,7 +77,6 @@ class RPI(threading.Thread):
                 self.arduino.writeArduino(data)
                 # wait a while between writes
                 time.sleep(2)
-
 
     def create_threads(self):
         t1 = threading.Thread(target=self.read_from_pc)
