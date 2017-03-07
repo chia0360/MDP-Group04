@@ -21,7 +21,7 @@ class Handler:
         self.map_descriptor = None
         self.status = "stop"
         self.recal_counter = 0
-        self.delay = 2
+        self.delay = 1
 
     def printMap(self):
         for row in self.map.map:
@@ -32,30 +32,89 @@ class Handler:
         # uncomment the line below to do integration
         # command = self.robot.receive() 
         print("Receiving :", command)
-        self.robot.send('m')
-        sensor_data = self.robot.receive()
-        while not sensor_data or len(sensor_data) != 5:
-            sensor_data = self.robot.receive()
 
-        print("Position", self.map.get_robot_location())
-        print("Sensors:", sensor_data)
-        if sensor_data[1] == 1 and sensor_data[3] == 1 and sensor_data[4] == 1 and self.recal_counter > 0:
-            # front left, front right and right
-            if sensor_data[0] == 1:
-                # and left
-                self.robot.send('c')
-            else:
-                self.robot.send('d')
-            self.recal_counter = 0
-            time.sleep(self.delay*3)
-            return
 
-        if(self.recal_counter >= 6):
-            self.robot.send('p')
-            self.recal_counter = 0
-            # do recalibration will take up 1 turn
-            time.sleep(self.delay*3)
-            return
+        # self.robot.send('m')
+        # sensor_data = self.robot.receive()
+        # while not sensor_data or len(sensor_data) != 5:
+        #     sensor_data = self.robot.receive()
+        
+        if(self.recal_counter >= 3):
+            # repositioning based on walls
+            position = self.map.get_robot_location()
+            right_direction = self.map.get_robot_direction_right()
+            recalibration = False
+            if right_direction == 'N':
+                if position[0] <= 1:
+                    if position[1] <= 1:
+                        self.robot.send('d')
+                    else:
+                        self.robot.send('p')
+                    recalibration = True
+            elif right_direction == 'S':
+                if position[0] >= self.map.width - 2:
+                    if position[1] >= self.map.length - 2:
+                        self.robot.send('d')
+                    else:
+                        self.robot.send('p')
+                    recalibration = True
+            elif right_direction == 'E':
+                if position[1] >= self.map.length - 2:
+                    if position[0] <= 1:
+                        self.robot.send('d')
+                    else:
+                        self.robot.send('p')
+                    recalibration = True
+            elif right_direction == 'W':
+                if position[1] <= 1:
+                    if position[0] >= self.map.width - 2:
+                        self.robot.send('d')
+                    else:
+                        self.robot.send('p')
+                    recalibration = True
+
+            if recalibration:
+                self.recal_counter = 0
+                time.sleep(self.delay*5)
+                return
+
+            # # repositioning based on sensors
+            # if not recalibration:
+            #     # turn right
+            #     self.right()
+            #     # get sensor
+            #     self.robot.send('m')
+            #     data = None
+            #     while not data:
+            #         data = self.robot.receive()
+            #     if data[1] == 1 and data[3] == 1:
+            #         self.robot.send('p')
+            #     self.left()
+            #     recalibration = True
+
+            # if recalibration:
+            #     self.recal_counter = 0
+            #     time.sleep(self.delay*5)
+            #     return
+        # print("Position", self.map.get_robot_location())
+        # print("Sensors:", sensor_data)
+        # if sensor_data[1] == 1 and sensor_data[3] == 1 and sensor_data[4] == 1 and self.recal_counter > 0:
+        #     # front left, front right and right
+        #     if sensor_data[0] == 1:
+        #         # and left
+        #         self.robot.send('c')
+        #     else:
+        #         self.robot.send('d')
+        #     self.recal_counter = 0
+        #     time.sleep(self.delay*3)
+        #     return
+
+        # if(self.recal_counter >= 3):
+        #     self.robot.send('p')
+        #     self.recal_counter = 0
+        #     # do recalibration will take up 1 turn
+        #     time.sleep(self.delay*3)
+        #     return
 
         # first reading before the algo works
         self.do_read()
@@ -93,14 +152,13 @@ class Handler:
         # delay for some amount of time before doing the reading again to update the map
         # after the robot has moved
         time.sleep(self.delay)
-        self.do_read()
-        self.simulator.update_map()
+        # self.do_read()
+        # self.simulator.update_map()
 
         # send the map to android, starting with g'xxx'
         # commentted out to test robot movement first
         # self.robot.send("g"+self.algo.des.descriptor2())
         # remind the rpi to change code to take care of this map thingy
-
         self.recal_counter += 1
 
     #Defining Robot's location on map and orientation

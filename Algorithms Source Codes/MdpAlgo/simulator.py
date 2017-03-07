@@ -158,7 +158,7 @@ class Simulator:
 
     def actual_run(self):
         self.handler.loop()
-        self.master.after(200, self.actual_run)
+        self.master.after(2000, self.actual_run)
 
     # ----------------------------------------------------------------------
     #   Actions received by robot

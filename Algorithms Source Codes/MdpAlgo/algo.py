@@ -264,6 +264,7 @@ class RightHandRule(algoAbstract):
         self.m = mapclass.Map()
         self.des = descriptor.descriptor()
         self.simulation = config.robot_simulation
+        self.goal_reached = False
 
     def explore(self):
         # periodic check is for the simulation
@@ -293,7 +294,10 @@ class RightHandRule(algoAbstract):
         
         location = self.handler.map.get_robot_location()
         print("robot location", location)
-        if location[0] == 1 and location[1] == 1:
+        if location[0] == 13 and location[1] == 18:
+            self.goal_reached = True
+
+        if location[0] == 1 and location[1] == 1 and self.goal_reached:
             self.done = True
             
         if not self.done and self.simulation:

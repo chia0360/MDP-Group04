@@ -12,6 +12,7 @@ class Connector(Robot):
         self.socket.settimeout(1)
         self.connected = False
         self.connect()
+        self.m_counter = 0
 
     def connect(self):
         host = '192.168.4.1'
@@ -28,6 +29,8 @@ class Connector(Robot):
         if not self.connected:
             self.connect()
         if self.connected:
+            if (msg == 'm'):
+                self.m_counter+=1
             print("[Info] Sending message: ", msg)
             try:
                 self.socket.sendall(str.encode(msg))
@@ -66,7 +69,7 @@ class Connector(Robot):
 
                         # we now receive only one set of values from sensor
                         splited_mess = mess.split(",")
-                        while len(splited_mess) != 5 or len(splited_mess[0]) == 0 or len(splited_mess[4]) == 0:
+                        while len(splited_mess) != 6 or len(splited_mess[1]) == 0 or len(splited_mess[4]) == 0:
                             mess = messages.pop()
                             splited_mess = mess.split(",")
                             # this is malformed sensors' values
@@ -76,7 +79,12 @@ class Connector(Robot):
                             # this will also check if the first value and the last value is empty
                         # now we return the integer set of sensors' value
                         print ("robot connector returning: ", splited_mess)
-                        splited_mess = [int(x) for x in splited_mess]
+                        print ("header: ", splited_mess[0])
+                        print ("[Info] M counter is", self.m_counter)
+                        
+                        splited_mess = [int(x) for x in splited_mess][1:]
+                        # if self.m_counter != splited_mess[0]:
+                        #     return None
                         return splited_mess
             except socket.timeout:
                 print("[Info] No message received.")
