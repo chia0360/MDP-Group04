@@ -21,7 +21,7 @@ class Handler:
         self.map_descriptor = None
         self.status = "stop"
         self.recal_counter = 0
-        self.delay = 1
+        self.delay = 2
 
     def printMap(self):
         for row in self.map.map:
@@ -32,22 +32,29 @@ class Handler:
         # uncomment the line below to do integration
         # command = self.robot.receive() 
         print("Receiving :", command)
-        if(self.recal_counter >= 6):
-            self.robot.send('m')
+        self.robot.send('m')
+        sensor_data = self.robot.receive()
+        while not sensor_data or len(sensor_data) != 5:
             sensor_data = self.robot.receive()
-            while not sensor_data or len(sensor_data) != 5:
-                sensor_data = self.robot.receive()
-            if sensor_data[1] == 1 and sensor_data[3] == 1 and sensor_data[4] == 1:
-                # front left, front right and right
-                if sensor_data[0] == 1:
-                    # and left
-                    self.robot.send('d')
-                else:
-                    self.robot.send('c')
+
+        print("Position", self.map.get_robot_location())
+        print("Sensors:", sensor_data)
+        if sensor_data[1] == 1 and sensor_data[3] == 1 and sensor_data[4] == 1:
+            # front left, front right and right
+            if sensor_data[0] == 1:
+                # and left
+                self.robot.send('c')
             else:
-                self.robot.send('p')
+                self.robot.send('d')
+            self.recal_counter = 0
+            time.sleep(self.delay*3)
+            return
+
+        if(self.recal_counter >= 6):
+            self.robot.send('p')
             self.recal_counter = 0
             # do recalibration will take up 1 turn
+            time.sleep(self.delay*3)
             return
 
         # first reading before the algo works

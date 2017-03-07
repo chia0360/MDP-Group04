@@ -47,26 +47,28 @@ class Connector(Robot):
                     # this message will contain all set of sensors' value upto the time of
                     # issueing the socket receive
                     print ("message: ", msg)
-                    if "," not in msg:
+                    msg = msg.decode()
+                    msg_decoded = re.sub(r'[^\x00-\x7f]',r'', msg)
+                    if "," not in msg_decoded:
                         # this is a command from android
-                        return msg.decode()
+                        return msg_decoded
                     else:    
-                        msg = msg.decode()
-                        msg_decoded = re.sub(r'[^\x00-\x7f]',r'', msg)
                         # # msg_decoded = "-2,-2,-2,-2,-2"
                         # print("[Info] Received: ", msg_decoded)
                         # # we thus need to separate each set of sensors' values
-                        # messages = msg_decoded.split("\n")
-                        # print("messages:", messages)
-                        # mess = messages.pop()
-                        # # this loop will help removing the empty readings
-                        # while len(mess) == 0:
-                        #     mess = messages.pop()
-                        # # for a incomplete set of sensors
+                        messages = msg_decoded.split("\n")
+                        print("messages:", messages)
+                        mess = messages.pop()
+                        # this loop will help removing the empty readings
+                        while len(mess) == 0:
+                            mess = messages.pop()
+                        # for a incomplete set of sensors
 
                         # we now receive only one set of values from sensor
-                        splited_mess = msg_decoded.split(",")
-                        # while len(splited_mess) != 5 or len(splited_mess[0]) == 0 or len(splited_mess[4]) == 0:
+                        splited_mess = mess.split(",")
+                        while len(splited_mess) != 5 or len(splited_mess[0]) == 0 or len(splited_mess[4]) == 0:
+                            mess = messages.pop()
+                            splited_mess = mess.split(",")
                             # this is malformed sensors' values
                             # splited_mess = mess.split(",")
                             # we will keep popping the previous set of sensor value if the 
