@@ -1,9 +1,9 @@
-
 import threading
 import socket
 import time
 
 class AndroidWifiCon(object):
+
     def __init__(self):
         self.port = 8765
         self.host = "192.168.4.1"
@@ -16,7 +16,7 @@ class AndroidWifiCon(object):
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.bind((self.host, self.port))
             self.socket.listen(5)
-            print "Waiting for android incomming connection"
+            print "Waiting for android incoming connection"
             self.client, self.address = self.socket.accept()
             print "Connected to: ", self.address
             return True
@@ -51,8 +51,3 @@ class AndroidWifiCon(object):
         if self.client:
             self.client.close()
         print "Disconnected"
-		
-android = AndroidWifiCon()
-android.connectAndroid()
-while True:
-	android.receiveAndroid()
