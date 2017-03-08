@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Sep 28 14:17:53 2016
-
-@author: lwh92
-"""
 import serial
 import threading
 import time
@@ -45,4 +39,3 @@ class ArduinoSerialCon(object):
 
     def close(self):
         self.serConn.close()
-

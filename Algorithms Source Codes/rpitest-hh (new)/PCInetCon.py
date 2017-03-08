@@ -16,7 +16,7 @@ class PCInetCon(object):
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.bind((self.host, self.port))
             self.socket.listen(5)
-            print "Waiting for PC incomming connection"
+            print "Waiting for PC incoming connection"
             self.client, self.address = self.socket.accept()
             print "Connected to: ", self.address
             return True
@@ -28,7 +28,6 @@ class PCInetCon(object):
 
     def sendPc(self,outData):
         time.sleep(.05)
-        
         try:
             self.client.send(outData)
         except Exception, e:

@@ -54,7 +54,6 @@ class RPI(threading.Thread):
                 # wait a while between reads
                 time.sleep(2)
 
-
     def write_to_pc(self):
         while True:	
             if not self.toPC_q.empty():
@@ -63,11 +62,9 @@ class RPI(threading.Thread):
                 # wait a while between writes
 				time.sleep(2)
 
-
     def write_to_android(self):
         while True:
             if not self.toAndroid_q.empty():
-				print("writing to android")
 				data = self.toAndroid_q.get_nowait()
 				self.android.sendAndroid(data+'\n')
                 # wait a while between writes
@@ -81,28 +78,27 @@ class RPI(threading.Thread):
                 # wait a while between writes
                 time.sleep(2)
 
-
     def create_threads(self):
-        t5 = threading.Thread(target=self.read_from_android)
-        t6 = threading.Thread(target=self.write_to_android)
         t1 = threading.Thread(target=self.read_from_pc)
         t2 = threading.Thread(target=self.write_to_pc)
         t3 = threading.Thread(target=self.read_from_arduino)
         t4 = threading.Thread(target=self.write_to_arduino)
+        t5 = threading.Thread(target=self.read_from_android)
+        t6 = threading.Thread(target=self.write_to_android)
 
-        t5.daemon = True
-        t6.daemon = True
         t1.daemon = True
         t2.daemon = True
         t3.daemon = True
         t4.daemon = True
+        t5.daemon = True
+        t6.daemon = True
 
-        t5.start()
-        t6.start()
         t1.start()
         t2.start()
         t3.start()
         t4.start()
+        t5.start()
+        t6.start()
 
         print "All threads started"
 
