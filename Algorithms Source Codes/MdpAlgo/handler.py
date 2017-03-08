@@ -21,7 +21,7 @@ class Handler:
         self.map_descriptor = None
         self.status = "stop"
         self.recal_counter = 0
-        self.delay = 2
+        self.delay = 1
         self.recalibration = False
 
     def printMap(self):
@@ -34,6 +34,18 @@ class Handler:
         # command = self.robot.receive() 
         print("Receiving :", command)
         
+        # 4 corners calibration
+        if not self.recalibration:
+            position = self.map.get_robot_location()
+            right_direction = self.map.get_robot_direction_right()
+            if position[0] == 1 or position[0] == 13:
+                if position[1] == 1 or position[1] == 18:
+                    self.robot.send('d')
+                    self.recalibration = True
+                    self.recal_counter = 0
+                    time.sleep(self.delay*2)
+                    return
+
         # calibration based on front wall
         if not self.recalibration:
             print("front wall calibration")
@@ -70,46 +82,34 @@ class Handler:
             #     return   
         
 
-        # repositioning based on walls and 4 corners
+        # repositioning based on walls
         if(self.recal_counter >= 4):
             position = self.map.get_robot_location()
             right_direction = self.map.get_robot_direction_right()
             wall_recalibration = False
             if right_direction == 'N':
-                if position[0] <= 1:
-                    if position[1] <= 1:
-                        self.robot.send('d')
-                    else:
-                        self.right()
-                        self.robot.send('e')
-                        self.left()
+                if position[0] == 1:
+                    self.right()
+                    self.robot.send('e')
+                    self.left()
                     wall_recalibration = True
             elif right_direction == 'S':
-                if position[0] >= self.map.width - 2:
-                    if position[1] >= self.map.length - 2:
-                        self.robot.send('d')
-                    else:
-                        self.right()
-                        self.robot.send('e')
-                        self.left()
+                if position[0] == self.map.width - 2:
+                    self.right()
+                    self.robot.send('e')
+                    self.left()
                     wall_recalibration = True
             elif right_direction == 'E':
-                if position[1] >= self.map.length - 2:
-                    if position[0] <= 1:
-                        self.robot.send('d')
-                    else:
-                        self.right()
-                        self.robot.send('e')
-                        self.left()
+                if position[1] == self.map.length - 2:
+                    self.right()
+                    self.robot.send('e')
+                    self.left()
                     wall_recalibration = True
             elif right_direction == 'W':
-                if position[1] <= 1:
-                    if position[0] >= self.map.width - 2:
-                        self.robot.send('d')
-                    else:
-                        self.right()
-                        self.robot.send('e')
-                        self.left()
+                if position[1] == 1:
+                    self.right()
+                    self.robot.send('e')
+                    self.left()
                     wall_recalibration = True
 
             if wall_recalibration:
