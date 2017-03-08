@@ -21,8 +21,8 @@ class Handler:
         self.map_descriptor = None
         self.status = "stop"
         self.recal_counter = 0
-        self.delay = 1
-        self.calibration = False
+        self.delay = 2
+        self.recalibration = False
 
     def printMap(self):
         for row in self.map.map:
@@ -35,7 +35,13 @@ class Handler:
         print("Receiving :", command)
         
         # calibration based on front wall
-        if not recalibration:
+        if not self.recalibration:
+            print("front wall calibration")
+            data = None#self.robot.receive()
+            self.robot.send('m')
+            while not data:
+                data = self.robot.receive()
+
             data = None#self.robot.receive()
             self.robot.send('m')
             while not data:
@@ -46,16 +52,26 @@ class Handler:
                 (data[2] == 1 and data[3] == 1):
                 self.robot.send('e')
                 self.recalibration = True
-                self.left()
+                # self.left()
             
-            if recalibration:
+            if self.recalibration:
                 self.recal_counter = 0
                 time.sleep(self.delay*2)
                 return
 
+            # # test for right wall
+            # if data[4] == 1 and data[5] == 1:
+            #     self.robot.send('t')
+            #     self.recalibration = True
+
+            # if self.recalibration:
+            #     self.recal_counter = 0
+            #     time.sleep(self.delay*2)
+            #     return   
         
+
         # repositioning based on walls and 4 corners
-        if(self.recal_counter >= 3):
+        if(self.recal_counter >= 4):
             position = self.map.get_robot_location()
             right_direction = self.map.get_robot_direction_right()
             wall_recalibration = False
@@ -101,6 +117,8 @@ class Handler:
                 time.sleep(self.delay*2)
                 return
 
+        
+        print("algo run")
         # first reading before the algo works
         self.do_read()
         self.simulator.update_map()
@@ -143,6 +161,7 @@ class Handler:
         # commentted out to test robot movement first
         # self.robot.send("g"+self.algo.des.descriptor2())
         # remind the rpi to change code to take care of this map thingy
+        self.recalibration = False
         self.recal_counter += 1
 
     #Defining Robot's location on map and orientation
@@ -175,6 +194,7 @@ class Handler:
             
             
     def do_read(self):
+
         # in the actual run, the sensor data will be passed from the main loop to do_read
         data = None#self.robot.receive()
 
@@ -272,9 +292,8 @@ class Handler:
         return sensor_data
 
         print("end do_read")
-    # ----------------------------------------------------------------------
-    #   Action Commands that robot can receive and carry out
-    # ----------------------------------------------------------------------
+
+    
     def move(self):
         # sending the command in do_move()
         self.do_move()

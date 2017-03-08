@@ -69,7 +69,7 @@ class Connector(Robot):
 
                         # we now receive only one set of values from sensor
                         splited_mess = mess.split(",")
-                        while len(splited_mess) != 6 or len(splited_mess[1]) == 0 or len(splited_mess[4]) == 0:
+                        while len(splited_mess) != 7 or len(splited_mess[1]) == 0 or len(splited_mess[6]) == 0:
                             mess = messages.pop()
                             splited_mess = mess.split(",")
                             # this is malformed sensors' values
