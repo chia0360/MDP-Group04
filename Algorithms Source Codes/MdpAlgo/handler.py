@@ -30,11 +30,14 @@ class Handler:
 
     def loop(self):
         #command = "fastestPath"
-        command = "startexplore" # this will be the command from android
+        # command = "startexplore" # this will be the command from android
         # command = "fastestPath" # this will be the command from android
         # uncomment the line below to do integration
-        # command = self.robot.receive() 
-        print("Receiving :", command)
+        command = None
+        if self.status == "stop":
+            while not command:
+                command = self.robot.receive()
+                print("Receiving :", command)
         
         # 4 corners calibration
         if not self.recalibration:
@@ -64,10 +67,10 @@ class Handler:
         # calibration based on front wall
         if not self.recalibration:
             print("front wall calibration")
-            data = None#self.robot.receive()
-            self.robot.send('m')
-            while not data:
-                data = self.robot.receive()
+            # data = None#self.robot.receive()
+            # self.robot.send('m')
+            # while not data:
+            #     data = self.robot.receive()
 
             data = None#self.robot.receive()
             self.robot.send('m')
@@ -143,11 +146,12 @@ class Handler:
                 # the starting point doing calibration
                 self.right()
                 self.robot.send('d')
+                self.left()
                 self.status = "exploring"
                 return
                 
             self.algo.explore()
-        elif command == 'fastestPath':
+        elif command == 'fastestpath':
             # stop so that the thing will not be affected by the exploration (maybe)
             self.status = "stop"
             # shortest_path_moves = 'ffflfrffflfrfflf'
@@ -170,7 +174,7 @@ class Handler:
             self.left()
         elif command == 'stop':
             self.status = "stop"
-        elif ',' in command and self.status == "exploring": 
+        elif self.status == "exploring": 
             self.algo.explore()
 
         print("sleeping for 2s")

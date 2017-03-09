@@ -268,6 +268,7 @@ class RightHandRule(algoAbstract):
 
     def explore(self):
         # periodic check is for the simulation
+        print("start exploration")
         if self.done:
             return
         self.periodic_check()
