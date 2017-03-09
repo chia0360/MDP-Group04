@@ -214,10 +214,10 @@ class Handler:
         if self.map.valid_pos(robot_next[0], robot_next[1]):
             self.map.set_robot_location( robot_next )
             self.robot.send('f')
+            # self.robot.send("A"+self.algo.des.descriptor2())
             
             
     def do_read(self):
-
         # in the actual run, the sensor data will be passed from the main loop to do_read
         data = None#self.robot.receive()
 

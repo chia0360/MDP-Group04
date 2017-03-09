@@ -777,17 +777,10 @@ class AStar:
 
     
     def convert (msg):
-        new_list = ['l','l']
+        new_list = []
         #cur_dir = self.map.get_robot_direction()
-        cur_dir = 'S'
-        if ((msg[0] == 'N') and(cur_dir == 'S')):
-            new_list = ['l','l','f']
-        elif ((msg[0] == 'N') and(cur_dir == 'W')):
-            new_list = ['r','f']
-        elif ((msg[0] == 'E') and(cur_dir == 'S')):
-            new_list = ['l','f']
-        elif ((msg[0] == 'E') and(cur_dir == 'W')):
-            new_list = ['l','l','f']    
+        msg = ['S'] + msg[:]
+
         for i in range (1,len(msg)):
             if (msg[i] == msg[i-1]):
                 new_list.append('f')
@@ -813,4 +806,16 @@ class AStar:
                 (msg[i-1]== 'W' and msg[i] == 'S')):
                 new_list.append ('l')
                 new_list.append ('f')
-        return new_list
+        shorten_list = []
+        counter = 0
+        for item in new_list:
+            if item != 'f' and counter != 0:
+                shorten_list.append(counter)
+                shorten_list.append(item)
+                counter = 0
+            elif item == 'f':
+                counter += 1
+        if counter > 0:
+            shorten_list.append(counter)
+
+        return shorten_list
