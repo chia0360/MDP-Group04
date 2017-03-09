@@ -43,14 +43,14 @@ class Handler:
         if not self.recalibration:
             position = self.map.get_robot_location()
             right_direction = self.map.get_robot_direction_right()
-            if position[0] == 1 and position[1] == 18 and right_direction == 'W':
+            if position[0] == 1 and position[1] == 18 and right_direction == 'E':
                 self.robot.send('d')
                 self.recalibration = True
                 self.recal_counter = 0
                 time.sleep(self.delay*2)
                 return
 
-            if position[0] == 13 and position[1] == 1 and right_direction == 'E':
+            if position[0] == 13 and position[1] == 1 and right_direction == 'W':
                 self.robot.send('d')
                 self.recalibration = True
                 self.recal_counter = 0
