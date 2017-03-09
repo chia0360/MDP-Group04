@@ -36,7 +36,6 @@ class algoFactory:
             self.algo = RightHandRule(handler)
         else:
             raise NameError('algoName not found')
-
     def explore(self):
         self.algo.explore()
 
@@ -46,6 +45,8 @@ class algoFactory:
     def run(self):
         self.algo.run()
         
+    def getHexMap(self):
+        self.algo.getHexMap()
 
 class algoBF1(algoAbstract):
     def __init__(self, handler):
@@ -265,6 +266,11 @@ class RightHandRule(algoAbstract):
         self.des = descriptor.descriptor()
         self.simulation = config.robot_simulation
         self.goal_reached = False
+    
+    # def getHexMap(self):
+    #     print("getHexMap descriptor", self.des.descriptor2)
+    #     print("getHexMap map", self.des.map)
+    #     return self.des.descriptor2()
 
     def explore(self):
         # periodic check is for the simulation
@@ -289,6 +295,7 @@ class RightHandRule(algoAbstract):
         if self.check_front():
             print("front free, moving front")
             self.handler.move()
+            self.handler.robot.send(self.des.descriptor2())
         else:
             print("top and right not free, turn left")
             self.handler.left()
@@ -442,6 +449,7 @@ class RightHandRule(algoAbstract):
                 # so robot need to turn now
             self.handler.right()
             self.handler.move()
+            self.handler.robot.send(self.des.descriptor2())
             return True
         else:
             return False

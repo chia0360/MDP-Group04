@@ -186,7 +186,7 @@ class Handler:
 
         # send the map to android, starting with g'xxx'
         # commentted out to test robot movement first
-        self.robot.send("g"+self.algo.des.descriptor2())
+        # self.robot.send("g"+self.algo.getHexMap())
         # remind the rpi to change code to take care of this map thingy
         self.recalibration = False
         self.recal_counter += 1
