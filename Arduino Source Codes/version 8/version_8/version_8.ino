@@ -4,12 +4,12 @@ DualVNH5019MotorShield md;
 #define arraySize 10
 
 //----------------------Sensors------------------------------------------------------------
-int  RightSensorPin= A3;
+int RightSensorPin= A3;
 int frontCentreSensorPin = A0;//A5
 int frontLeftSensorPin = A2; //A1
 int leftSensorPin = A5;
 int frontRightSensorPin = A4;
-int  NewRightSensorPin= A1;
+int NewRightSensorPin= A1;
 
 double leftSensorArray[arraySize], rightSensorArray[arraySize], frontRightSensorArray[arraySize], frontLeftSensorArray[arraySize],NewRightSensorArray[arraySize],frontCentreSensorArray[arraySize];
 double leftSensorMedian=0.0, rightSensorMedian=0.0,  frontRightSensorMedian=0.0, frontLeftSensorMedian=0.0,NewRightSensorMedian=0.0;
@@ -60,17 +60,17 @@ void loop(){
 //    Serial.println(frontLeftSensorAvg);
 //    Serial.print("right");
 //    Serial.println(frontRightSensorAvg);
-      while (Serial.available() > 0){
+  while (Serial.available() > 0){
     commands = (char)Serial.read(); 
-   if(commands!='o'){ //if fastest path, send command 
-     break;
-   } 
-   if(commands=='\n')
-    break;
+    if(commands!='o'){ //if fastest path, send command 
+      break;
+    } 
+    if(commands=='\n')
+      break;
 
-   fastestpath.concat(commands);
- }
- 
+    fastestpath.concat(commands);
+  }
+  
   if(commands=='o'){
     for(int i=0;i<fastestpath.length();i++){
       commands=fastestpath[i];
@@ -81,94 +81,91 @@ void loop(){
     }
   }
   else
-  action();
-  
-        
+    action();   
 }
+
 
 void action(){
-   switch(commands){
-   case 'm': 
-   objScan();
-   repo =realignRideSide();
+  switch(commands){
+  case 'm': 
+    objScan();
+    repo = realignRideSide();
   // Serial.println(repo);
-   if(check==false){
-    FindLeftRightSensorsAvg() ;
-    
-    double checkdistance=abs(rightSensorAvg-NewRightSensorAvg);
+    if(check==false){
+      FindLeftRightSensorsAvg();
+      double checkdistance=abs(rightSensorAvg-NewRightSensorAvg);
 //   Serial.println(checkdistance);
 
-if( checkdistance>9.0 && checkdistance<=15 ||checkdistance<=8.7){
-      if(repo==1){
-      TurnAngle(-90);
-      for (long startTime = millis(); (millis() - startTime) < 100;) {
-      FindFrontSensorAvg();
-      FindLeftRightSensorsAvg() ;
-    }
-      
-       if(frontLeftSensorAvg<=13 &&frontRightSensorAvg<=13 && frontCentreSensorAvg<=21 ||frontLeftSensorAvg<=13&& frontLeftSensorAvg<=25&&frontRightSensorAvg<=13 &&frontRightSensorAvg<=25&& frontCentreSensorAvg>=21 &&frontCentreSensorAvg<=31){
-        repositionRobotFront();
-        realignRobotCentre() ;
-        repositionRobotFront();
+      if( checkdistance>9.0 && checkdistance<=15 ||checkdistance<=8.7){
+        if(repo==1){
+          TurnAngle(-90);
+          for (long startTime = millis(); (millis() - startTime) < 100;) {
+            FindFrontSensorAvg();
+            FindLeftRightSensorsAvg() ;
+          }
+            
+          if(frontLeftSensorAvg<=13 &&frontRightSensorAvg<=13 && frontCentreSensorAvg<=21 ||frontLeftSensorAvg<=13&& frontLeftSensorAvg<=25&&frontRightSensorAvg<=13 &&frontRightSensorAvg<=25&& frontCentreSensorAvg>=21 &&frontCentreSensorAvg<=31){
+            repositionRobotFront();
+            realignRobotCentre() ;
+            repositionRobotFront();
+          }
+        //if(frontLeftSensorAvg<=13 &&frontRightSensorAvg<=13||frontLeftSensorAvg<=13 && frontLeftSensorAvg<=25&&frontRightSensorAvg<=13 &&frontRightSensorAvg<=25)
+          //  repositionRobotFront();
+          TurnAngle(90);    
+        
+          check=true;
         }
-       
-    
-     //if(frontLeftSensorAvg<=13 &&frontRightSensorAvg<=13||frontLeftSensorAvg<=13 && frontLeftSensorAvg<=25&&frontRightSensorAvg<=13 &&frontRightSensorAvg<=25)
-       //  repositionRobotFront();
-         TurnAngle(90);    
-      
-     check=true;
-  }
- }
-}
-   commands='z';
-   break;
+      }
+    }
+    commands='z';
+    break;
 
   case'e':
-  for (long startTime = millis(); (millis() - startTime) < 100;) {
-
+    for (long startTime = millis(); (millis() - startTime) < 100;) {
       FindFrontSensorAvg();
-
     }
   //FindFrontSensorAvg();
-  if(frontLeftSensorAvg<=14 &&frontRightSensorAvg<=14 && frontCentreSensorAvg<=16 ||frontLeftSensorAvg>14&& frontLeftSensorAvg<=28&&frontRightSensorAvg>14 &&frontRightSensorAvg<=28&& frontCentreSensorAvg>16 &&frontCentreSensorAvg<=28){
+    if(frontLeftSensorAvg<=14 &&frontRightSensorAvg<=14 && frontCentreSensorAvg<=16 ||frontLeftSensorAvg>14&& frontLeftSensorAvg<=28&&frontRightSensorAvg>14 &&frontRightSensorAvg<=28&& frontCentreSensorAvg>16 &&frontCentreSensorAvg<=28){
       repositionRobotFront();
-        realignRobotCentre() ;
-          repositionRobotFront();
-          }
-          if(frontLeftSensorAvg<=14 &&frontRightSensorAvg<=14||frontLeftSensorAvg>14 && frontLeftSensorAvg<=32&&frontRightSensorAvg>14 &&frontRightSensorAvg<=30)
-           repositionRobotFront();
-           commands='z';
-         check=true;  
-          break;
-
-    case 'f':moveOneGrid(1);
-          commands='z';
-          check=false;
-         break;
-
-    case 'l': TurnAngle(88);
-       commands='z';
-       check=true;
-      break;                  
-
-    case 'r': TurnAngle(-90);
+      realignRobotCentre() ;
+      repositionRobotFront();
+    }
+      if(frontLeftSensorAvg<=14 &&frontRightSensorAvg<=14||frontLeftSensorAvg>14 && frontLeftSensorAvg<=32&&frontRightSensorAvg>14 &&frontRightSensorAvg<=30)
+        repositionRobotFront();
       commands='z';
-      check=true;
+      check=true;  
       break;
 
-   case 'd':
-      TurnAngle(-90);
-      repositionRobotFront() ;
-      realignRobotCentre() ;
-      TurnAngle(90);
-      realignRobotCentre();
-      repositionRobotFront() ;
-      commands='z';
-      check=true;
-   break;
+  case 'f':
+    moveOneGrid(1);
+    commands='z';
+    check=false;
+    break;
 
-    default:
+  case 'l': 
+    TurnAngle(88);
+    commands='z';
+    check=true;
+    break;                  
+
+  case 'r':
+    TurnAngle(-90);
+    commands='z';
+    check=true;
+    break;
+
+  case 'd':
+    TurnAngle(-90);
+    repositionRobotFront() ;
+    realignRobotCentre() ;
+    TurnAngle(90);
+    realignRobotCentre();
+    repositionRobotFront() ;
+    commands='z';
+    check=true;
+    break;
+
+  default:
     if(commands>0 && commands<20)
     moveOneGrid(commands);
     break;
@@ -208,29 +205,25 @@ void moveForward(double m1Speed, double m2Speed) {
 
 
 void moveOneGrid(int grid) {
-left=1;
-right=1;
-int inc=0;
- m1MovementCount = 0;
+  left=1;
+  right=1;
+  int inc=0;
+  m1MovementCount = 0;
   m2MovementCount = 0;
 
   MovementCountAvg = (m1MovementCount + m2MovementCount) / 2;
- if(grid%5==0){
-  inc=grid/5;
- }
+  if(grid%5==0){
+    inc=grid/5;
+  }
   grid=grid*(245+inc);
     //Serial.print(MovementCountAvg);
   while (MovementCountAvg < grid) {
- 
-moveForward(173,200);//175//220
-
+    moveForward(173,200);//175//220
     MovementCountAvg = (m1MovementCount + m2MovementCount) / 2;
-
   }
     
   md.setBrakes(350, 350);
   delay(380);
-
 }
 
 void TurnAngle(int degree)
@@ -238,16 +231,15 @@ void TurnAngle(int degree)
 
   int tick = 0;
   unsigned long current_ms = millis();
-
   if (degree > 0) {
     left = 1;
     right = -1;
-kd = 5.90;
+    kd = 5.90;
   }
   else if (degree < 0) {
     left = -1;
     right = 1;
-     kd = 5.55;
+    kd = 5.55;
   }
   tick = kd * abs(degree);
   //Serial.println(tick);
@@ -256,14 +248,12 @@ kd = 5.90;
     moveForward(80, 100); 
         delay(2);
         tick--;
-      
   }
    
   left = 1;
   right = 1;
   md.setBrakes(350, 350);
-delay(380);
-
+  delay(380);
 }
 
 //Sensors Reading
@@ -272,18 +262,14 @@ void FindLeftRightSensorsAvg() {
   rightSensorAvg = 0;
   leftSensorAvg = 0;
 
-
   for (sum = 0; sum < 25; sum++) {
     rightSensorValue = analogRead(RightSensorPin);
-
-NewRightSensorValue=analogRead(NewRightSensorPin);
+    NewRightSensorValue=analogRead(NewRightSensorPin);
     LeftSensorValue = analogRead(leftSensorPin);
-
     leftSensorAvg = leftSensorAvg + LeftSensorValue,
     rightSensorAvg = rightSensorValue + rightSensorAvg;
     NewRightSensorAvg=NewRightSensorValue+NewRightSensorAvg;
-    
-   }
+  }
 
 
 //right sensor=centre
@@ -336,24 +322,18 @@ void repositionRobotFront() {
     if (frontLeftSensorAvg > frontRightSensorAvg) {
      //Serial.println("RIGHT");
       TurnAngle(-3);
-      
-      
     } else if (frontLeftSensorAvg < frontRightSensorAvg) {
      // Serial.println("LEFT");
       TurnAngle(3);
-      
     }
 
     for (long startTime = millis(); (millis() - startTime) < 100;) {
-
       FindFrontSensorAvg();
-
     }
     reposCount++;
   }
-
   md.setBrakes(400, 400);
-delay(350);
+  delay(350);
 }
 
 int realignRideSide(){
@@ -363,31 +343,30 @@ int realignRideSide(){
   if(rightSensorAvg>=18.8 && rightSensorAvg<=25  ||rightSensorAvg<14.0 &&rightSensorAvg>=0)//&&rightSensorAvg<=24 ||rightSensorAvg<14  )
   {
     //Serial.println("REPO");
-  return 1;
+    return 1;
   }
   else return 0;
 }
 
 void realignRobotCentre() { 
- 
-     FindFrontSensorAvg();
-     while ((frontCentreSensorAvg - calibratedFrontCentreDist) > 0.1) {
-        moveForward(70, 60);
-        for (long startTime = millis(); (millis() - startTime) < 50;) {
-            FindFrontSensorAvg();
-       }
+  FindFrontSensorAvg();
+  while ((frontCentreSensorAvg - calibratedFrontCentreDist) > 0.1) {
+    moveForward(70, 60);
+    for (long startTime = millis(); (millis() - startTime) < 50;) {
+      FindFrontSensorAvg();
     }
-     
-      md.setBrakes(350,350);
-      delay(300);
+  }
+
+  md.setBrakes(350,350);
+  delay(300);
   
   while ((frontCentreSensorAvg - calibratedFrontCentreDist) < 0) {
-      moveForward(70, 60);
-      left=-1;
-      right=-1;
+    moveForward(70, 60);
+    left=-1;
+    right=-1;
     for (long startTime = millis(); (millis() - startTime) < 100;) {
       FindFrontSensorAvg();
-       }
+    }
   }
   left=1;
   right=1;
@@ -401,28 +380,27 @@ void objScan(){
       FindFrontSensorAvg();
       FindLeftRightSensorsAvg();
   }*/
-   for(long startTime=millis();(millis()-startTime)<50;)
+  for(long startTime=millis();(millis()-startTime)<50;)
   {
     computeMedian();
   }
   
   //---------------Scan Left----------------------------------------     
-   if(leftSensorMedian<=18 && leftSensorMedian>0){
-          objPos[0] = 1;
-    }
+  if(leftSensorMedian<=18 && leftSensorMedian>0){
+        objPos[0] = 1;
+  }
      
      
-   else if(leftSensorMedian<=28 && leftSensorMedian>18)
-      objPos[0] = 2;
+  else if(leftSensorMedian<=28 && leftSensorMedian>18)
+    objPos[0] = 2;
   
    /*else if(leftSensorAvg<=41 && leftSensorAvg>31)
      objPos[0] = 3;
   
     else if(leftSensorAvg<=51 && leftSensorAvg>41)
      objPos[0] = 4;*/
-  
-    else 
-      objPos[0] = -2;
+  else 
+    objPos[0] = -2;
   
     //---------------Scan Front----------------------------------------    
     //Scan Front Left
