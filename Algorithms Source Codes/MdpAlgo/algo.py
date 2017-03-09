@@ -295,7 +295,7 @@ class RightHandRule(algoAbstract):
         if self.check_front():
             print("front free, moving front")
             self.handler.move()
-            self.handler.robot.send(self.des.descriptor2())
+          #  self.handler.robot.send(self.des.descriptor2())
         else:
             print("top and right not free, turn left")
             self.handler.left()
@@ -449,7 +449,7 @@ class RightHandRule(algoAbstract):
                 # so robot need to turn now
             self.handler.right()
             self.handler.move()
-            self.handler.robot.send(self.des.descriptor2())
+     #       self.handler.robot.send(self.des.descriptor2())
             return True
         else:
             return False
