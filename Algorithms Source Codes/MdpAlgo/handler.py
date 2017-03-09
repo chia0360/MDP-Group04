@@ -21,7 +21,7 @@ class Handler:
         self.map_descriptor = None
         self.status = "stop"
         self.recal_counter = 0
-        self.delay = 1
+        self.delay = 0.5
         self.recalibration = False
 
     def printMap(self):
@@ -30,6 +30,7 @@ class Handler:
 
     def loop(self):
         command = "startexplore" # this will be the command from android
+        # command = "fastestPath" # this will be the command from android
         # uncomment the line below to do integration
         # command = self.robot.receive() 
         print("Receiving :", command)
@@ -38,13 +39,26 @@ class Handler:
         if not self.recalibration:
             position = self.map.get_robot_location()
             right_direction = self.map.get_robot_direction_right()
-            if position[0] == 1 or position[0] == 13:
-                if position[1] == 1 or position[1] == 18:
-                    self.robot.send('d')
-                    self.recalibration = True
-                    self.recal_counter = 0
-                    time.sleep(self.delay*2)
-                    return
+            if position[0] == 1 and position[1] == 18 and right_direction == 'E':
+                self.robot.send('d')
+                self.recalibration = True
+                self.recal_counter = 0
+                time.sleep(self.delay*2)
+                return
+
+            if position[0] == 13 and position[1] == 1 and right_direction == 'W':
+                self.robot.send('d')
+                self.recalibration = True
+                self.recal_counter = 0
+                time.sleep(self.delay*2)
+                return
+
+            if position[0] == 13 and position[1] == 18 and right_direction == 'S':
+                self.robot.send('d')
+                self.recalibration = True
+                self.recal_counter = 0
+                time.sleep(self.delay*2)
+                return
 
         # calibration based on front wall
         if not self.recalibration:
@@ -124,12 +138,19 @@ class Handler:
         self.simulator.update_map()
         # this set of command comes from android
         if command == 'startexplore':
-            self.status = "exploring"
+            if self.status == "stop":
+                # the starting point doing calibration
+                self.right()
+                self.robot.send('d')
+                self.status = "exploring"
+                return
+                
             self.algo.explore()
         elif command == 'fastestPath':
             # stop so that the thing will not be affected by the exploration (maybe)
             self.status = "stop"
-            shortest_path_moves = self.algo.run()
+            # shortest_path_moves = self.algo.run()
+            shortest_path_moves = 'ffflfrffflfrfflf'
             # will send everything to the arduino in this turn.
             for move in shortest_path_moves:
                 self.robot.send(move)

@@ -39,3 +39,4 @@ def convert (msg):
     return new_list
 # print("['N','S','S','E','W','N']")
 # print (convert(['N','S','S','E','W','N']))
+
