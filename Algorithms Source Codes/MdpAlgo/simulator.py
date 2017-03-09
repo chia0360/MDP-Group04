@@ -153,8 +153,8 @@ class Simulator:
         self.master.bind("<Left>", lambda e: self.left())
         self.master.bind("<Right>", lambda e: self.right())
         self.master.bind("<Down>", lambda e: self.back())
-        self.actual_run()
         self.master.mainloop()
+        self.actual_run()
 
     def actual_run(self):
         self.handler.loop()

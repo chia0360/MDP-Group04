@@ -82,7 +82,8 @@ class Connector(Robot):
                         print ("header: ", splited_mess[0])
                         print ("[Info] M counter is", self.m_counter)
                         
-                        splited_mess = [int(x) for x in splited_mess][1:]
+                        splited_mess = [int(x) for x in splited_mess][1:7]
+                        print("the funny character from arduino", splited_mess[6])
                         # if self.m_counter != splited_mess[0]:
                         #     return None
                         return splited_mess
