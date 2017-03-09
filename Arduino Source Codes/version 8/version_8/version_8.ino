@@ -404,105 +404,101 @@ void objScan(){
   
     //---------------Scan Front----------------------------------------    
     //Scan Front Left
-    if(frontLeftSensorMedian<=18 && frontLeftSensorMedian>0)
-      objPos[1] = 1;
-    else if(frontLeftSensorMedian<=28 && frontLeftSensorMedian>18)
-      objPos[1] = 2;
-   
-     else 
-      objPos[1] = -2;
+  if(frontLeftSensorMedian<=18 && frontLeftSensorMedian>0)
+    objPos[1] = 1;
+  else if(frontLeftSensorMedian<=28 && frontLeftSensorMedian>18)
+    objPos[1] = 2;
+  
+  else 
+    objPos[1] = -2;
   //Serial.println(frontCentreSensorAvg);
-    if(frontCentreSensorMedian<=19 && frontCentreSensorMedian>0)
-      objPos[2] = 1;
-    else if(frontCentreSensorMedian<=26 && frontCentreSensorMedian>19)
-      objPos[2] = 2;
-     
-    else 
-      objPos[2] = -2;
+  if(frontCentreSensorMedian<=19 && frontCentreSensorMedian>0)
+    objPos[2] = 1;
+  else if(frontCentreSensorMedian<=26 && frontCentreSensorMedian>19)
+    objPos[2] = 2;
+    
+  else 
+    objPos[2] = -2;
       
     //Scan Front Right
-    if(frontRightSensorMedian<=13 && frontRightSensorMedian>0)
-      objPos[3] = 1;
-    else if(frontRightSensorMedian<=23 && frontRightSensorMedian>13)
-      objPos[3] = 2;
-    else
-      objPos[3] = -2;
+  if(frontRightSensorMedian<=13 && frontRightSensorMedian>0)
+    objPos[3] = 1;
+  else if(frontRightSensorMedian<=23 && frontRightSensorMedian>13)
+    objPos[3] = 2;
+  else
+    objPos[3] = -2;
   
   
-     if(rightSensorMedian<=19 && rightSensorMedian>0)
-      objPos[4] = 1;
-      else if(rightSensorMedian<=28 && rightSensorMedian>15)
-      objPos[4] = 2;
-    else
-      objPos[4] = -2;
-      if(NewRightSensorAvg<=14 &&NewRightSensorAvg>0)
-            objPos[5] = 1;
-            else if(NewRightSensorAvg>14 &&NewRightSensorAvg<23)
-            objPos[5] = 2;
-            else
-            
-                  objPos[5] = -2;
+  if(rightSensorMedian<=19 && rightSensorMedian>0)
+    objPos[4] = 1;
+  else if(rightSensorMedian<=28 && rightSensorMedian>15)
+    objPos[4] = 2;
+  else
+    objPos[4] = -2;
+
+  if(NewRightSensorAvg<=14 &&NewRightSensorAvg>0)
+    objPos[5] = 1;
+  else if(NewRightSensorAvg>14 &&NewRightSensorAvg<23)
+    objPos[5] = 2;
+  else
+    objPos[5] = -2;
 
 
-    Serial.print(x);
-    Serial.print(',');
-    Serial.print(objPos[0]);
-    Serial.print(',');
-    Serial.print(objPos[1]);
-    Serial.print(',');
-    Serial.print(objPos[2]);
-    Serial.print(',');
-    Serial.print(objPos[3]);
-    Serial.print(',');
-    Serial.print(objPos[4]);
-    Serial.print(',');
-    Serial.print(objPos[5]);
-    Serial.print("\n");
-    x++;
-    objPos[0]='\0';
-    objPos[1]='\0';
-    objPos[2]='\0';
-    objPos[3]='\0';
-    objPos[4]='\0';
-    objPos[5]='\0';
+  Serial.print(x);
+  Serial.print(',');
+  Serial.print(objPos[0]);
+  Serial.print(',');
+  Serial.print(objPos[1]);
+  Serial.print(',');
+  Serial.print(objPos[2]);
+  Serial.print(',');
+  Serial.print(objPos[3]);
+  Serial.print(',');
+  Serial.print(objPos[4]);
+  Serial.print(',');
+  Serial.print(objPos[5]);
+  Serial.print("\n");
+  x++;
+  objPos[0]='\0';
+  objPos[1]='\0';
+  objPos[2]='\0';
+  objPos[3]='\0';
+  objPos[4]='\0';
+  objPos[5]='\0';
     
      
   }
 
   //-------------Sensors-------------------------------
 double frontRightSensorReading(){
-    double dist = analogRead(frontRightSensorPin);
-  
+  double dist = analogRead(frontRightSensorPin);
   return -2.90778*pow(10,-7)*pow(dist,3)+0.000476141*pow(dist,2)-0.276684*dist+65.1692;
   //return -3.83732 * pow(10, -7) * pow(dist, 3) + 0.000610225 * pow(dist, 2) - 0.338653 * dist + 74.688;
 }
 
 double frontLeftSensorReading(){
-  
   double dist = analogRead(frontLeftSensorPin);
   return -3.97168 * pow(10, -7) * pow(dist, 3) + 0.000595119 * dist * dist - 0.314918 * dist + 68.1434;  
 }
 
 double frontCentreSensorReading(){
-  
   double dist = analogRead(frontCentreSensorPin);
   return -9.85343 * pow(10, -7) * pow(dist, 3) + 0.00121121 * pow(dist, 2) - 0.525592 * dist + 92.371;  
 }
 
 double rightSensorReading(){
-  
   double dist = analogRead(RightSensorPin);
   return -1.09725*pow(10,-6)*pow(dist,3)+0.0012996*pow(dist,2)-0.545108*dist+92.9372;
 }
 
 
 double leftSensorReading(){
-   double dist = analogRead(leftSensorPin);
+  double dist = analogRead(leftSensorPin);
   return -1.2293*(pow(10,-6))*pow(dist,3) + 0.00157807*pow(dist,2) - 0.756313 *dist + 158.344;
 }
 
 double backRightSensorReading(){
-   double dist = analogRead(NewRightSensorPin);
+  double dist = analogRead(NewRightSensorPin);
   return -5.84716*pow(10,-7)*pow(dist,3)+0.00088273*pow(dist,2)-0.458497*dist+91.5766;
 }
 
@@ -526,7 +522,7 @@ void computeMedian(){
   frontCentreSensorMedian = frontCentreSensorArray[arraySize/2];
   NewRightSensorMedian=NewRightSensorArray[arraySize/2];
   index = (index+1)%arraySize;
- }
+}
 
 void insertionSort(){
   for(int i=1; i<arraySize; i++){
