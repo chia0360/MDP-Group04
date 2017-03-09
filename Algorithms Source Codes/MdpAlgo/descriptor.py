@@ -28,7 +28,7 @@ class descriptor:
                     ret += "1"
             
         ret += "11" #padded
-        hexa = "g"
+        hexa = "x"
         for i in range(0,len(ret),4):
             temp = ""
             temp += ret[i:i+1]
@@ -58,7 +58,7 @@ class descriptor:
             cnt += 1
         # print(ret)
             
-        hexa = "g"
+        hexa = "y"
         for i in range(0,len(ret),4):
             temp = ""
             temp += ret[i:i+1]
