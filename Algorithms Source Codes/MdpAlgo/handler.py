@@ -29,6 +29,7 @@ class Handler:
             print(row)
 
     def loop(self):
+        #command = "fastestPath"
         command = "startexplore" # this will be the command from android
         # command = "fastestPath" # this will be the command from android
         # uncomment the line below to do integration
@@ -39,27 +40,27 @@ class Handler:
         if not self.recalibration:
             position = self.map.get_robot_location()
             right_direction = self.map.get_robot_direction_right()
-            if position[0] == 1 and position[1] == 18 and right_direction == 'E':
+            if position[0] == 1 and position[1] == 18 and right_direction == 'W':
                 self.robot.send('d')
                 self.recalibration = True
                 self.recal_counter = 0
                 time.sleep(self.delay*2)
                 return
 
-            if position[0] == 13 and position[1] == 1 and right_direction == 'W':
+            if position[0] == 13 and position[1] == 1 and right_direction == 'E':
                 self.robot.send('d')
                 self.recalibration = True
                 self.recal_counter = 0
                 time.sleep(self.delay*2)
                 return
-
+            
             if position[0] == 13 and position[1] == 18 and right_direction == 'S':
                 self.robot.send('d')
                 self.recalibration = True
                 self.recal_counter = 0
                 time.sleep(self.delay*2)
                 return
-
+            
         # calibration based on front wall
         if not self.recalibration:
             print("front wall calibration")
@@ -149,8 +150,9 @@ class Handler:
         elif command == 'fastestPath':
             # stop so that the thing will not be affected by the exploration (maybe)
             self.status = "stop"
-            # shortest_path_moves = self.algo.run()
-            shortest_path_moves = 'ffflfrffflfrfflf'
+            # shortest_path_moves = 'ffflfrffflfrfflf'
+            shortest_path_moves = self.algo.run()
+
             # will send everything to the arduino in this turn.
             for move in shortest_path_moves:
                 self.robot.send(move)
