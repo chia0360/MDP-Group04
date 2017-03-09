@@ -306,6 +306,9 @@ class RightHandRule(algoAbstract):
             self.goal_reached = True
 
         if location[0] == 1 and location[1] == 1 and self.goal_reached:
+            # send the hex string over here
+            self.handler.robot.send(self.des.descriptor1())
+            self.handler.robot.send(self.des.descriptor2())
             self.done = True
             
         if not self.done and self.simulation:
