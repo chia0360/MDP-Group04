@@ -144,9 +144,9 @@ class Handler:
         if command == 'startexplore':
             if self.status == "stop":
                 # the starting point doing calibration
-                self.right()
-                self.robot.send('d')
-                self.left()
+                # self.right()
+                # self.robot.send('d')
+                # self.left()
                 self.status = "exploring"
                 return
                 
@@ -156,7 +156,7 @@ class Handler:
             self.status = "stop"
             # shortest_path_moves = 'ffflfrffflfrfflf'
             shortest_path_moves = self.algo.run()
-
+            self.robot.send('o')
             # will send everything to the arduino in this turn.
             for move in shortest_path_moves:
                 self.robot.send(move)
