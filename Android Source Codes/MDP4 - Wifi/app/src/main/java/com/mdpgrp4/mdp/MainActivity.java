@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+
 import com.mdpgrp4.mdp.adapter.GridAdapter;
 
 import java.math.BigInteger;
@@ -68,7 +69,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String mapLog = "";
     String maphexLog = "";
     String manualmap = "";
+    String lastString = "";
     boolean mapUpdateLog = false;
+    boolean getLastString = false;
 
     ChatClientThread chatClientThread = null;
 
@@ -83,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         assignInterfaceVariables();
 
+        autoUpdateBtn.setChecked(true);
         autoUpdateBtn.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton toggleButton, boolean isChecked) {
@@ -279,6 +283,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     exploreBtn.setText("Stop");
                     sendMessage("startexplore");
                     runBtn.setClickable(false);
+                    status.setText("Exploring");
                 } else {
                     exploreBtn.setText("Explore");
                     sendMessage("stop");
@@ -292,6 +297,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     runBtn.setText("Stop");
                     sendMessage("fastestpath");
                     exploreBtn.setClickable(false);
+                    status.setText("Fastest Path");
                 } else {
                     runBtn.setText("Run");
                     sendMessage("stop");
@@ -300,12 +306,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         else if(v == f1Btn){
-            String defaultValue = "f1old";
+            String defaultValue = "startexplore";
             String cmd = sharedPref.getString("C1", defaultValue);
             sendMessage(cmd);
         }
         else if(v == f2Btn){
-            String defaultValue = "f2old";
+            String defaultValue = "stop";
             String cmd = sharedPref.getString("C2", defaultValue);
             sendMessage(cmd);
         }
@@ -362,14 +368,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             refreshBtn.setVisibility(View.VISIBLE);
     }
 
-    public void updateMap(String hex){
-        String obstacles = hexToBinary(hex);
-        int index = 0;
-        while(index < obstacles.length()){
-            if(obstacles.charAt(index) == '1') {
-                adapter.setItem(index, adapter.STATE_OBSTACLE);
-            }
-            index++;
+    public void updateMap(String hex) {
+        String[] obstacles = hex.split(",");
+        if(obstacles.length == 7) {
+            adapter.updateSensor(obstacles);
         }
     }
 
@@ -392,6 +394,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }else{
                 manualmap = maphexLog;
             }
+        } else if (msg.indexOf("x")==0) {
+            lastUpdate(msg.substring(1));
+            status.setText("stop");
         } else if (msg.contains("exploring")) {
             status.setText("Exploring");
         } else if (msg.contains("fastest path")) {
@@ -409,9 +414,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             status.setText("Reversing");
         }*/else if (msg.contains("connected")) {
             status.setText("Bluetooth Connected");
-        }else if (msg.contains("disconnect")) {
+         }else if (msg.contains("disconnect")) {
             status.setText("Bluetooth Disconnected");
-        }else if (msg.contains("connecting")) {
+        } else if (msg.contains("connecting")) {
             status.setText("Bluetooth Connecting");
         }
     }
@@ -562,7 +567,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         for (byte b:bs) {
                             // convert byte into character
                             char c = (char)b;
-                            msgLog+=c;
+                            //msgLog+=c;
                             if(c == 'f'){
                                 statusLog = "f";
                             }else if(c == 'r'){
@@ -571,13 +576,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 statusLog = "l";
                             }else if(c == 'g'){
                                 mapUpdateLog = true;
+                            }else if(c == 'x'){
+                                getLastString = true;
                             }
                             if(mapUpdateLog == true){
-                                mapLog += c + "";
-                                if(mapLog.length() == 76){
+                                if(c == 'z'){
+                                    statusLog = "updateMap";
                                     mapUpdateLog = false;
-                                    maphexLog = mapLog;
                                     mapLog="";
+                                }
+                                else{
+                                    mapLog += c + "";
+                                    maphexLog = mapLog;
+                                }
+                            }
+                            if(getLastString == true){
+                                if(lastString.length() == 76){
+                                    getLastString = false;
+                                    statusLog = "lastString";
+                                }else {
+                                    lastString += c + "";
                                 }
                             }
 
@@ -590,12 +608,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             public void run() {
                                 chatMsg.setText(msgLog);
                                 if(!statusLog.equals("")) {
-                                    onReceiveMessage(statusLog);
-                                    statusLog = "";
-                                }
-                                if(maphexLog.length() == 76){
-                                    onReceiveMessage(maphexLog);
-                                    maphexLog = "";
+                                    if(statusLog.equals("updateMap")){
+                                        statusLog="";
+                                        onReceiveMessage(maphexLog);
+                                        maphexLog = "";
+                                    }
+                                    else if(statusLog.equals("lastString")){
+                                        statusLog="";
+                                        onReceiveMessage((lastString));
+                                    }
+                                    else{
+                                        onReceiveMessage(statusLog);
+                                        statusLog = "";
+                                    }
+
                                 }
                             }
                         });
@@ -675,6 +701,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         private void disconnect(){
             goOut = true;
+        }
+
+
+    }
+
+    public void lastUpdate(String hex){
+        String unexplored = hexToBinary(hex);
+        int index = 0;
+        while(index < unexplored.length()){
+            if(unexplored.charAt(index) == '0') {
+                adapter.setItem(index, adapter.STATE_UNEXPLORED);
+            }
+            index++;
         }
     }
 }
