@@ -32,15 +32,28 @@ def convert (msg):
     counter = 0
     for item in new_list:
         if item != 'f' and counter != 0:
-            shorten_list.append(counter)
+            if counter >= 10:
+                counter1 = counter//2
+                counter2 = counter - counter1
+                shorten_list.append(counter1)
+                shorten_list.append(counter2)
+            else:
+                shorten_list.append(counter)
             shorten_list.append(item)
             counter = 0
         elif item == 'f':
             counter += 1
     if counter > 0:
-        shorten_list.append(counter)
+        if counter >= 10:
+            counter1 = counter//2
+            counter2 = counter - counter1
+            shorten_list.append(counter1)
+            shorten_list.append(counter2)
+        else:
+            shorten_list.append(counter)
 
     return shorten_list
 
-print(convert(['S','S','S','S','S','E','E','S','E','E','N','E','E','N','E','E']))
+
+print(convert(['S','S','S','S','S','S','S','S','S','S','S','E','E','S','E','E','N','E','E','N','E','E']))
 
