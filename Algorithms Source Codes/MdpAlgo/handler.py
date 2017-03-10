@@ -154,8 +154,8 @@ class Handler:
         elif command == 'fastestpath':
             # stop so that the thing will not be affected by the exploration (maybe)
             self.status = "stop"
-            shortest_path_moves = '5l6r2l3'
-            # shortest_path_moves = self.algo.run()
+            #shortest_path_moves = '5l6r2l3'
+            shortest_path_moves = self.algo.run()
             self.robot.send('o')
             # will send everything to the arduino in this turn.
             for move in shortest_path_moves:
