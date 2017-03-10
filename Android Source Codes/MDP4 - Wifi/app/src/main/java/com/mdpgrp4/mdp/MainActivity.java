@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String lastString = "";
     boolean mapUpdateLog = false;
     boolean getLastString = false;
+    boolean write = false;
 
     ChatClientThread chatClientThread = null;
 
@@ -567,7 +568,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         for (byte b:bs) {
                             // convert byte into character
                             char c = (char)b;
-                            msgLog+=c;
+                            if(write){
+                                msgLog+=c;
+                            }
                             if(c == 'f'){
                                 statusLog = "f";
                             }else if(c == 'r'){
@@ -577,6 +580,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }else if(c == 'g'){
                                 mapUpdateLog = true;
                             }else if(c == 'x'){
+                                write = true;
                                 getLastString = true;
                             }
                             if(mapUpdateLog == true){
