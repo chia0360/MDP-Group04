@@ -567,7 +567,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         for (byte b:bs) {
                             // convert byte into character
                             char c = (char)b;
-                            //msgLog+=c;
+                            msgLog+=c;
                             if(c == 'f'){
                                 statusLog = "f";
                             }else if(c == 'r'){
