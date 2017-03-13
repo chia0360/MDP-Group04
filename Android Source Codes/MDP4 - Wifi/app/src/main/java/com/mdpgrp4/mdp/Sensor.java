@@ -28,4 +28,8 @@ public class Sensor {
     public int getY(){
         return this.y_coor;
     }
+
+    public boolean isValid(){
+        return (x_coor>=0 && x_coor<15 && y_coor>=0 && y_coor<20);
+    }
 }

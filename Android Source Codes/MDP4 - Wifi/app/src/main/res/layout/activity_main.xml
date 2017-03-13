@@ -10,17 +10,6 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-        <!--<GridView
-            android:id="@+id/arena_grid_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:numColumns="20"
-            android:verticalSpacing="1dp"
-            android:horizontalSpacing="1dp"
-            android:stretchMode="columnWidth"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="20dp"/>-->
-
         <com.mdpgrp4.mdp.ExpandableGridView
             android:id="@+id/arena_grid_view"
             android:layout_width="match_parent"
@@ -58,7 +47,7 @@
                         android:id="@+id/robotstatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Bluetooth Disconnected"
+                        android:text="Disconnected"
                         android:textSize="16sp"/>
 
                 </LinearLayout>
@@ -143,7 +132,8 @@
                         android:layout_height="40dp"
                         android:id="@+id/refresh"
                         android:clickable="true"
-                        android:background="@drawable/ic_refresh"/>
+                        android:background="@drawable/ic_refresh"
+                        android:visibility="invisible"/>
 
                 </LinearLayout>
 
@@ -221,7 +211,7 @@
                         android:textColor="#ffffff"
                         android:textAlignment="center"
                         android:layout_marginRight="5dp"
-                        android:text="Reset"/>
+                        android:text="Run"/>
 
 
                 </LinearLayout>

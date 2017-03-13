@@ -27,7 +27,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
-import com.mdpgrp4.mdp.adapter.GridAdapter;
+import com.mdpgrp4.mdp.adapter.MapAdapter;
 
 import java.math.BigInteger;
 import java.io.DataInputStream;
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ExpandableGridView arena;
     Button manualBtn, upBtn, downBtn, leftBtn, rightBtn, setCoorBtn, refreshBtn, f1Btn, f2Btn, configureBtn, save;
     ToggleButton autoUpdateBtn, exploreBtn, runBtn;
-    GridAdapter adapter;
+    MapAdapter adapter;
     LinearLayout leftLayout, control;
     EditText xCoor, yCoor;
     SensorManager sensorManager;
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int width = display.getWidth();
         //leftLayout.setLayoutParams(new LinearLayout.LayoutParams((width / 2), ViewGroup.LayoutParams.FILL_PARENT));
 
-        setMapAdapter(0,0);
+        setMapAdapter(1,1);
 
         exploreBtn.setText("Explore");
         runBtn.setText("Run");
@@ -176,9 +176,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.connect_wifi:
-                /*Intent intent = new Intent(this, DeviceListActivity.class);
-                startActivityForResult(intent, 1);
-                return true;*/
                 msgLog = "";
                 chatMsg.setText(msgLog);
 
@@ -195,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 status.setText("Connected");
                 return true;
             case R.id.rst_btn:
-                setMapAdapter(0,0);
+                setMapAdapter(1,1);
                 return true;
             case R.id.disconnect:
                 if(chatClientThread!=null){
@@ -255,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             toast.show();
         }
         else if(v == upBtn){
-            sendMessage("f");
+            //sendMessage("f");
             adapter.moveRobot("f");
             status.setText("Going Forward");
         }
@@ -265,12 +262,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             status.setText("Going Backward");*/
         }
         else if(v == leftBtn){
-            sendMessage("l");
+            //sendMessage("l");
             adapter.moveRobot("tl");
             status.setText("Turning Left");
         }
         else if(v == rightBtn){
-            sendMessage("r");
+            //sendMessage("r");
             adapter.moveRobot("tr");
             status.setText("Turning Right");
         }
@@ -341,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void setMapAdapter(int x, int y){
-        adapter = new GridAdapter(this, x, y);
+        adapter = new MapAdapter(this, x, y);
         arena.setAdapter(adapter);
 
         arena.setOnTouchListener(new View.OnTouchListener() {
@@ -371,6 +368,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void updateMap(String hex) {
         String[] obstacles = hex.split(",");
+        System.out.println(obstacles.toString());
         if(obstacles.length == 7) {
             adapter.updateSensor(obstacles);
         }
@@ -396,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 manualmap = maphexLog;
             }
         } else if (msg.indexOf("x")==0) {
-            lastUpdate(msg.substring(1));
+            //lastUpdate(msg.substring(1));
             status.setText("stop");
         } else if (msg.contains("exploring")) {
             status.setText("Exploring");
@@ -460,17 +458,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             else */
             if(axisY < -5){
-                sendMessage("f");
+                //sendMessage("f");
                 adapter.moveRobot("f");
                 status.setText("Moving Forward");
             }
             else if(axisX > 5){
-                sendMessage("l");
+                //sendMessage("l");
                 adapter.moveRobot("tl");
                 status.setText("Turning Left");
             }
             else if(axisX < -5 ){
-                sendMessage("r");
+                //sendMessage("r");
                 adapter.moveRobot("tr");
                 status.setText("Turning Right");
             }
@@ -568,38 +566,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         for (byte b:bs) {
                             // convert byte into character
                             char c = (char)b;
-                            if(write){
+                            if(c != 'm'){
                                 msgLog+=c;
                             }
-                            if(c == 'f'){
+                            if(c == 'f' && !getLastString){
                                 statusLog = "f";
                             }else if(c == 'r'){
                                 statusLog = "r";
                             }else if(c == 'l'){
                                 statusLog = "l";
                             }else if(c == 'g'){
+                                mapLog="";
                                 mapUpdateLog = true;
-                            }else if(c == 'x'){
-                                write = true;
-                                getLastString = true;
                             }
                             if(mapUpdateLog == true){
                                 if(c == 'z'){
                                     statusLog = "updateMap";
                                     mapUpdateLog = false;
+                                    maphexLog = mapLog;
                                     mapLog="";
                                 }
                                 else{
                                     mapLog += c + "";
-                                    maphexLog = mapLog;
                                 }
                             }
                             if(getLastString == true){
+                                lastString += c + "";
                                 if(lastString.length() == 76){
+                                    msgLog += "\n";
                                     getLastString = false;
                                     statusLog = "lastString";
-                                }else {
-                                    lastString += c + "";
                                 }
                             }
 
@@ -620,6 +616,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     else if(statusLog.equals("lastString")){
                                         statusLog="";
                                         onReceiveMessage((lastString));
+                                        lastString = "";
                                     }
                                     else{
                                         onReceiveMessage(statusLog);
@@ -709,7 +706,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
-
+/*
     public void lastUpdate(String hex){
         String unexplored = hexToBinary(hex);
         int index = 0;
@@ -720,4 +717,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             index++;
         }
     }
+    */
 }
