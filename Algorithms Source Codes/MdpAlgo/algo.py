@@ -313,7 +313,8 @@ class RightHandRule(algoAbstract):
             if self.map.get_robot_direction == 'N':
                 self.handler.left()
             self.handler.left()
-            
+            return
+
         if not self.done and self.simulation:
             self.handler.simulator.master.after(self.interval, self.periodic_check)
             

@@ -152,7 +152,6 @@ class Handler:
                 # self.left()
                 self.status = "exploring"
                 return
-                
             self.algo.explore()
         elif command == 'fastestpath':
             # stop so that the thing will not be affected by the exploration (maybe)
