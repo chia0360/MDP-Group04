@@ -266,7 +266,7 @@ class RightHandRule(algoAbstract):
         self.des = descriptor.descriptor()
         self.simulation = config.robot_simulation
         self.goal_reached = False
-    
+        self.astar = AStar()
     # def getHexMap(self):
     #     print("getHexMap descriptor", self.des.descriptor2)
     #     print("getHexMap map", self.des.map)
@@ -323,8 +323,8 @@ class RightHandRule(algoAbstract):
         
     def findSP(self):
         # use the generic astar to find the shortest path
-        astar = AStar()
-        self.shortest_path_moves = astar.solve(self.map.get_map(), astar.start, astar.goal)
+        
+        self.shortest_path_moves = self.astar.solve(self.map.get_map(), self.astar.start, self.astar.goal)
         print(self.shortest_path_moves)
         return self.shortest_path_moves
         
@@ -340,7 +340,7 @@ class RightHandRule(algoAbstract):
             if self.shortest_path_moves:
                 self.handler.simulator.master.after(self.interval, self.run)
         else:
-            return convert(shortest_path_moves)
+            return self.astar.convert(self.shortest_path_moves)
 
     def moveTo(self, directions):
         for direction in directions:
