@@ -52,8 +52,8 @@ void setup() {
   md.init();
              
 
- //TurnAngle(90);
-  //moveOneGrid(12);
+ //TurnAngle(-90);
+ // moveOneGrid(12);
  // TurnAngle(-90);
   //moveOneGrid(12);
 //moveOneGrid(1);
@@ -64,7 +64,9 @@ void setup() {
 //moveOneGrid(1);
 //moveOneGrid(1);
 //moveOneGrid(1);
+//
 //moveOneGrid(1);
+//
 //moveOneGrid(1);
 //moveOneGrid(1);
 //moveOneGrid(1);
@@ -259,7 +261,7 @@ void moveOneGrid(int grid) {
   grid = grid * (218 + inc);
   //Serial.print(MovementCountAvg);
   while (MovementCountAvg < grid) {
-    moveForward(230, 200); //175//220
+    moveForward(210, 200); //175//220
     MovementCountAvg = (m1MovementCount + m2MovementCount) / 2;
   }
 
@@ -277,12 +279,12 @@ void TurnAngle(int degree)
   if (degree > 0) {
     left = 1;
     right = -1;
-    kd = 5.65;
+    kd = 5.60;
   }
   else if (degree < 0) {
     left = -1;
     right = 1;
-    kd = 5.50;
+    kd = 5.40;
   }
   tick = kd * abs(degree);
   //Serial.println(tick);
