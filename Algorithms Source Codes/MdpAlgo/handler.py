@@ -21,7 +21,7 @@ class Handler:
         self.map_descriptor = None
         self.status = "stop"
         self.recal_counter = 0
-        self.delay = 0.5
+        self.delay = 0.2
         self.recalibration = False
 
     def printMap(self):
