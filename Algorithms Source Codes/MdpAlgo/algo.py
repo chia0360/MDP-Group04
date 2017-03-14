@@ -310,6 +310,9 @@ class RightHandRule(algoAbstract):
             self.handler.robot.send(self.des.descriptor1())
             self.handler.robot.send(self.des.descriptor2())
             self.done = True
+            if self.map.get_robot_direction == 'N':
+                self.handler.left()
+            self.handler.left()
             
         if not self.done and self.simulation:
             self.handler.simulator.master.after(self.interval, self.periodic_check)
