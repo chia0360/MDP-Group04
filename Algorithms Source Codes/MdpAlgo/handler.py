@@ -38,56 +38,58 @@ class Handler:
             while not command:
                 command = self.robot.receive()
                 print("Receiving :", command)
+            
         
-        # 4 corners calibration
-        if not self.recalibration:
-            position = self.map.get_robot_location()
-            right_direction = self.map.get_robot_direction_right()
-            if position[0] == 1 and position[1] == 18 and right_direction == 'E':
-                self.robot.send('d')
-                self.recalibration = True
-                self.recal_counter = 0
-                time.sleep(self.delay*2)
-                return
+        if self.status is not "stop":
+            # 4 corners calibration
+            if not self.recalibration:
+                position = self.map.get_robot_location()
+                right_direction = self.map.get_robot_direction_right()
+                if position[0] == 1 and position[1] == 18 and right_direction == 'E':
+                    self.robot.send('d')
+                    self.recalibration = True
+                    self.recal_counter = 0
+                    time.sleep(self.delay*2)
+                    return
 
-            if position[0] == 13 and position[1] == 1 and right_direction == 'W':
-                self.robot.send('d')
-                self.recalibration = True
-                self.recal_counter = 0
-                time.sleep(self.delay*2)
-                return
-            
-            if position[0] == 13 and position[1] == 18 and right_direction == 'S':
-                self.robot.send('d')
-                self.recalibration = True
-                self.recal_counter = 0
-                time.sleep(self.delay*2)
-                return
-            
-        # calibration based on front wall
-        if not self.recalibration:
-            print("front wall calibration")
-            # data = None#self.robot.receive()
-            # self.robot.send('m')
-            # while not data:
-            #     data = self.robot.receive()
+                if position[0] == 13 and position[1] == 1 and right_direction == 'W':
+                    self.robot.send('d')
+                    self.recalibration = True
+                    self.recal_counter = 0
+                    time.sleep(self.delay*2)
+                    return
+                
+                if position[0] == 13 and position[1] == 18 and right_direction == 'S':
+                    self.robot.send('d')
+                    self.recalibration = True
+                    self.recal_counter = 0
+                    time.sleep(self.delay*2)
+                    return
+                
+            # calibration based on front wall
+            if not self.recalibration:
+                print("front wall calibration")
+                # data = None#self.robot.receive()
+                # self.robot.send('m')
+                # while not data:
+                #     data = self.robot.receive()
 
-            data = None#self.robot.receive()
-            self.robot.send('m')
-            while not data:
-                data = self.robot.receive()
-            # test for front wall
-            if (data[1] == 1 and data[2] == 1) or \
-                (data[1] == 1 and data[3] == 1) or \
-                (data[2] == 1 and data[3] == 1):
-                self.robot.send('e')
-                self.recalibration = True
-                # self.left()
-            
-            if self.recalibration:
-                self.recal_counter = 0
-                time.sleep(self.delay*2)
-                return
+                data = None#self.robot.receive()
+                self.robot.send('m')
+                while not data:
+                    data = self.robot.receive()
+                # test for front wall
+                if (data[1] == 1 and data[2] == 1) or \
+                    (data[1] == 1 and data[3] == 1) or \
+                    (data[2] == 1 and data[3] == 1):
+                    self.robot.send('e')
+                    self.recalibration = True
+                    # self.left()
+                
+                if self.recalibration:
+                    self.recal_counter = 0
+                    time.sleep(self.delay*2)
+                    return
 
             # # test for right wall
             # if data[4] == 1 and data[5] == 1:
