@@ -35,10 +35,11 @@ class Handler:
         # uncomment the line below to do integration
         command = None
         if self.status == "stop":
-            while not command:
-                command = self.robot.receive()
+            command = self.robot.receive()
+            if not command:
+                return
+            else:
                 print("Receiving :", command)
-            
         
         if self.status is not "stop":
             # 4 corners calibration
