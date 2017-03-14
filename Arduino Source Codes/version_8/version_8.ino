@@ -20,7 +20,7 @@ double kd = 0;
 int left = 1, right = 1;
 int MovementCountAvg;
 double calibratedFrontCentreDist = 13.5 ;//9.6
-
+boolean error=true;
 double LeftSensorValue = 0, rightSensorValue = 0, frontRightSensorValue = 0, frontLeftSensorValue = 0, frontCentreSensorValue = 0;
 int commands = 'z';
 
@@ -37,11 +37,11 @@ double prevError = 0.0;
 int totalgrid;
 double kP = -6.9;
 double Adjust = 0;
-boolean check = false;
+boolean repo = true;
 unsigned long prev_ms = 0;
 unsigned long interval = 0;
 double m1Speed = 0, m2Speed = 0;
-int repo;
+//int repo;
 int objPos[5] = {'\0', '\0', '\0', '\0', '\0'};
 String fastestpath;
 
@@ -50,19 +50,37 @@ void setup() {
   PCintPort::attachInterrupt(3, &compute_m1_ticks, RISING); //Attached to Pin 3
   PCintPort::attachInterrupt(5, &compute_m2_ticks, RISING); //Attached to Pin 5
   md.init();
-  //TurnAngle(90);
-  //moveOneGrid(4);
-  //TurnAngle(90);
-  //moveOneGrid(4);
+             
 
-
+ //TurnAngle(90);
+  //moveOneGrid(12);
+ // TurnAngle(-90);
+  //moveOneGrid(12);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//moveOneGrid(1);
+//
 }
 
 
 void loop() {
+    //FindLeftRightSensorsAvg();
+
+  //Serial.println(abs(NewRightSensorAvg - rightSensorAvg ));
+ //  repositionRobotFront() ;
   //objScan();
   //Serial.println(frontCentreSensorMedian);
-  //FindLeftRightSensorsAvg();
   //RightReposition();
   //Serial.println(abs(NewRightSensorAvg-rightSensorAvg ));
   //Serial.print("new");
@@ -113,7 +131,7 @@ void action() {
   switch (commands) {
     case 'm':
       objScan();
-
+    if(error==true){
       if (objPos[4] == 1 && objPos[5] == 1) 
       RightReposition();
       if (objPos[4] == 1 && objPos[5] == 1) {
@@ -136,8 +154,9 @@ void action() {
 
         }
       }
-
-      //moveOneGrid(1);
+      error=false;
+    }
+    //moveOneGrid(1);
       commands = 'z';
       break;
 
@@ -154,28 +173,29 @@ void action() {
       if (frontLeftSensorAvg <= 14 && frontRightSensorAvg <= 14 || frontLeftSensorAvg > 14 && frontLeftSensorAvg <= 32 && frontRightSensorAvg > 14 && frontRightSensorAvg <= 30)
         repositionRobotFront();
       commands = 'z';
-      check = true;
+  error = false;
       break;
 
     case 'f':
       moveOneGrid(1);
       commands = 'z';
-      check = false;
+    error = true;
       break;
 
     case 'l':
       TurnAngle(90);
       commands = 'z';
-      check = true;
+      error= true;
       break;
 
     case 'r':
       TurnAngle(-90);
       commands = 'z';
-      check = true;
+     error = true;
       break;
 
     case 'd':
+      //repo=true;
       TurnAngle(-90);
       repositionRobotFront() ;
       realignRobotCentre() ;
@@ -183,7 +203,7 @@ void action() {
       realignRobotCentre();
       repositionRobotFront() ;
       commands = 'z';
-      check = true;
+    error = false;
       break;
 
     case 48:
@@ -236,10 +256,10 @@ void moveOneGrid(int grid) {
   if (grid % 5 == 0) {
     inc = grid / 5;
   }
-  grid = grid * (230 + inc);
+  grid = grid * (218 + inc);
   //Serial.print(MovementCountAvg);
   while (MovementCountAvg < grid) {
-    moveForward(175, 200); //175//220
+    moveForward(230, 200); //175//220
     MovementCountAvg = (m1MovementCount + m2MovementCount) / 2;
   }
 
@@ -257,18 +277,18 @@ void TurnAngle(int degree)
   if (degree > 0) {
     left = 1;
     right = -1;
-    kd = 6.05;
+    kd = 5.65;
   }
   else if (degree < 0) {
     left = -1;
     right = 1;
-    kd = 5.80;
+    kd = 5.50;
   }
   tick = kd * abs(degree);
   //Serial.println(tick);
   while (tick > 0)
   {
-    moveForward(85, 100);
+    moveForward(125, 100);
     delay(2);
     tick--;
   }
@@ -336,22 +356,24 @@ void FindFrontSensorAvg() {
 
 //havent calibrate to straight line
 void repositionRobotFront() {
-  int reposCount = 0;
-  FindFrontSensorAvg();
-
+  int check = 0;
+  
+FindFrontSensorAvg();
+FindFrontSensorAvg();
+//Serial.println(abs(frontLeftSensorAvg - frontRightSensorAvg));
   md.setBrakes(330, 300);
-  while ((abs(frontLeftSensorAvg - frontRightSensorAvg) > 0.9)) {
+  while ((abs(frontLeftSensorAvg - frontRightSensorAvg) > 0.6)&&check<15) {
 
     if (frontLeftSensorAvg > frontRightSensorAvg) {
-      TurnAngle(-5);
+      TurnAngle(-4);
     } else if (frontLeftSensorAvg < frontRightSensorAvg) {
-      TurnAngle(5);
+      TurnAngle(4);
     }
 
     for (long startTime = millis(); (millis() - startTime) < 100;) {
       FindFrontSensorAvg();
     }
-    reposCount++;
+    check++;
   }
   md.setBrakes(330, 300);
   delay(350);
@@ -421,26 +443,26 @@ void objScan() {
   else
     objPos[0] = -2;
 
-  if (frontLeftSensorMedian <= 16.5 && frontLeftSensorMedian > 0)
+  if (frontLeftSensorMedian <= 15.0 && frontLeftSensorMedian > 0)
     objPos[1] = 1;
-  else if (frontLeftSensorMedian <= 23 && frontLeftSensorMedian > 16.5)
+  else if (frontLeftSensorMedian <= 23 && frontLeftSensorMedian > 15.0)
     objPos[1] = 2;
 
   else
     objPos[1] = -2;
   //Serial.println(frontCentreSensorAvg);
-  if (frontCentreSensorMedian <= 17 && frontCentreSensorMedian > 0)
+  if (frontCentreSensorMedian <= 16 && frontCentreSensorMedian > 0)
     objPos[2] = 1;
-  else if (frontCentreSensorMedian <= 26.5 && frontCentreSensorMedian > 17)
+  else if (frontCentreSensorMedian <= 26.5 && frontCentreSensorMedian > 16)
     objPos[2] = 2;
 
   else
     objPos[2] = -2;
 
   //Scan Front Right
-  if (frontRightSensorMedian <= 16.5 && frontRightSensorMedian > 0)
+  if (frontRightSensorMedian <= 15.0 && frontRightSensorMedian > 0)
     objPos[3] = 1;
-  else if (frontRightSensorMedian <= 23 && frontRightSensorMedian > 16.5)
+  else if (frontRightSensorMedian <= 23 && frontRightSensorMedian > 15.0)
     objPos[3] = 2;
   else
     objPos[3] = -2;
@@ -580,7 +602,7 @@ void RightReposition() {
   for (long startTime = millis(); (millis() - startTime) < 50;)
     FindLeftRightSensorsAvg() ;
   //Serial.print(abs(NewRightSensorAvg-rightSensorAvg ));
-  while ((abs(NewRightSensorAvg - rightSensorAvg ) > 0.7)&& check<10){//  && { //&&abs((NewRightSensorAvg+0.4)-rightSensorAvg )>0 ||abs((NewRightSensorAvg+0.4)-rightSensorAvg )<0  ){//||(abs(NewRightSensorAvg +0.8)-rightSensorAvg)>3.5){
+  while ((abs(NewRightSensorAvg - rightSensorAvg ) > 0.7)&&(abs(NewRightSensorAvg - rightSensorAvg ) < 10.0)&& check<10){//  && { //&&abs((NewRightSensorAvg+0.4)-rightSensorAvg )>0 ||abs((NewRightSensorAvg+0.4)-rightSensorAvg )<0  ){//||(abs(NewRightSensorAvg +0.8)-rightSensorAvg)>3.5){
 
     if (rightSensorAvg > NewRightSensorAvg) {
       TurnAngle(-6);
