@@ -101,39 +101,39 @@ class Handler:
         
 
         # repositioning based on walls
-        if(self.recal_counter >= 4):
-            position = self.map.get_robot_location()
-            right_direction = self.map.get_robot_direction_right()
-            wall_recalibration = False
-            if right_direction == 'N':
-                if position[0] == 1:
-                    self.right()
-                    self.robot.send('e')
-                    self.left()
-                    wall_recalibration = True
-            elif right_direction == 'S':
-                if position[0] == self.map.width - 2:
-                    self.right()
-                    self.robot.send('e')
-                    self.left()
-                    wall_recalibration = True
-            elif right_direction == 'E':
-                if position[1] == self.map.length - 2:
-                    self.right()
-                    self.robot.send('e')
-                    self.left()
-                    wall_recalibration = True
-            elif right_direction == 'W':
-                if position[1] == 1:
-                    self.right()
-                    self.robot.send('e')
-                    self.left()
-                    wall_recalibration = True
+        # if(self.recal_counter >= 4):
+        #     position = self.map.get_robot_location()
+        #     right_direction = self.map.get_robot_direction_right()
+        #     wall_recalibration = False
+        #     if right_direction == 'N':
+        #         if position[0] == 1:
+        #             self.right()
+        #             self.robot.send('e')
+        #             self.left()
+        #             wall_recalibration = True
+        #     elif right_direction == 'S':
+        #         if position[0] == self.map.width - 2:
+        #             self.right()
+        #             self.robot.send('e')
+        #             self.left()
+        #             wall_recalibration = True
+        #     elif right_direction == 'E':
+        #         if position[1] == self.map.length - 2:
+        #             self.right()
+        #             self.robot.send('e')
+        #             self.left()
+        #             wall_recalibration = True
+        #     elif right_direction == 'W':
+        #         if position[1] == 1:
+        #             self.right()
+        #             self.robot.send('e')
+        #             self.left()
+        #             wall_recalibration = True
 
-            if wall_recalibration:
-                self.recal_counter = 0
-                time.sleep(self.delay*2)
-                return
+        #     if wall_recalibration:
+        #         self.recal_counter = 0
+        #         time.sleep(self.delay*2)
+        #         return
 
         
         print("algo run")
