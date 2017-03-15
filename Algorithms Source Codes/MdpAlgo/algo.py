@@ -349,11 +349,11 @@ class RightHandRule(algoAbstract):
         else:
             moves = self.astar.convert(self.shortest_path_moves)
             print("shortest path in run function: ", moves)
-            self.robot.send('o')
+            self.handler.robot.send('o')
             # will send everything to the arduino in this turn.
             for move in moves:
-                self.robot.send(move)
-            self.robot.send('\n')
+                self.handler.robot.send(move)
+            self.handler.robot.send('\n')
             return
             # return result
 
@@ -840,10 +840,10 @@ class AStar:
                 if counter >= 10:
                     counter1 = counter//2
                     counter2 = counter - counter1
-                    shorten_list.append(counter1)
-                    shorten_list.append(counter2)
+                    shorten_list.append(str(counter1))
+                    shorten_list.append(str(counter2))
                 else:
-                    shorten_list.append(counter)
+                    shorten_list.append(str(counter))
                 shorten_list.append(item)
                 counter = 0
             elif item == 'f':
@@ -852,9 +852,9 @@ class AStar:
             if counter >= 10:
                 counter1 = counter//2
                 counter2 = counter - counter1
-                shorten_list.append(counter1)
-                shorten_list.append(counter2)
+                shorten_list.append(str(counter1))
+                shorten_list.append(str(counter2))
             else:
-                shorten_list.append(counter)
+                shorten_list.append(str(counter))
         print("result of the convert function: ",shorten_list)
         return shorten_list
