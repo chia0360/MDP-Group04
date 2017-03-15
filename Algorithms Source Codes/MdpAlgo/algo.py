@@ -553,7 +553,6 @@ class AStar:
     def solve(self, map, origin, dest):
         # make a copy of the map
         local_map = [row[:] for row in map]
-
         #-----Preprocessing of the map start----
 
         # if the map is not 100% explored due in case of using RightHandRule
@@ -612,7 +611,7 @@ class AStar:
                         local_map[j][i+1] = 3
                     
 
-        #----Preprocessing of the map is completed, only those blocks numbered 1 is movable-----
+        #----Preprocessing of the map is completed, only those blocks numbered 1 is movable----
 
         #----The actual A* algorithms----
 
@@ -640,14 +639,11 @@ class AStar:
             current = min(open_list, key=open_list.get)
             # remove the current node from open list
             open_list.pop(current)
-
             # add current node to closed list
             closed_list.append(current)
-
             # if current equal dest, we are done
             if current == dest:
                 break
-
             # open up the surrounding nodes
             
             # if the neighbor is not in closed_list, not in open_list, and traversable, we add it into open_list 
@@ -700,57 +696,57 @@ class AStar:
                     gScore[right] = tentative_gScore
                     open_list[right] = fScore
             
-            # now for the diagonal blocks
-            # we also test like above + test if the move is possible
-            # for example if we want to move to top right
-            # we need to check if top and right blocks are traversable 
-            # topright 
-            topright =  (y-1, x+1)
-            if local_map[topright[0]][topright[1]] == 1 and topright not in closed_list:
-                # check moveable
-                if local_map[right[0]][right[1]] == 1 and local_map[top[0]][top[1]] == 1:
-                    fScore = gScore[current] + self.diagonal_cost + self.distance(topright, dest)
-                    tentative_gScore = gScore[current] + self.diagonal_cost
-                    if topright not in open_list or tentative_gScore < gScore[topright]:
-                        came_from[topright] = current
-                        gScore[topright] = tentative_gScore
-                        open_list[topright] = fScore
+            # # now for the diagonal blocks
+            # # we also test like above + test if the move is possible
+            # # for example if we want to move to top right
+            # # we need to check if top and right blocks are traversable 
+            # # topright 
+            # topright =  (y-1, x+1)
+            # if local_map[topright[0]][topright[1]] == 1 and topright not in closed_list:
+            #     # check moveable
+            #     if local_map[right[0]][right[1]] == 1 and local_map[top[0]][top[1]] == 1:
+            #         fScore = gScore[current] + self.diagonal_cost + self.distance(topright, dest)
+            #         tentative_gScore = gScore[current] + self.diagonal_cost
+            #         if topright not in open_list or tentative_gScore < gScore[topright]:
+            #             came_from[topright] = current
+            #             gScore[topright] = tentative_gScore
+            #             open_list[topright] = fScore
 
-            # topleft 
-            topleft =  (y-1, x-1)
-            if local_map[topleft[0]][topleft[1]] == 1 and topleft not in closed_list:
-                # check moveable
-                if local_map[left[0]][left[1]] == 1 and local_map[top[0]][top[1]] == 1:
-                    fScore = gScore[current] + self.diagonal_cost + self.distance(topleft, dest)
-                    tentative_gScore = gScore[current] + self.diagonal_cost
-                    if topleft not in open_list or tentative_gScore < gScore[topleft]:
-                        came_from[topleft] = current
-                        gScore[topleft] = tentative_gScore
-                        open_list[topleft] = fScore
+            # # topleft 
+            # topleft =  (y-1, x-1)
+            # if local_map[topleft[0]][topleft[1]] == 1 and topleft not in closed_list:
+            #     # check moveable
+            #     if local_map[left[0]][left[1]] == 1 and local_map[top[0]][top[1]] == 1:
+            #         fScore = gScore[current] + self.diagonal_cost + self.distance(topleft, dest)
+            #         tentative_gScore = gScore[current] + self.diagonal_cost
+            #         if topleft not in open_list or tentative_gScore < gScore[topleft]:
+            #             came_from[topleft] = current
+            #             gScore[topleft] = tentative_gScore
+            #             open_list[topleft] = fScore
 
-            # bottom right 
-            bottomright =  (y+1, x+1)
-            if local_map[bottomright[0]][bottomright[1]] == 1 and bottomright not in closed_list:
-                # check moveable
-                if local_map[right[0]][right[1]] == 1 and local_map[bottom[0]][bottom[1]] == 1:
-                    fScore = gScore[current] + self.diagonal_cost + self.distance(bottomright, dest)
-                    tentative_gScore = gScore[current] + self.diagonal_cost
-                    if bottomright not in open_list or tentative_gScore < gScore[bottomright]:
-                        came_from[bottomright] = current
-                        gScore[bottomright] = tentative_gScore
-                        open_list[bottomright] = fScore
+            # # bottom right 
+            # bottomright =  (y+1, x+1)
+            # if local_map[bottomright[0]][bottomright[1]] == 1 and bottomright not in closed_list:
+            #     # check moveable
+            #     if local_map[right[0]][right[1]] == 1 and local_map[bottom[0]][bottom[1]] == 1:
+            #         fScore = gScore[current] + self.diagonal_cost + self.distance(bottomright, dest)
+            #         tentative_gScore = gScore[current] + self.diagonal_cost
+            #         if bottomright not in open_list or tentative_gScore < gScore[bottomright]:
+            #             came_from[bottomright] = current
+            #             gScore[bottomright] = tentative_gScore
+            #             open_list[bottomright] = fScore
             
-            # bottom left 
-            bottomleft =  (y+1, x-1)
-            if local_map[bottomleft[0]][bottomleft[1]] == 1 and bottomleft not in closed_list:
-                # check moveable
-                if local_map[left[0]][left[1]] == 1 and local_map[bottom[0]][bottom[1]] == 1:
-                    fScore = gScore[current] + self.diagonal_cost + self.distance(bottomleft, dest)
-                    tentative_gScore = gScore[current] + self.diagonal_cost
-                    if bottomleft not in open_list or tentative_gScore < gScore[bottomleft]:
-                        came_from[bottomleft] = current
-                        gScore[bottomleft] = tentative_gScore
-                        open_list[bottomleft] = fScore
+            # # bottom left 
+            # bottomleft =  (y+1, x-1)
+            # if local_map[bottomleft[0]][bottomleft[1]] == 1 and bottomleft not in closed_list:
+            #     # check moveable
+            #     if local_map[left[0]][left[1]] == 1 and local_map[bottom[0]][bottom[1]] == 1:
+            #         fScore = gScore[current] + self.diagonal_cost + self.distance(bottomleft, dest)
+            #         tentative_gScore = gScore[current] + self.diagonal_cost
+            #         if bottomleft not in open_list or tentative_gScore < gScore[bottomleft]:
+            #             came_from[bottomleft] = current
+            #             gScore[bottomleft] = tentative_gScore
+            #             open_list[bottomleft] = fScore
 
         # found the path, now just need to print the path from the dest node to the origin node
 
@@ -765,41 +761,48 @@ class AStar:
             else:
                 break
 
-        # result now has the list of tiles to traverse on
-
-        # we need to convert them to a list of moves in ['N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW']
-        # print("map")
-        # for row in local_map: 
-        #     print(row)
-        # print("result", result)
         moves = []
+        # diagonal included
+
+        # for i in range(len(result)-1):
+        #     if result[i][0] < result[i+1][0]:
+        #         if result[i][1] == result[i+1][1]:
+        #             moves.append('S')
+        #         elif result[i][1] > result[i+1][1]:
+        #             moves.append('S')
+        #             moves.append('W')
+        #         else:
+        #             moves.append('S')
+        #             moves.append('E')
+        #     elif result[i][0] > result[i+1][0]:
+        #         if result[i][1] == result[i+1][1]:
+        #             moves.append('N')
+        #         elif result[i][1] > result[i+1][1]:
+        #             moves.append('N')
+        #             moves.append('W')
+        #         else:
+        #             moves.append('N')
+        #             moves.append('E')
+        #     else:
+        #         if result[i][1] < result[i+1][1]:
+        #             moves.append('E')
+        #         else:
+        #             moves.append('W')
+
+        # diagonal not included
+
         for i in range(len(result)-1):
-            
             if result[i][0] < result[i+1][0]:
-                if result[i][1] == result[i+1][1]:
-                    moves.append('S')
-                elif result[i][1] > result[i+1][1]:
-                    moves.append('S')
-                    moves.append('W')
-                else:
-                    moves.append('S')
-                    moves.append('E')
+                moves.append('S')
             elif result[i][0] > result[i+1][0]:
-                if result[i][1] == result[i+1][1]:
-                    moves.append('N')
-                elif result[i][1] > result[i+1][1]:
-                    moves.append('N')
-                    moves.append('W')
-                else:
-                    moves.append('N')
-                    moves.append('E')
+                moves.append('N')
             else:
                 if result[i][1] < result[i+1][1]:
                     moves.append('E')
                 else:
                     moves.append('W')
+        print(moves)
 
-        # print(moves)
         return moves
 
     
