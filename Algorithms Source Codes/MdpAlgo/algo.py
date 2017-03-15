@@ -856,5 +856,5 @@ class AStar:
                 shorten_list.append(str(counter2))
             else:
                 shorten_list.append(str(counter))
-        print("result of the convert function: ",shorten_list)
-        return shorten_list
+        print("result of the convert function: ",new_list)
+        return new_list
