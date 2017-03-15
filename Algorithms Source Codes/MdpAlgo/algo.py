@@ -313,6 +313,7 @@ class RightHandRule(algoAbstract):
             if self.map.get_robot_direction == 'N':
                 self.handler.left()
             self.handler.left()
+            time.sleep(2)
             # stop the handler robot status here, if doesn't work try comment out.
             self.handler.status = "stop"
             return
@@ -332,11 +333,11 @@ class RightHandRule(algoAbstract):
         
         self.shortest_path_moves = self.astar.solve(self.map.get_map(), self.astar.start, self.astar.goal)
         print(self.shortest_path_moves)
-        return self.shortest_path_moves
+        # return self.shortest_path_moves
         
     def run(self):
         # have not found the shortest path, run findSP to find
-        if not self.shortest_path_moves:
+        while not self.shortest_path_moves:
             self.findSP()
 
         if self.simulation:
@@ -346,7 +347,9 @@ class RightHandRule(algoAbstract):
             if self.shortest_path_moves:
                 self.handler.simulator.master.after(self.interval, self.run)
         else:
-            return self.astar.convert(self.shortest_path_moves)
+            result = self.astar.convert(self.shortest_path_moves)
+            print("shortest path in run function: ", result)
+            return result
 
     def moveTo(self, directions):
         for direction in directions:
@@ -794,7 +797,7 @@ class AStar:
         return moves
 
     
-    def convert (msg):
+    def convert (self, msg):
         new_list = []
         #cur_dir = self.map.get_robot_direction()
         msg = ['S'] + msg[:]
@@ -847,5 +850,5 @@ class AStar:
                 shorten_list.append(counter2)
             else:
                 shorten_list.append(counter)
-
+        print("result of the convert function: ",shorten_list)
         return shorten_list
