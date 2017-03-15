@@ -313,6 +313,8 @@ class RightHandRule(algoAbstract):
             if self.map.get_robot_direction == 'N':
                 self.handler.left()
             self.handler.left()
+            # stop the handler robot status here, if doesn't work try comment out.
+            self.handler.status = "stop"
             return
 
         if not self.done and self.simulation:

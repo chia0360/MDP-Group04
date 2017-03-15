@@ -141,8 +141,11 @@ class Handler:
         
         print("algo run")
         # first reading before the algo works
-        self.do_read()
-        self.simulator.update_map()
+
+        if self.status != "stop":
+            self.do_read()
+            self.simulator.update_map()
+            
         # this set of command comes from android
         if command == 'startexplore':
             if self.status == "stop":
@@ -178,6 +181,7 @@ class Handler:
             self.status = "stop"
         elif self.status == "exploring": 
             self.algo.explore()
+
 
         print("sleeping for 2s")
         # delay for some amount of time before doing the reading again to update the map
