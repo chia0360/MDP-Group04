@@ -310,12 +310,12 @@ class RightHandRule(algoAbstract):
             self.handler.robot.send(self.des.descriptor1())
             self.handler.robot.send(self.des.descriptor2())
             self.done = True
+            self.handler.status = "stop"
+            time.sleep(2)
             if self.map.get_robot_direction == 'N':
                 self.handler.left()
             self.handler.left()
-            time.sleep(2)
             # stop the handler robot status here, if doesn't work try comment out.
-            self.handler.status = "stop"
             return
 
         if not self.done and self.simulation:
@@ -347,9 +347,15 @@ class RightHandRule(algoAbstract):
             if self.shortest_path_moves:
                 self.handler.simulator.master.after(self.interval, self.run)
         else:
-            result = self.astar.convert(self.shortest_path_moves)
-            print("shortest path in run function: ", result)
-            return result
+            moves = self.astar.convert(self.shortest_path_moves)
+            print("shortest path in run function: ", moves)
+            self.robot.send('o')
+            # will send everything to the arduino in this turn.
+            for move in moves:
+                self.robot.send(move)
+            self.robot.send('\n')
+            return
+            # return result
 
     def moveTo(self, directions):
         for direction in directions:

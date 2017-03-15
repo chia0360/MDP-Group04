@@ -158,14 +158,9 @@ class Handler:
             self.algo.explore()
         elif command == 'fastestpath':
             # stop so that the thing will not be affected by the exploration (maybe)
-            self.status = "stop"
             #shortest_path_moves = '5l6r2l3'
-            shortest_path_moves = self.algo.run()
-            self.robot.send('o')
-            # will send everything to the arduino in this turn.
-            for move in shortest_path_moves:
-                self.robot.send(move)
-            self.robot.send('\n')
+            self.algo.run()
+
         # the 4 cases below require setting the status of the robot to stop
         # since android is taking over the movement of the robot
         elif command == 'f':
