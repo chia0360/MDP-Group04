@@ -18,7 +18,6 @@ double leftSensorMedian = 0.0, rightSensorMedian = 0.0,  frontRightSensorMedian 
 double frontCentreSensorMedian = 0.0;
 
 int x = 0;
-double kd = 0;
 int left = 1, right = 1;
 int MovementCountAvg;
 double calibratedFrontCentreDist = 13.5 ;//9.6
@@ -33,6 +32,7 @@ double NewRightSensorValue = 0.0, NewRightSensorAvg = 0.0;
 volatile int m1Ticks = 0, m2Ticks = 0;
 volatile int m1MovementCount = 0, m2MovementCount = 0,  m1 = 0, m2 = 0;
 
+
 //PID Parameters
 double curError = 0.0;
 double prevError = 0.0;
@@ -46,36 +46,47 @@ double m1Speed = 0, m2Speed = 0;
 int objPos[5] = {'\0', '\0', '\0', '\0', '\0'};
 String fastestpath;
 
+//---------------Movement Parameter---------------------------------------------------------
+
+boolean TurningLeftTest=false,TurningRightTest=false;
+boolean movingTest=false;
+
+int leftmotorspeed=185,rightmotorspeed=200;
+
+double kdl=6.07, kdr=5.86;
 void setup() {
   Serial.begin(115200);
   PCintPort::attachInterrupt(3, &compute_m1_ticks, RISING); //Attached to Pin 3
   PCintPort::attachInterrupt(5, &compute_m2_ticks, RISING); //Attached to Pin 5
   md.init();
- //TurnAngle(-90);
- // moveOneGrid(12);
- // TurnAngle(-90);
-  //moveOneGrid(12);
-//moveOneGrid(1);
-//moveOneGrid(1);
-//moveOneGrid(1);
-//moveOneGrid(1);
-//moveOneGrid(1);
-//moveOneGrid(1);
-//moveOneGrid(1);
-//moveOneGrid(1);
-//
-//moveOneGrid(1);
-//
-//moveOneGrid(1);
-//moveOneGrid(1);
-//moveOneGrid(1);
-//moveOneGrid(1);
-//moveOneGrid(1);
-//
 }
 
 
 void loop() {
+  if(TurningLeftTest==true){
+   delay(400);
+   TurnAngle(90);
+   }
+
+   if(TurningRightTest==true){
+   delay(400);
+   TurnAngle(-90);
+   }
+
+   if(movingTest==true){
+    delay(500);
+    moveOneGrid(1);
+    moveOneGrid(1);
+    moveOneGrid(1);
+    moveOneGrid(1);
+    moveOneGrid(1);
+    moveOneGrid(1);
+    moveOneGrid(1);
+    moveOneGrid(1);
+    moveOneGrid(1);
+    moveOneGrid(1);
+    }
+  
   //check if algo is sending any values to arduino
   if (Serial.available() > 0) {
     commands = (char)Serial.read();
@@ -261,7 +272,7 @@ void moveOneGrid(int grid) {
   grid = grid * (218 + inc);
 
   while (MovementCountAvg < grid) {
-    moveForward(210, 200); //175//220
+    moveForward(leftmotorspeed, rightmotorspeed); //175//220
     MovementCountAvg = (m1MovementCount + m2MovementCount) / 2;
   }
 
@@ -278,18 +289,20 @@ void TurnAngle(int degree){
   if (degree > 0) {
     left = 1;
     right = -1;
-    kd = 5.60;
+   // kd = 6.07;
+    tick = kdl * abs(degree);
+
   }
  
   else if (degree < 0) {
     left = -1;
     right = 1;
-    kd = 5.40;
+    //kd = 5.86;
+    tick = kdr * abs(degree);
+
   }
   
-  tick = kd * abs(degree);
-  
-  
+   
   while (tick > 0){
       moveForward(125, 100);
       delay(2);
@@ -365,7 +378,7 @@ void repositionRobotFront() {
   FindFrontSensorAvg();
   md.setBrakes(330, 300);
 
-  while ((abs(frontLeftSensorAvg - frontRightSensorAvg) > 0.6)&&check<15) {
+  while ((abs(frontLeftSensorAvg - frontRightSensorAvg) > 0.7)&&check<15) {
 
     if (frontLeftSensorAvg > frontRightSensorAvg) 
       TurnAngle(-4);
