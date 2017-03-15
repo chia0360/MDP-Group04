@@ -35,13 +35,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SensorEventListener{
 
 
     ExpandableGridView arena;
-    Button manualBtn, upBtn, downBtn, leftBtn, rightBtn, setCoorBtn, refreshBtn, f1Btn, f2Btn, configureBtn, save;
-    ToggleButton autoUpdateBtn, exploreBtn, runBtn;
+    Button manualBtn, upBtn, downBtn, leftBtn, rightBtn, setCoorBtn, refreshBtn, f1Btn, f2Btn, configureBtn, save, exploreBtn, runBtn;
+    ToggleButton autoUpdateBtn;
     MapAdapter adapter;
     LinearLayout leftLayout, control;
     EditText xCoor, yCoor;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String maphexLog = "";
     String manualmap = "";
     String lastString = "";
+    ArrayList<String> moveCmd = new ArrayList<String>();
     boolean mapUpdateLog = false;
     boolean getLastString = false;
     boolean write = false;
@@ -102,8 +104,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setMapAdapter(1,1);
 
-        exploreBtn.setText("Explore");
-        runBtn.setText("Run");
+        //exploreBtn.setText("Explore");
+        //runBtn.setText("Run");
 
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
 
@@ -115,8 +117,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void assignInterfaceVariables(){
         arena = (ExpandableGridView) findViewById(R.id.arena_grid_view);
-        exploreBtn = (ToggleButton) findViewById(R.id.explore_btn);
-        runBtn = (ToggleButton) findViewById(R.id.run_btn);
+        exploreBtn = (Button) findViewById(R.id.explore_btn);
+        runBtn = (Button) findViewById(R.id.run_btn);
         manualBtn = (Button) findViewById(R.id.manual_btn);
         leftBtn = (Button) findViewById(R.id.left_btn);
         upBtn = (Button) findViewById(R.id.up_btn);
@@ -177,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (item.getItemId()) {
             case R.id.connect_wifi:
                 msgLog = "";
-                chatMsg.setText(msgLog);
+                //chatMsg.setText(msgLog);
 
                 chatClientThread = new ChatClientThread(
                         "Android Client", SocketServerADD, SocketServerPORT);
@@ -263,12 +265,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else if(v == leftBtn){
             //sendMessage("l");
-            adapter.moveRobot("tl");
+            adapter.moveRobot("l");
             status.setText("Turning Left");
         }
         else if(v == rightBtn){
             //sendMessage("r");
-            adapter.moveRobot("tr");
+            adapter.moveRobot("r");
             status.setText("Turning Right");
         }
         else if(v == refreshBtn){
@@ -276,21 +278,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 updateMap(manualmap.substring(1));
         }
         else if(v == exploreBtn){
-            if(!runBtn.isChecked()) {
+            /*if(!runBtn.isChecked()) {
                 if (exploreBtn.isChecked()) {
                     exploreBtn.setText("Stop");
                     sendMessage("startexplore");
-                    runBtn.setClickable(false);
                     status.setText("Exploring");
                 } else {
                     exploreBtn.setText("Explore");
                     sendMessage("stop");
-                    runBtn.setClickable(true);
                 }
-            }
+            }*/
+            sendMessage("startexplore");
+            status.setText("Exploring");
         }
         else if(v == runBtn) {
-            if(!exploreBtn.isChecked()) {
+            /*if(!exploreBtn.isChecked()) {
                 if (runBtn.isChecked()) {
                     runBtn.setText("Stop");
                     sendMessage("fastestpath");
@@ -301,10 +303,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     sendMessage("stop");
                     exploreBtn.setClickable(true);
                 }
-            }
+            }*/
+            sendMessage("fastestpath");
+            status.setText("fastest path");
+
         }
         else if(v == f1Btn){
-            String defaultValue = "startexplore";
+            String defaultValue = "Rrerell";
             String cmd = sharedPref.getString("C1", defaultValue);
             sendMessage(cmd);
         }
@@ -368,9 +373,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void updateMap(String hex) {
         String[] obstacles = hex.split(",");
-        System.out.println(obstacles.toString());
-        if(obstacles.length == 7) {
-            adapter.updateSensor(obstacles);
+        if(Integer.parseInt(obstacles[0]) % 3 == 2) {
+            System.out.println(obstacles.toString());
+            if (obstacles.length == 7) {
+                adapter.updateSensor(obstacles);
+            }
         }
     }
 
@@ -402,16 +409,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             status.setText("Fastest Path");
         } else if (msg.equals("l")) {
             status.setText("Turning Left");
-            adapter.moveRobot("tl");
+            adapter.moveRobot("l");
         } else if (msg.equals("r")) {
             status.setText("Turning Right");
-            adapter.moveRobot("tr");
+            adapter.moveRobot("r");
         } else if (msg.equals("f")) {
             status.setText("Moving Forward");
             adapter.moveRobot("f");
-        } /*else if (msg.contains("reversing")) {
-            status.setText("Reversing");
-        }*/else if (msg.contains("connected")) {
+        } else if (msg.contains("connected")) {
             status.setText("Bluetooth Connected");
          }else if (msg.contains("disconnect")) {
             status.setText("Bluetooth Disconnected");
@@ -464,12 +469,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             else if(axisX > 5){
                 //sendMessage("l");
-                adapter.moveRobot("tl");
+                adapter.moveRobot("l");
                 status.setText("Turning Left");
             }
             else if(axisX < -5 ){
                 //sendMessage("r");
-                adapter.moveRobot("tr");
+                adapter.moveRobot("r");
                 status.setText("Turning Right");
             }
         }
@@ -566,36 +571,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         for (byte b:bs) {
                             // convert byte into character
                             char c = (char)b;
-                            if(c != 'm'){
-                                msgLog+=c;
-                            }
-                            if(c == 'f' && !getLastString){
-                                statusLog = "f";
-                            }else if(c == 'r'){
-                                statusLog = "r";
-                            }else if(c == 'l'){
-                                statusLog = "l";
-                            }else if(c == 'g'){
-                                mapLog="";
-                                mapUpdateLog = true;
-                            }
-                            if(mapUpdateLog == true){
-                                if(c == 'z'){
-                                    statusLog = "updateMap";
-                                    mapUpdateLog = false;
-                                    maphexLog = mapLog;
-                                    mapLog="";
-                                }
-                                else{
-                                    mapLog += c + "";
-                                }
-                            }
-                            if(getLastString == true){
-                                lastString += c + "";
-                                if(lastString.length() == 76){
+                            if(write){
+                                if(c=='y'){
                                     msgLog += "\n";
-                                    getLastString = false;
-                                    statusLog = "lastString";
+                                }else if(c=='l'){
+                                    moveCmd.add("l");
+                                    write = false;
+                                }else{
+                                    msgLog += c;
+                                }
+                            }else {
+                                if (c == 'f') {
+                                    moveCmd.add("f");
+                                } else if (c == 'r') {
+                                    moveCmd.add("r");
+                                } else if (c == 'l') {
+                                    moveCmd.add("l");
+                                } else if (c == 'g') {
+                                    mapLog = "";
+                                    mapUpdateLog = true;
+                                } else if (c == 'x') {
+                                    write = true;
+                                }
+                                if (mapUpdateLog == true) {
+                                    if (c == 'z') {
+                                        statusLog = "updateMap";
+                                        mapUpdateLog = false;
+                                        maphexLog = mapLog;
+                                        mapLog = "";
+                                    } else {
+                                        mapLog += c + "";
+                                    }
                                 }
                             }
 
@@ -607,21 +613,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             @Override
                             public void run() {
                                 chatMsg.setText(msgLog);
+                                if(moveCmd.size()!=0){
+                                    adapter.moveRobot(moveCmd.get(0));
+                                    moveCmd.remove(0);
+                                }
                                 if(!statusLog.equals("")) {
                                     if(statusLog.equals("updateMap")){
                                         statusLog="";
                                         onReceiveMessage(maphexLog);
                                         maphexLog = "";
                                     }
-                                    else if(statusLog.equals("lastString")){
+                                    /*else if(statusLog.equals("lastString")){
                                         statusLog="";
                                         onReceiveMessage((lastString));
                                         lastString = "";
-                                    }
-                                    else{
+                                    }*/
+                                    /*else{
                                         onReceiveMessage(statusLog);
                                         statusLog = "";
-                                    }
+                                    }*/
 
                                 }
                             }

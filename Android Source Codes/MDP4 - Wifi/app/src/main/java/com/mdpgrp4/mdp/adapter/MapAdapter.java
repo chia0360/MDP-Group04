@@ -25,9 +25,8 @@ public class MapAdapter extends BaseAdapter {
     private final char DIRECTION_EAST = 'E';
     private final char DIRECTION_WEST = 'W';
     private final String FORWARD = "f";
-    private final String REVERSE = "r";
-    private final String TURN_RIGHT = "tr";
-    private final String TURN_LEFT = "tl";
+    private final String TURN_RIGHT = "r";
+    private final String TURN_LEFT = "l";
     private int robot_curr_x;
     private int robot_curr_y;
     private int robot_next_x;
