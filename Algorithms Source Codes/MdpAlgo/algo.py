@@ -307,6 +307,7 @@ class RightHandRule(algoAbstract):
 
         if location[0] == 1 and location[1] == 1 and self.goal_reached:
             # send the hex string over here
+            time.sleep(2)
             self.handler.robot.send(self.des.descriptor1())
             self.handler.robot.send(self.des.descriptor2())
             self.done = True

@@ -72,7 +72,7 @@ class Connector(Robot):
                         while len(splited_mess) != 7 or len(splited_mess[1]) == 0 or len(splited_mess[5]) == 0:
                             mess = messages.pop()
                             splited_mess = mess.split(",")
-                            # this is malformed sensors' values
+                            # this is malformed sensors' values 
                             # splited_mess = mess.split(",")
                             # we will keep popping the previous set of sensor value if the 
                             # current one is not a 5-value comma separated message
@@ -82,7 +82,7 @@ class Connector(Robot):
                         print ("header: ", splited_mess[0])
                         print ("[Info] M counter is", self.m_counter)
                         print("the funny character from arduino", splited_mess[6])
-                        
+                        self.send('Ag' + ','.join(splited_mess) + 'z')
                         splited_mess = [int(x) for x in splited_mess[:6]][1:]
                         # if self.m_counter != splited_mess[0]:
                         #     return None
