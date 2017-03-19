@@ -19,10 +19,10 @@ double frontCentreSensorMedian = 0.0;
 
 int x = 0;
 int left = 1, right = 1;
-  int counterF=0;
+int counterF=0;
 int MovementCountAvg;
 double calibratedFrontCentreDist = 13.5 ;//9.6
-boolean error=true;
+
 double LeftSensorValue = 0, rightSensorValue = 0, frontRightSensorValue = 0, frontLeftSensorValue = 0, frontCentreSensorValue = 0;
 int commands = 'z';
 
@@ -40,37 +40,40 @@ double prevError = 0.0;
 int totalgrid;
 double kP = -6.9;
 double Adjust = 0;
+
+boolean error=true;
 boolean repo = true;
+boolean cornerrepositioning=true;
+
 unsigned long prev_ms = 0;
 unsigned long interval = 0;
 double m1Speed = 0, m2Speed = 0;
 int objPos[5] = {'\0', '\0', '\0', '\0', '\0'};
 String fastestpath;
-//---------------Movement Parameter---------------------------------------------------------
+int count=0;
 
+//---------------Movement Parameter---------------------------------------------------------
+int gridcompensation;
 boolean TurningLeftTest=false,TurningRightTest=false;
 boolean movingTest=false;
-boolean runLeftTest=false,runRightTest=false;
 int leftmotorspeed=230,rightmotorspeed=238;//230 //238 /220 // 300 // 326 //left 245
  //left inc -->right
-double kdl=5.58, kdr=5.58; //5.2  //kdl 5.8 //kdr 5.4
 int test=false;
 boolean Astar=false;
+int leftAngleTarget=377,rightAngleTarget=377;
+int movement=225;
 
-int movement=225;//225
 void setup() {
- 
   Serial.begin(115200);
   PCintPort::attachInterrupt(3, &compute_m1_ticks, RISING); //Attached to Pin 3
   PCintPort::attachInterrupt(5, &compute_m2_ticks, RISING); //Attached to Pin 5
   md.init();
-//moveOneGrid(1);
+
 }
 
 
 void loop() {
-
-    if(TurningLeftTest==true){
+   if(TurningLeftTest==true){
    delay(400);
    TurnLeftAngle();
    }
@@ -79,7 +82,7 @@ void loop() {
    delay(400);
    TurnRightAngle();
    }
-//
+
    if(movingTest==true){
     delay(500);
     moveOneGrid(1);
@@ -97,166 +100,91 @@ void loop() {
     moveOneGrid(1);
     moveOneGrid(1);
     moveOneGrid(1);
-
-    }
+  }
    
-    if(runRightTest==true){
-//    
-    //moveOneGrid(1);
-    //moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-   TurnRightAngle();
-    //moveOneGrid(1);
-    //moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-   TurnRightAngle();
-    //moveOneGrid(1);
-    //moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-   TurnRightAngle();
-    //moveOneGrid(1);
-    //moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-   TurnRightAngle();
-    }
-//    
-    if(runLeftTest==true){
-    
-    //moveOneGrid(1);
-    //moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-  TurnLeftAngle();
   
-    //moveOneGrid(1);
-    //moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-    TurnLeftAngle();
-  
-   // moveOneGrid(1);
-    //moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-  TurnLeftAngle();
-  //moveOneGrid(1);
-
-    //moveOneGrid(1);
-   moveOneGrid(1);
-    moveOneGrid(1);
-    moveOneGrid(1);
-  TurnLeftAngle();
-  
-    }
-//  
-//  //check if algo is sending any values to arduino
+ //check if algo is sending any values to arduino
   if (Serial.available() > 0) 
     commands = (char)Serial.read();
-//
     
-     if (commands == 'o') { //if fastest path, send command
+  if (commands == 'o') { //if fastest path, send command
         Astar=true;
-      
+     
         leftmotorspeed=295;
         rightmotorspeed=326;
+     
         while(Serial.available() > 0){ 
            commands = (char)Serial.read();
-           switch(commands){
-               case 'f':
-               counterF = counterF+1;
-               break;
-//               
-
-              case 'r':
-                totalgrid = counterF;
-                commands = 48;
-                action();
-                commands = 'r';
-                action();
-                counterF = 0;
-                break;
-                
-              case 'l':
-                totalgrid = counterF;
-                commands = 48;
-                action();
-
-                commands = 'l';
-                action ();
-                counterF = 0;
-                break;
-                
-              default:
-                // bye
-                break;   
-           }
-        
-
-     
-        
-    
-            if (commands == '\n'){
-                    if(counterF>0){
-           totalgrid=counterF;
-           commands=48;
-           action();
-           counterF=0;
-           }  
-                break;
-            }
-        }
-        
-     }
-        
+                switch(commands){
+                     case 'f':
+                     counterF = counterF+1;
+                     break;
   
+                    case 'r':
+                      totalgrid = counterF;
+                      commands = 48;
+                      action();
+                      commands = 'r';
+                      action();
+                      counterF = 0;
+                      break;
+                      
+                    case 'l':
+                      totalgrid = counterF;
+                      commands = 48;
+                      action();
+      
+                      commands = 'l';
+                      action ();
+                      counterF = 0;
+                      break;
+                      
+                    default:
+                      // bye
+                      break;   
+                 }
+               
+            if (commands == '\n'){ //last movement
+                      if(counterF>0){
+                             totalgrid=counterF;
+                             commands=48;
+                             action();
+                             counterF=0;
+                      }  
+              break;
+            }
+          }
+      }
   else
-  //fastest path 
-    action();
+     action();
 }
 
 void action() {
   switch (commands) {
-    case 'g':
-              RightReposition();
-  break;
-  
-    case 'm':
-     //send the sensor values to algo
-      objScan();
+      case 'm':
       //check if repositioning was being sent by algo
-    if(error==true){
+     if(error==true){ //to prevent double repositioning
         
+         FindLeftRightSensorsAvg() ;
+         FindFrontSensorAvg();
+      
       //if the robot is not straight
-        if (objPos[4] == 1 && objPos[5] == 1){ 
-        RightReposition();
-            //Serial.print("case m")
-
-        }
+          if (rightSensorAvg<=15 && NewRightSensorAvg<= 15) 
+          RightReposition();
        
-       //if the robot is too far away from the block
-        if (objPos[4] == 1 && objPos[5] == 1) {
-          int pos = realignRideSide();
-          if (pos == 1) {
-              TurnRightAngle();
-              FindFrontSensorAvg();
-              FindFrontSensorAvg();
-                
-                if (frontLeftSensorAvg <= 16.5&&frontRightSensorAvg <=16.5)
-                    repositionRobotFront() ;
+       //if right sides is a wall, and robot is too far from the wall
+        if (rightSensorAvg<=15 && NewRightSensorAvg<= 15) {
+            int pos = realignRideSide();
+              if (pos == 1) {
+                  TurnRightAngle();
+                  FindFrontSensorAvg();
+                  FindFrontSensorAvg();
+                    
+                  if (frontLeftSensorAvg <= 16.5&&frontRightSensorAvg <=16.5) //if front sensor has sth
+                  repositionRobotFront() ;
            
-                if (frontCentreSensorAvg<=17)
-                  realignRobotCentre() ;
+                  if (frontCentreSensorAvg<=17)
+                   realignRobotCentre() ;
           
               TurnLeftAngle();
          }
@@ -265,65 +193,77 @@ void action() {
        //if there is a corner
         error=false;
     }
-
+      //send the sensor values to algo
+      objScan();
       commands = 'z';
       break;
 
-    case'e': //front wall calibration
-      for (long startTime = millis(); (millis() - startTime) < 50;) 
-        FindFrontSensorAvg();
-            
-      //check 2 conditions
-      //3 blocks in front
-      
-      if (frontLeftSensorAvg <= 15 && frontRightSensorAvg <= 15 && frontCentreSensorAvg <= 16){ 
-        repositionRobotFront();
-        realignRobotCentre() ;
-        repositionRobotFront();
-      }
-      
-      //2 blocks left and right in front
-      if (frontLeftSensorAvg <= 14 && frontRightSensorAvg <= 14)
-        repositionRobotFront();
-       
-        commands = 'z';
-        error = false;
-        break;
-
     case 'f':
       moveOneGrid(1);
+      count++;
       commands = 'z';
       error = true;
+      cornerrepositioning=true;
       break;
 
     case 'l':
       TurnLeftAngle();
       commands = 'z';
       error= true;
+      cornerrepositioning=true;
       break;
 
     case 'r':
       TurnRightAngle();
       commands = 'z';
       error = true;
+      cornerrepositioning=true;
       break;
+      
+    case'e': //front wall calibration
+      for (long startTime = millis(); (millis() - startTime) < 50;) 
+        FindFrontSensorAvg();
+            
+      //check 2 conditions
+      //3 blocks in front
 
+      if(cornerrepositioning==true){
+              if (frontLeftSensorAvg <= 15 && frontRightSensorAvg <= 15 && frontCentreSensorAvg <= 16){ 
+                repositionRobotFront();
+                realignRobotCentre() ;
+                repositionRobotFront();
+                count=0;
+              }
+              
+              //2 blocks left and right in front
+              if (frontLeftSensorAvg <= 14 && frontRightSensorAvg <= 14)
+                repositionRobotFront();
+      }        
+        
+        commands = 'z';
+        error = false;
+        cornerrepositioning=false;
+        break;
+        
     case 'd':
     //corner calibration
         TurnRightAngle();
         repositionRobotFront() ;
         realignRobotCentre() ;
-      TurnLeftAngle();
-    realignRobotCentre();
+        TurnLeftAngle();
+        realignRobotCentre();
         repositionRobotFront() ;
-      
-      commands = 'z';
-      error = false;
+        commands = 'z';
+        error = false;
+        cornerrepositioning=false;
+        count=0;
        break;
 
+    case 'g':
+    RightReposition();
+    break;
+    
     case 48:
-    //   FindFrontSensorAvg();
-     // if(frontLeftSensorAvg>15 && frontRightSensorAvg>15)
       moveOneGrid(totalgrid);
       break;
   }
@@ -351,14 +291,14 @@ void Alignment() {
 
 void moveForward(double m1Speed, double m2Speed) {
   unsigned long current_ms = millis() ;
-
-  if ((current_ms - prev_ms) > 100) {
-    Alignment();
-    m1Speed = m1Speed - Adjust;
-    md.setM1Speed(m1Speed * left);
-    md.setM2Speed(m2Speed * right);
-    prev_ms = current_ms;
-  }
+  
+    if ((current_ms - prev_ms) > 100) {
+      Alignment();
+      m1Speed = m1Speed - Adjust;
+      md.setM1Speed(m1Speed * left);
+      md.setM2Speed(m2Speed * right);
+      prev_ms = current_ms;
+    }
 }
 
 
@@ -373,18 +313,23 @@ void moveOneGrid(int grid) {
 
   MovementCountAvg = (m1MovementCount + m2MovementCount) / 2;
   
-
   if(Astar==true)
   grid=291.147*grid-100.887;
   
   else
   grid = grid * (movement);
-//  grid=movement;
 
+  //if(count>5) //grid compensation
+  //grid=grid+gridcompensation;   
+    
   while (MovementCountAvg < grid) {
+    /*if(Astar==true){ //e-brake
+    FindFrontSensorAvg();
+       if(frontLeftSensorAvg<=15 && frontRightSensorAvg<=15)
+       break;
+    }*/
     moveForward(rightmotorspeed,leftmotorspeed ); //175//220
     MovementCountAvg = (m1MovementCount + m2MovementCount) / 2;
-    
   }
 
     md.setBrakes(300, 315);
@@ -400,19 +345,13 @@ void TurnAngle(int degree){
   if (degree > 0) {
     left = 1;
     right = -1;
-   // kd = 6.07;
-    tick = kdl * abs(degree);
-
   }
  
   else if (degree < 0) {
     left = -1;
     right = 1;
-    //kd = 5.86;
-    tick = kdr * abs(degree);
-
   }
-  
+  tick=5.30*abs(degree);
    
   while (tick > 0){
       moveForward(125, 100);
@@ -427,6 +366,7 @@ void TurnAngle(int degree){
   m1Ticks = 0;
   m2Ticks = 0;
 }
+
 //-------------Sensor Readings---------------------------
 void FindLeftRightSensorsAvg() {
   int sum = 0;
@@ -523,10 +463,11 @@ int realignRideSide() {
 //check centre distance
 void realignRobotCentre() {
   FindFrontSensorAvg();
+  
   while ((frontCentreSensorAvg - calibratedFrontCentreDist) > 0.1) {
-    moveForward(70, 60);
-    for (long startTime = millis(); (millis() - startTime) < 50;) {
-      FindFrontSensorAvg();
+      moveForward(30, 20);
+      for (long startTime = millis(); (millis() - startTime) < 50;) {
+        FindFrontSensorAvg();
     }
   }
 
@@ -534,12 +475,12 @@ void realignRobotCentre() {
   delay(300);
 
   while ((frontCentreSensorAvg - calibratedFrontCentreDist) < 0) {
-    moveForward(70, 60);
-    left = -1;
-    right = -1;
-    for (long startTime = millis(); (millis() - startTime) < 100;) {
-      FindFrontSensorAvg();
-    }
+        moveForward(70, 60);
+        left = -1;
+        right = -1;
+        for (long startTime = millis(); (millis() - startTime) < 100;) {
+          FindFrontSensorAvg();
+        }
   }
  
   left = 1;
@@ -548,14 +489,16 @@ void realignRobotCentre() {
   delay(300);
   m1Ticks = 0;
   m2Ticks = 0;
+
 }
 
 //ensure robot is straight
 void RightReposition() {
+ 
   int check=0;
   for (long startTime = millis(); (millis() - startTime) < 50;)
     FindLeftRightSensorsAvg() ;
-//Serial.println("repositioning");
+
   while ((abs(NewRightSensorAvg - rightSensorAvg ) > 0.7)&&(abs(NewRightSensorAvg - rightSensorAvg ) < 10.0)&& check<10){//  && { //&&abs((NewRightSensorAvg+0.4)-rightSensorAvg )>0 ||abs((NewRightSensorAvg+0.4)-rightSensorAvg )<0  ){//||(abs(NewRightSensorAvg +0.8)-rightSensorAvg)>3.5){
 
       if (rightSensorAvg > NewRightSensorAvg) {
@@ -583,13 +526,12 @@ void objScan() {
   for (long startTime = millis(); (millis() - startTime) < 50;)
   computeMedian();
   
-
   if (leftSensorMedian <= 18 && leftSensorMedian > 0) 
     objPos[0] = 1;
   else if (leftSensorMedian <= 28 && leftSensorMedian > 18)
-   objPos[0] = 2;
-     else if (leftSensorMedian <= 38 && leftSensorMedian > 18)
-   objPos[0] = 2;
+        objPos[0] = 2;
+   else if (leftSensorMedian <= 38 && leftSensorMedian > 18)
+           objPos[0] = 2;
   else
     objPos[0] = -2;
 
@@ -597,17 +539,15 @@ void objScan() {
     objPos[1] = 1;
   else if (frontLeftSensorMedian <= 23 && frontLeftSensorMedian > 15.0)
     objPos[1] = 2;
-
   else
-    objPos[1] = -2;
-//Serial.println(frontCentreSensorMedian);
+      objPos[1] = -2;
+
   if (frontCentreSensorMedian <= 16 && frontCentreSensorMedian > 0)
     objPos[2] = 1;
   else if (frontCentreSensorMedian <= 28.5 && frontCentreSensorMedian > 16)
-    objPos[2] = 2;
-
+  objPos[2] = 2;
   else
-    objPos[2] = -2;
+  objPos[2] = -2;
 
   if (frontRightSensorMedian <= 15.0 && frontRightSensorMedian > 0)
     objPos[3] = 1;
@@ -647,9 +587,6 @@ void objScan() {
   Serial.print(objPos[5]);
   Serial.print("\n");
   x++;
-
-
-
 }
 
 //-------------Sensors-------------------------------
@@ -749,12 +686,15 @@ void insertionSort() {
 }
 
 void TurnRightAngle(){
-    left = -1;
-    right = 1;
-      while (m1Ticks <377){ //m1 to
-      moveForward(120, 102);
-      delay(2);}
- left = 1;
+  left = -1;
+  right = 1;
+     
+  while (m1Ticks <rightAngleTarget){ //m1 to
+  moveForward(120, 102);
+  delay(2);
+  }
+  
+  left = 1;
   right = 1;
   md.setBrakes(300, 315);
   delay(380);
@@ -765,15 +705,18 @@ void TurnRightAngle(){
 void TurnLeftAngle(){
     left = 1;
     right = -1;
-     while (m1Ticks <377){ //m1 to be any random to make it 90c
-    moveForward(120, 102);
-    delay(2);}
- left = 1;
-  right = 1;
-  md.setBrakes(300, 315);
-  delay(380);
-  m1Ticks = 0;
-  m2Ticks = 0;
+     while (m1Ticks <leftAngleTarget){ //m1 to be any random to make it 90c
+      moveForward(120, 102);
+      delay(2);
+    }
+    
+    left = 1;
+    right = 1;
+    
+    md.setBrakes(300, 315);
+    delay(380);
+    m1Ticks = 0;
+    m2Ticks = 0;
 }
 
 
