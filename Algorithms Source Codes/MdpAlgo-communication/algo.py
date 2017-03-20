@@ -467,9 +467,19 @@ class RightHandRule(algoAbstract):
                 # haven't turned because map already explored robot didn't need to turn to explore the map
                 # so robot need to turn now
             self.handler.right()
-            self.handler.move()
+            sensor = None;
+            while not sensor:
+                sensor = self.handler.robot.receive()
+
+            # after turning right if the its front are blocked then turn left (back to original direction)
+            if sensor[1] == 1 or sensor[2] == 1 or sensor[3] == 1:
+                self.handler.left()
+                return False
+            else:
+                # if its free we just move like previously
+                self.handler.move()
      #       self.handler.robot.send(self.des.descriptor2())
-            return True
+                return True
         else:
             return False
 
@@ -479,53 +489,95 @@ class RightHandRule(algoAbstract):
         direction = self.handler.map.get_robot_direction()
         map_explored = self.map.get_map()
 
-        # using the wall to check first        
+        # not using the sensor values but right now MS CHENG KHIM ask for less m
         if direction == 'N':
             # already touching the wall
             if robot_location[0] <= 1:
                 print("touching north")
                 return False
+
+            # define the y, x location of the blocks on the right of the robot
+            y1 = robot_location[0]-2
+            y2 = robot_location[0]-2
+            y3 = robot_location[0]-2
+            x1 = robot_location[1] 
+            x2 = robot_location[1]-1
+            x3 = robot_location[1]+1
             
         elif direction == 'S':
             if robot_location[0] >= self.map.width - 2:
                 print("touching south")
                 return False
 
+            y1 = robot_location[0]+2
+            y2 = robot_location[0]+2
+            y3 = robot_location[0]+2
+            x1 = robot_location[1] 
+            x2 = robot_location[1]-1
+            x3 = robot_location[1]+1
+
         elif direction == 'E':
             if robot_location[1] >= self.map.length - 2:
                 print("touching east")
                 return False
 
+            y1 = robot_location[0]
+            y2 = robot_location[0]+1
+            y3 = robot_location[0]-1
+            x1 = robot_location[1]+2 
+            x2 = robot_location[1]+2
+            x3 = robot_location[1]+2    
+
         elif direction == 'W':
             if robot_location[1] <= 1:
                 print("touching west")
                 return False
-        
-        print("check front using sensors")
-        # check using sensor
-        data = None
-        self.handler.robot.send('m')
-        # the loop to wait for sensor is here
-        while not data:
-            # this sensor data is in the the following order
-            data = self.handler.robot.receive()
-            # left,         front-left, front-middle, front-right, right for real data
-            # front_middle, front-left, front-right,  left,        right for simulation
-        sensor_data = data
 
-        if not self.simulation:
-            # swap 0 with 2, then 2 with 3 
-            sensor_data[0], sensor_data[2] = sensor_data[2], sensor_data[0]
-            sensor_data[3], sensor_data[2] = sensor_data[2], sensor_data[3]
-            sensor_data = [int(x) for x in sensor_data]
+            y1 = robot_location[0]
+            y2 = robot_location[0]+1
+            y3 = robot_location[0]-1
+            x1 = robot_location[1]-2 
+            x2 = robot_location[1]-2
+            x3 = robot_location[1]-2    
+
+        else:
+            print("[Error] Invalid direction.")
+            return False
+
+        if map_explored[y1][x1] == 1 and \
+            map_explored[y2][x2] == 1 and \
+            map_explored[y3][x3] == 1:
             
-        print('Sensor data: ', sensor_data)
-        if (sensor_data[0] > 1 or sensor_data[0] < 0) and \
-            (sensor_data[1] > 1 or sensor_data[1] < 0) and \
-            (sensor_data[2] > 1 or sensor_data[2] < 0):
             return True
         else:
             return False
+
+##        
+##        print("check front using sensors")
+##        # check using sensor
+##        data = None
+##        self.handler.robot.send('m')
+##        # the loop to wait for sensor is here
+##        while not data:
+##            # this sensor data is in the the following order
+##            data = self.handler.robot.receive()
+##            # left,         front-left, front-middle, front-right, right for real data
+##            # front_middle, front-left, front-right,  left,        right for simulation
+##        sensor_data = data
+##
+##        if not self.simulation:
+##            # swap 0 with 2, then 2 with 3 
+##            sensor_data[0], sensor_data[2] = sensor_data[2], sensor_data[0]
+##            sensor_data[3], sensor_data[2] = sensor_data[2], sensor_data[3]
+##            sensor_data = [int(x) for x in sensor_data]
+##            
+##        print('Sensor data: ', sensor_data)
+##        if (sensor_data[0] > 1 or sensor_data[0] < 0) and \
+##            (sensor_data[1] > 1 or sensor_data[1] < 0) and \
+##            (sensor_data[2] > 1 or sensor_data[2] < 0):
+##            return True
+##        else:
+##            return False
 
 class AStar:
     """

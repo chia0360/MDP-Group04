@@ -66,31 +66,35 @@ class Handler:
                     self.recal_counter = 0
                     time.sleep(self.delay*2)
                     return
-                
-            # calibration based on front wall
-            if not self.recalibration:
-                print("front wall calibration")
-                # data = None#self.robot.receive()
-                # self.robot.send('m')
-                # while not data:
-                #     data = self.robot.receive()
 
-                data = None#self.robot.receive()
-                self.robot.send('m')
-                while not data:
-                    data = self.robot.receive()
-                # test for front wall
-                if (data[1] == 1 and data[2] == 1) or \
-                    (data[1] == 1 and data[3] == 1) or \
-                    (data[2] == 1 and data[3] == 1):
-                    self.robot.send('e')
-                    self.recalibration = True
-                    # self.left()
-                
-                if self.recalibration:
-                    self.recal_counter = 0
-                    time.sleep(self.delay*2)
-                    return
+            # this thing needs to send m to test if the robot is facing a
+            # wall immediately infront
+            # comment out first to test
+            
+##            # calibration based on front wall
+##            if not self.recalibration:
+##                print("front wall calibration")
+##                # data = None#self.robot.receive()
+##                # self.robot.send('m')
+##                # while not data:
+##                #     data = self.robot.receive()
+##
+##                data = None#self.robot.receive()
+##                #self.robot.send('m')
+##                while not data:
+##                    data = self.robot.receive()
+##                # test for front wall
+##                if (data[1] == 1 and data[2] == 1) or \
+##                    (data[1] == 1 and data[3] == 1) or \
+##                    (data[2] == 1 and data[3] == 1):
+##                    self.robot.send('e')
+##                    self.recalibration = True
+##                    # self.left()
+##                
+##                if self.recalibration:
+##                    self.recal_counter = 0
+##                    time.sleep(self.delay*2)
+##                    return
 
             # # test for right wall
             # if data[4] == 1 and data[5] == 1:
@@ -143,24 +147,31 @@ class Handler:
         # first reading before the algo works
 
         if self.status != "stop":
+            # the arduino has to send sensor values after everymove it takes.
             self.do_read()
             self.simulator.update_map()
             
         # this set of command comes from android
         if command == 'startexplore':
+            data = None #self.robot.receive()
+            self.robot.send('m')
+            while not data:
+                data = self.robot.receive()
+            # update the map using this data
+            self.do_read(data)
+            self.simulator.update_map()
             if self.status == "stop":
                 # the starting point doing calibration
                 # self.right()
                 # self.robot.send('d')
                 # self.left()
                 self.status = "exploring"
+                self.algo.explore()
                 return
-            self.algo.explore()
         elif command == 'fastestpath':
             # stop so that the thing will not be affected by the exploration (maybe)
             #shortest_path_moves = '5l6r2l3'
             self.algo.run()
-
         # the 4 cases below require setting the status of the robot to stop
         # since android is taking over the movement of the robot
         elif command == 'f':
@@ -222,13 +233,13 @@ class Handler:
             # self.robot.send("A"+self.algo.des.descriptor2())
             
             
-    def do_read(self):
+    def do_read(self, sensor=None):
         # in the actual run, the sensor data will be passed from the main loop to do_read
-        data = None#self.robot.receive()
+        data = sensor#self.robot.receive()
 
         # the loop to wait for sensor is here
         # this will not execute in actual run
-        self.robot.send('m')
+        #self.robot.send('m')
         while not data:
             print("robot.receive in do_read")
             # this sensor data is in the the following order
@@ -236,7 +247,6 @@ class Handler:
             data = self.robot.receive()
             # left,         front-left, front-middle, front-right, right for real data
             # front_middle, front-left, front-right,  left,        right for simulation
-        
 
         sensor_data = data
         if not config.robot_simulation:
