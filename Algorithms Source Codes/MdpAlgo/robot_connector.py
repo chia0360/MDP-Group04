@@ -84,7 +84,6 @@ class Connector(Robot):
                         print ("header: ", splited_mess[0])
                         print ("[Info] M counter is", self.m_counter)
                         print("the funny character from arduino", splited_mess[6])
-                        time.sleep(.3)
                         splited_mess = [int(x) for x in splited_mess[:6]][1:]
                         # if self.m_counter != splited_mess[0]:
                         #     return None
