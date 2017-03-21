@@ -1,6 +1,7 @@
 import socket
 from robot import *
 import re
+import time
 
 
 class Connector(Robot):
@@ -83,6 +84,7 @@ class Connector(Robot):
                         print ("[Info] M counter is", self.m_counter)
                         print("the funny character from arduino", splited_mess[6])
                         self.send('Ag' + ','.join(splited_mess) + 'z')
+                        time.sleep(1)
                         splited_mess = [int(x) for x in splited_mess[:6]][1:]
                         # if self.m_counter != splited_mess[0]:
                         #     return None
