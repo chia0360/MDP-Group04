@@ -715,7 +715,7 @@ class AStar:
                 # the robot is facing
                 fScore = gScore[current] + self.side_cost + self.distance(top, dest)
                 tentative_gScore = gScore[current] + self.side_cost
-                if came_from[current] - top[0] != 2:
+                if came_from[current][0] - top[0] != 2:
                     tentative_gScore += 0.1
 
                 if top not in open_list or tentative_gScore < gScore[top]:
@@ -729,7 +729,7 @@ class AStar:
             if local_map[bottom[0]][bottom[1]] == 1 and bottom not in closed_list:
                 fScore = gScore[current] + self.side_cost + self.distance(bottom, dest)
                 tentative_gScore = gScore[current] + self.side_cost
-                if came_from[current] - bottom[0] != -2:
+                if came_from[current][0] - bottom[0] != -2:
                     tentative_gScore += 0.1
                     
                 if bottom not in open_list or tentative_gScore < gScore[bottom]:
@@ -742,7 +742,7 @@ class AStar:
             if local_map[left[0]][left[1]] == 1 and left not in closed_list:
                 fScore = gScore[current] + self.side_cost + self.distance(left, dest)
                 tentative_gScore = gScore[current] + self.side_cost
-                if came_from[current] - left[0] != 2:
+                if came_from[current][1] - left[1] != 2:
                     tentative_gScore += 0.1
                 if left not in open_list or tentative_gScore < gScore[left]:
                     came_from[left] = current
@@ -754,7 +754,7 @@ class AStar:
             if local_map[right[0]][right[1]] == 1 and right not in closed_list:
                 fScore = gScore[current] + self.side_cost + self.distance(right, dest)
                 tentative_gScore = gScore[current] + self.side_cost
-                if came_from[current] - right[0] != -2:
+                if came_from[current][1] - right[1] != -2:
                     tentative_gScore += 0.1
 
                 if right not in open_list or tentative_gScore < gScore[right]:
