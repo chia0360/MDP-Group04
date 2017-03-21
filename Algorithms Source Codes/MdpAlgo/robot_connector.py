@@ -79,12 +79,12 @@ class Connector(Robot):
                             # current one is not a 5-value comma separated message
                             # this will also check if the first value and the last value is empty
                         # now we return the integer set of sensors' value
+                        self.send('Ag' + ','.join(splited_mess) + 'z')
                         print ("robot connector returning: ", splited_mess)
                         print ("header: ", splited_mess[0])
                         print ("[Info] M counter is", self.m_counter)
                         print("the funny character from arduino", splited_mess[6])
-                        self.send('Ag' + ','.join(splited_mess) + 'z')
-                        time.sleep(1)
+                        time.sleep(.3)
                         splited_mess = [int(x) for x in splited_mess[:6]][1:]
                         # if self.m_counter != splited_mess[0]:
                         #     return None
