@@ -709,10 +709,15 @@ class AStar:
                 # fScore is the cost from start + estimated heuristics 
                 # cost to end
                 # the cost from start will equal the cost from start
-                # of the previous node + either 10 or 14 depends 
-                # on the position
+                # of the previous node + either 10 on the position
+                
+                # increase the cost by 0.1 if the current block is of different direction than the direction
+                # the robot is facing
                 fScore = gScore[current] + self.side_cost + self.distance(top, dest)
                 tentative_gScore = gScore[current] + self.side_cost
+                if came_from[current] - top[0] != 2:
+                    tentative_gScore += 0.1
+
                 if top not in open_list or tentative_gScore < gScore[top]:
                     open_list[top] = fScore
                     gScore[top] = tentative_gScore
@@ -724,6 +729,9 @@ class AStar:
             if local_map[bottom[0]][bottom[1]] == 1 and bottom not in closed_list:
                 fScore = gScore[current] + self.side_cost + self.distance(bottom, dest)
                 tentative_gScore = gScore[current] + self.side_cost
+                if came_from[current] - bottom[0] != -2:
+                    tentative_gScore += 0.1
+                    
                 if bottom not in open_list or tentative_gScore < gScore[bottom]:
                     came_from[bottom] = current
                     gScore[bottom] = tentative_gScore
@@ -734,6 +742,8 @@ class AStar:
             if local_map[left[0]][left[1]] == 1 and left not in closed_list:
                 fScore = gScore[current] + self.side_cost + self.distance(left, dest)
                 tentative_gScore = gScore[current] + self.side_cost
+                if came_from[current] - left[0] != 2:
+                    tentative_gScore += 0.1
                 if left not in open_list or tentative_gScore < gScore[left]:
                     came_from[left] = current
                     gScore[left] = tentative_gScore
@@ -744,6 +754,9 @@ class AStar:
             if local_map[right[0]][right[1]] == 1 and right not in closed_list:
                 fScore = gScore[current] + self.side_cost + self.distance(right, dest)
                 tentative_gScore = gScore[current] + self.side_cost
+                if came_from[current] - right[0] != -2:
+                    tentative_gScore += 0.1
+
                 if right not in open_list or tentative_gScore < gScore[right]:
                     came_from[right] = current
                     gScore[right] = tentative_gScore
