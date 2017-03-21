@@ -273,10 +273,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             adapter.moveRobot("r");
             status.setText("Turning Right");
         }
-        else if(v == refreshBtn){
+        /*else if(v == refreshBtn){
             if( !manualmap.equals(""))
                 updateMap(manualmap.substring(1));
-        }
+        }*/
         else if(v == exploreBtn){
             /*if(!runBtn.isChecked()) {
                 if (exploreBtn.isChecked()) {
@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             sendMessage(cmd);
         }
         else if(v == f2Btn){
-            String defaultValue = "stop";
+            String defaultValue = "Rm";
             String cmd = sharedPref.getString("C2", defaultValue);
             sendMessage(cmd);
         }
@@ -393,11 +393,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onReceiveMessage(String msg){
         if (msg.indexOf("g")==0) {
-            if(autoUpdateBtn.isChecked() && !maphexLog.equals("")) {
+            /*if(autoUpdateBtn.isChecked() && !maphexLog.equals("")) {
                 updateMap(maphexLog.substring(1));
             }else{
                 manualmap = maphexLog;
-            }
+            }*/
+            updateMap(msg.substring(1));
         } else if (msg.indexOf("x")==0) {
             //lastUpdate(msg.substring(1));
             status.setText("stop");
@@ -593,9 +594,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }
                                 if (mapUpdateLog == true) {
                                     if (c == 'z') {
-                                        statusLog = "updateMap";
                                         mapUpdateLog = false;
-                                        maphexLog = mapLog;
+                                        moveCmd.add(mapLog);
                                         mapLog = "";
                                     } else {
                                         mapLog += c + "";
@@ -611,27 +611,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             @Override
                             public void run() {
                                 chatMsg.setText(msgLog);
-                                if(moveCmd.size()!=0){
-                                    adapter.moveRobot(moveCmd.get(0));
+                                while(moveCmd.size()!=0){
+                                    onReceiveMessage(moveCmd.get(0));
                                     moveCmd.remove(0);
                                 }
-                                if(!statusLog.equals("")) {
-                                    if(statusLog.equals("updateMap")){
-                                        statusLog="";
-                                        onReceiveMessage(maphexLog);
-                                        maphexLog = "";
-                                    }
-                                    /*else if(statusLog.equals("lastString")){
-                                        statusLog="";
-                                        onReceiveMessage((lastString));
-                                        lastString = "";
-                                    }*/
-                                    /*else{
-                                        onReceiveMessage(statusLog);
-                                        statusLog = "";
-                                    }*/
 
-                                }
                             }
                         });
                     }
