@@ -156,10 +156,12 @@ public class MapAdapter extends BaseAdapter {
             int position2 = -1;
             Sensor s1 = null;
             Sensor s2 = null;
+            Sensor s3 = null;
             switch (i) {
                 case 1:
                     s1 = getFirstLeft();
                     s2 = getSecondLeft();
+                    //s3 = getThirdLeft();
                     break;
                 case 2:
                     s1 = getFirstFrontLeft();
@@ -205,6 +207,7 @@ public class MapAdapter extends BaseAdapter {
                             explored.add(position2);
                     }
                     break;
+                    
                 default:
                     if(s1.isValid() && position1 != -1){
                         if (!explored.contains(position1))
@@ -415,6 +418,23 @@ public class MapAdapter extends BaseAdapter {
         return s;
     }
 
+    public Sensor getThirdLeft(){
+        Sensor s = null;
+        if(robot_curr_direction == DIRECTION_EAST) {
+            s = new Sensor(robot_curr_x-4, robot_curr_y+1);
+        }
+        else if(robot_curr_direction == DIRECTION_WEST) {
+            s = new Sensor(robot_curr_x+4, robot_curr_y-1);
+        }
+        else if(robot_curr_direction == DIRECTION_SOUTH) {
+            s = new Sensor(robot_curr_x+1, robot_curr_y+4);
+        }
+        else if(robot_curr_direction == DIRECTION_NORTH) {
+            s = new Sensor(robot_curr_x-1, robot_curr_y-4);
+        }
+        return s;
+    }
+
     public Sensor getFirstRight(){
         Sensor s = null;
         if(robot_curr_direction == DIRECTION_EAST) {
@@ -446,6 +466,23 @@ public class MapAdapter extends BaseAdapter {
         }
         else if(robot_curr_direction == DIRECTION_NORTH) {
             s = new Sensor(robot_curr_x-1, robot_curr_y+3);
+        }
+        return s;
+    }
+
+    public Sensor getThirdRight(){
+        Sensor s = null;
+        if(robot_curr_direction == DIRECTION_EAST) {
+            s = new Sensor(robot_curr_x+4, robot_curr_y+1);
+        }
+        else if(robot_curr_direction == DIRECTION_WEST) {
+            s = new Sensor(robot_curr_x-4, robot_curr_y-1);
+        }
+        else if(robot_curr_direction == DIRECTION_SOUTH) {
+            s = new Sensor(robot_curr_x+1, robot_curr_y-4);
+        }
+        else if(robot_curr_direction == DIRECTION_NORTH) {
+            s = new Sensor(robot_curr_x-1, robot_curr_y+4);
         }
         return s;
     }

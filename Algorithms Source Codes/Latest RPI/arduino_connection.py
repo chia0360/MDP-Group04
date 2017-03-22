@@ -2,7 +2,7 @@ import serial
 import threading
 import time
 
-class ArduinoSerialCon(object):
+class ArduinoConnection(object):
     def __init__(self):
         self.bufFile = '/dev/ttyACM0'
         self.baudRate = 115200
@@ -11,31 +11,26 @@ class ArduinoSerialCon(object):
     def connect(self):
         self.serConn = serial.Serial(self.bufFile,self.baudRate)
         self.serConn.flush()
+        print "Connected to arduino"
     
-    def readArduino(self):
-        print("readArduino")
+    def readMsg(self):
         while self.serConn == None: 
             self.connect()
         try:
             data = self.serConn.readline()
-            # delay between write and read
-            time.sleep(.05)
-            print ("From Arduino: " + data)
             return data
         except Exception, e:
-            print ("Fail to read from Arduino")
-            print e
+            print "Error reading from arduino", str(e)
                 
-    def writeArduino(self, inData):
+    def sendMsg(self, msg):
         while self.serConn == None: 
             self.connect()
         try:
-            self.serConn.write(inData)
-            # delay between write and read
-            time.sleep(.05)
-            print ("To Arduino: " + inData)
+            self.serConn.write(msg)
         except Exception, e:
-            print ("Fail to write to Arduino")
+            print "Error writing to arduino", str(e)
 
-    def close(self):
+    def disconnect(self):
         self.serConn.close()
+        print "Arduino Disconnected"
+
