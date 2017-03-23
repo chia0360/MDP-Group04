@@ -327,6 +327,16 @@ class Handler:
             # set if obstacle
             if obs:
                 self.map.set_map(loc[0], loc[1], 'obstacle')
+
+            # set all start blocks and goal blocks as free
+            for i in range(3):
+                for j in range(3):
+                    self.map.set_map(i, j, 'free')
+            
+            for i in range(12, 15):
+                for j in range(17, 20):
+                    self.map.set_map(i, j, 'free')
+                    
         return sensor_data
 
         print("end do_read")
