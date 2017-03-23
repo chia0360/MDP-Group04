@@ -310,6 +310,18 @@ class RightHandRule(algoAbstract):
             time.sleep(2)
             self.handler.robot.send(self.des.descriptor1())
             self.handler.robot.send(self.des.descriptor2())
+
+            #   Map Legend:
+            #       0 - unexplored
+            #       1 - explored; free
+            #       2 - explored; obstacle
+            map_des = 'W'
+            explored_map = self.map.get_map()
+            for row in explored_map:
+                for value in row:
+                    map_des += str(value)
+            self.handler.robot.send(map_des)
+
             self.done = True
             self.handler.status = "stop"
             time.sleep(2)
