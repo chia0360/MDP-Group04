@@ -315,12 +315,12 @@ class RightHandRule(algoAbstract):
             #       0 - unexplored
             #       1 - explored; free
             #       2 - explored; obstacle
-            map_des = 'W'
-            explored_map = self.map.get_map()
-            for row in explored_map:
-                for value in row:
-                    map_des += str(value)
-            self.handler.robot.send(map_des)
+            # map_des = 'W'
+            # explored_map = self.map.get_map()
+            # for row in explored_map:
+            #     for value in row:
+            #         map_des += str(value)
+            # self.handler.robot.send(map_des)
 
             self.done = True
             self.handler.status = "stop"
