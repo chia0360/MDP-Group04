@@ -1,3 +1,4 @@
+//FRONT CALIBRATION CHECK AGAIN
 #include "PinChangeInt.h"
 #include "DualVNH5019MotorShield.h"
 DualVNH5019MotorShield md;
@@ -56,10 +57,10 @@ int count=0;
 //int gridcompensation=5;
 boolean TurningLeftTest=false,TurningRightTest=false;
 boolean movingTest=false;
-int leftmotorspeed=215,rightmotorspeed=242;//210 //255 //left inc -->right
+int leftmotorspeed=208,rightmotorspeed=242;//212 //242 //left inc -->right
 int test=false;
 boolean Astar=false;
-int leftAngleTarget=369,rightAngleTarget=367;
+int leftAngleTarget=370,rightAngleTarget=367;
 int movement=240; //245
 boolean fastestpathspeed=false;
 void setup() {
@@ -185,7 +186,7 @@ void action() {
           RightReposition();
 
 
-       if(frontLeftSensorAvg<=15 &&frontRightSensorAvg<=15 &&frontCentreSensorAvg<=14){
+       if(frontLeftSensorAvg<=16.5 &&frontRightSensorAvg<=16.5 &&frontCentreSensorAvg<=17){
          repositionRobotFront();
          realignRobotCentre() ;
           repositionRobotFront();
@@ -371,7 +372,7 @@ void moveOneGrid(int grid) {
     MovementCountAvg = (m1MovementCount + m2MovementCount) / 2;
   }
 
-    md.setBrakes(310,325); // swing left > increase left //2nd value left from back //313
+    md.setBrakes(312,327); // swing left > increase left //2nd value left from back //313
     delay(350);
     m1Ticks = 0;
     m2Ticks = 0;
@@ -646,14 +647,14 @@ void objScan() {
 
   if (rightSensorMedian <= 15.0 && rightSensorMedian > 0)
     objPos[4] = 1;
-  else if (rightSensorMedian <= 24 && rightSensorMedian > 12.0) //23
+  else if (rightSensorMedian <= 24 && rightSensorMedian > 15.0) //23
     objPos[4] = 2;
   else
     objPos[4] = -2;
 
   if (NewRightSensorMedian <= 15 && NewRightSensorMedian > 0)
     objPos[5] = 1;
-  else if (NewRightSensorMedian > 15 && NewRightSensorMedian < 24)
+  else if (NewRightSensorMedian > 15 && NewRightSensorMedian <= 24)
     objPos[5] = 2;
   else
     objPos[5] = -2;
