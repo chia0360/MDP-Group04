@@ -526,8 +526,8 @@ class RightHandRule(algoAbstract):
         all_paths = {}
         for unex_block in unexplored:
             for offset in offsets:
-                row = block[0] - offset[0]
-                col = block[1] - offset[1]
+                row = unex_block[0] - offset[0]
+                col = unex_block[1] - offset[1]
                 if (row >= 1 and row <= 13) and (col >= 1 and col <= 18):
                     # checking valid position
                     block = (row, col)
