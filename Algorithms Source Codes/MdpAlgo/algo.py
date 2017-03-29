@@ -555,7 +555,7 @@ class RightHandRule(algoAbstract):
             keys = list(all_paths.keys())
             min_path = all_paths[keys[0]][:]
         
-            for block, path in all_paths:
+            for block, path in all_paths.items():
                 if len(path) < len(min_path):
                     min_path = path[:]
 
@@ -622,7 +622,7 @@ class RightHandRule(algoAbstract):
                         moves.append('E')
                     else:
                         moves.append('W')
-            print(moves)
+            print(moves)  
             return moves
         else:
             # no path
