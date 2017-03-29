@@ -585,6 +585,18 @@ class RightHandRule(algoAbstract):
             # call this function recursively until there is no more unexplored block
             self.find_unexplored()
         else:
+            # go back to start
+            return_path = self.get_path((1,1))
+            commands = self.convert(return_path)
+            # command the robot to move towards the unexplored block and update the map after every move
+            for command in commands:
+                if command == 'f':
+                    self.handler.move()
+                elif command == 'r':
+                    self.handler.right()
+                elif command == 'l':
+                    self.handler.left()
+                # self.handler.do_read()
             return
         
     def get_path(self, block):
