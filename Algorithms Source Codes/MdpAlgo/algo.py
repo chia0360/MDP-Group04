@@ -529,7 +529,10 @@ class RightHandRule(algoAbstract):
                     self.handler.right()
                 elif command == 'l':
                     self.handler.left()
-                self.handler.do_read()
+                broken = self.handler.do_read()
+                if broken == -1:
+                    break
+                self.handler.simulator.update_map()
             
             return
         # find the string to go to all the unexplored block
@@ -572,7 +575,10 @@ class RightHandRule(algoAbstract):
                     self.handler.right()
                 elif command == 'l':
                     self.handler.left()
-                self.handler.do_read()
+                broken = self.handler.do_read()
+                if broken == -1:
+                    break
+                self.handler.simulator.update_map()
             
             # when we reach the block adjacent to the unexplored block, since we dunno our direction,
             # turn left and right to update the map
@@ -605,7 +611,10 @@ class RightHandRule(algoAbstract):
                     self.handler.right()
                 elif command == 'l':
                     self.handler.left()
-                self.handler.do_read()
+                broken = self.handler.do_read()
+                if broken == -1:
+                    break
+                self.handler.simulator.update_map()
             return
         
     # def get_path(self, block, end):

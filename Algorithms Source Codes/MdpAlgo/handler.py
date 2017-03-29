@@ -241,16 +241,16 @@ class Handler:
         # this will not execute in actual run
         #self.robot.send('m')
         # safe_m = True
-        # counter = 0
+        counter = 0
         while not data:
             print("robot.receive in do_read")
             # this sensor data is in the the following order
             # while not data:
-            # counter += 1
-            # if counter == 20 and safe_m:
-            #     self.robot.send('m')
+            counter += 1
+            if counter == 50:
+                return -1
             #     safe_m = False
-
+            
             data = self.robot.receive()
             # left,         front-left, front-middle, front-right, right for real data
             # front_middle, front-left, front-right,  left,        right for simulation
