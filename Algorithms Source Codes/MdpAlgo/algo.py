@@ -322,7 +322,7 @@ class RightHandRule(algoAbstract):
             time.sleep(2)
             self.handler.robot.send(self.des.descriptor1())
             self.handler.robot.send(self.des.descriptor2())
-
+            
             #   Map Legend:
             #       0 - unexplored
             #       1 - explored; free
@@ -515,6 +515,19 @@ class RightHandRule(algoAbstract):
 
         print("There are", len(unexplored), "unexplored blocks left")
         if len(unexplored) == 0:
+            # go back to start
+            return_path = self.get_path((1,1))
+            commands = self.convert(return_path)
+            # command the robot to move towards the unexplored block and update the map after every move
+            for command in commands:
+                if command == 'f':
+                    self.handler.move()
+                elif command == 'r':
+                    self.handler.right()
+                elif command == 'l':
+                    self.handler.left()
+                # self.handler.do_read()
+            
             return
         # find the string to go to all the unexplored block
         closest = []
