@@ -577,11 +577,11 @@ class RightHandRule(algoAbstract):
     def get_path(self, block):
         result = [block]
         if block in self.came_from:
-            node = came_from[block]
+            node = self.came_from[block]
             while True:
                 result.insert(0, node)
-                if node in came_from:
-                    node = came_from[node]
+                if node in self.came_from:
+                    node = self.came_from[node]
                     continue
                 else:
                     break
