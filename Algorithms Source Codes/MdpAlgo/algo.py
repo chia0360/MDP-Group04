@@ -516,8 +516,11 @@ class RightHandRule(algoAbstract):
         print("There are", len(unexplored), "unexplored blocks left")
         if len(unexplored) == 0:
             # go back to start
+            print("going back")
+
             return_path = self.get_path((1,1))
             commands = self.astar.convert(return_path, self.map.get_robot_direction())
+            print("command to go back", commands)
             # command the robot to move towards the unexplored block and update the map after every move
             for command in commands:
                 if command == 'f':
@@ -526,7 +529,7 @@ class RightHandRule(algoAbstract):
                     self.handler.right()
                 elif command == 'l':
                     self.handler.left()
-                # self.handler.do_read()
+                self.handler.do_read()
             
             return
         # find the string to go to all the unexplored block
@@ -572,10 +575,10 @@ class RightHandRule(algoAbstract):
             
             # when we reach the block adjacent to the unexplored block, since we dunno our direction,
             # turn left and right to update the map
-            self.handler.left()
-            self.handler.do_read()
-            self.handler.right()
-            self.handler.do_read()
+            # self.handler.left()
+            # self.handler.do_read()
+            # self.handler.right()
+            # self.handler.do_read()
             self.handler.right()
             self.handler.do_read()
             # no need to turn back to original direction since the next call to find_unexplored will take into 
@@ -588,8 +591,10 @@ class RightHandRule(algoAbstract):
             self.find_unexplored()
         else:
             # go back to start
+            print("going back")
             return_path = self.get_path((1,1))
             commands = self.astar.convert(return_path, self.map.get_robot_direction())
+            print("command to go back", commands)
             # command the robot to move towards the unexplored block and update the map after every move
             for command in commands:
                 if command == 'f':
