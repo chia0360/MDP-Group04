@@ -533,7 +533,8 @@ class RightHandRule(algoAbstract):
                     block = (row, col)
                     # get the path
                     path = self.get_path(block)
-                    all_paths[block] = path
+                    if len(path) != 0:
+                        all_paths[block] = path 
             
         # get the path to closest block
         if len(all_paths > 0):
