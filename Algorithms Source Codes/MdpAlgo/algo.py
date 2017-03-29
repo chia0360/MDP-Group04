@@ -530,45 +530,48 @@ class RightHandRule(algoAbstract):
                 col = block[1] - offset[1]
                 if (row >= 1 and row <= 13) and (col >= 1 and col <= 18):
                     # checking valid position
-                block = (row, col)
-                # get the path
-                path = self.get_path(block)
-                all_paths[block] = path
-        
+                    block = (row, col)
+                    # get the path
+                    path = self.get_path(block)
+                    all_paths[block] = path
+            
         # get the path to closest block
-        min_path = all_paths[0][:]
+        if len(all_paths > 0):
+            # assign the min_path to first path
+            min_path = all_paths[all_paths.keys()[0]][:]
         
-        for path in all_paths:
-            if len(path) < len(min_path):
-                min_path = path[:]
+            for block, path in all_paths:
+                if len(path) < len(min_path):
+                    min_path = path[:]
 
-        
-        commands = self.convert(min_path)
-        # command the robot to move towards the unexplored block and update the map after every move
-        for command in commands:
-            if command == 'f':
-                self.handler.move()
-            elif command == 'r':
-                self.handler.right()
-            elif command == 'l':
-                self.handler.left()
+            commands = self.convert(min_path)
+            # command the robot to move towards the unexplored block and update the map after every move
+            for command in commands:
+                if command == 'f':
+                    self.handler.move()
+                elif command == 'r':
+                    self.handler.right()
+                elif command == 'l':
+                    self.handler.left()
+                self.handler.do_read()
+            
+            # when we reach the block adjacent to the unexplored block, since we dunno our direction,
+            # turn left and right to update the map
+            self.handler.left()
             self.handler.do_read()
-        
-        # when we reach the block adjacent to the unexplored block, since we dunno our direction,
-        # turn left and right to update the map
-        self.handler.left()
-        self.handler.do_read()
-        self.handler.right()
-        self.handler.right()
-        self.handler.do_read()
-        # no need to turn back to original direction since the next call to find_unexplored will take into 
-        # account the current direction of the robot to calculate the path
+            self.handler.right()
+            self.handler.right()
+            self.handler.do_read()
+            # no need to turn back to original direction since the next call to find_unexplored will take into 
+            # account the current direction of the robot to calculate the path
 
-        # update the self.came_from by running astar again
-        self.findSP()
+            # update the self.came_from by running astar again
+            self.findSP()
 
-        # call this function recursively until there is no more unexplored block
-        self.find_unexplored()
+            # call this function recursively until there is no more unexplored block
+            self.find_unexplored()
+        else:
+            return
         
     def get_path(self, block):
         result = [block]
