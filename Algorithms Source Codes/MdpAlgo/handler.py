@@ -250,6 +250,7 @@ class Handler:
             # if counter == 20 and safe_m:
             #     self.robot.send('m')
             #     safe_m = False
+
             data = self.robot.receive()
             # left,         front-left, front-middle, front-right, right for real data
             # front_middle, front-left, front-right,  left,        right for simulation
