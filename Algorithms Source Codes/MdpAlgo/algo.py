@@ -575,6 +575,7 @@ class RightHandRule(algoAbstract):
             self.handler.left()
             self.handler.do_read()
             self.handler.right()
+            self.handler.do_read()
             self.handler.right()
             self.handler.do_read()
             # no need to turn back to original direction since the next call to find_unexplored will take into 
@@ -597,7 +598,7 @@ class RightHandRule(algoAbstract):
                     self.handler.right()
                 elif command == 'l':
                     self.handler.left()
-                # self.handler.do_read()
+                self.handler.do_read()
             return
         
     def get_path(self, block):
