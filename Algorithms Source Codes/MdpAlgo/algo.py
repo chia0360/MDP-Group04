@@ -552,7 +552,8 @@ class RightHandRule(algoAbstract):
         # get the path to closest block
         if len(all_paths) > 0:
             # assign the min_path to first path
-            min_path = all_paths[all_paths.keys()[0]][:]
+            keys = list(all_paths.keys())
+            min_path = all_paths[keys[0]][:]
         
             for block, path in all_paths:
                 if len(path) < len(min_path):
