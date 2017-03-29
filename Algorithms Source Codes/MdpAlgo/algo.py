@@ -511,7 +511,7 @@ class RightHandRule(algoAbstract):
         for row in range(15):
             for col in range(20):
                 if explored_map[row][col] == 0:
-                    self.unexplored.append((row, col))
+                    unexplored.append((row, col))
 
         print("There are", len(unexplored), "unexplored blocks left")
         if len(unexplored) == 0:
