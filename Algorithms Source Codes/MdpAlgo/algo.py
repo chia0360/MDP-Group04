@@ -587,7 +587,7 @@ class RightHandRule(algoAbstract):
             # account the current direction of the robot to calculate the path
 
             # update the self.came_from by running astar again
-            self.findSP()
+            # self.findSP()
 
             # call this function recursively until there is no more unexplored block
             self.find_unexplored()
@@ -974,8 +974,11 @@ class AStar:
             #             gScore[bottomleft] = tentative_gScore
             #             open_list[bottomleft] = fScore
 
+        
+        if dest not in came_from:
+            return []
+            
         # found the path, now just need to print the path from the dest node to the origin node
-
         result = [dest]
 
         node = came_from[dest]
