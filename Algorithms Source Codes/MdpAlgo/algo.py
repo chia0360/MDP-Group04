@@ -517,7 +517,7 @@ class RightHandRule(algoAbstract):
         if len(unexplored) == 0:
             # go back to start
             return_path = self.get_path((1,1))
-            commands = self.convert(return_path)
+            commands = self.astar.convert(return_path)
             # command the robot to move towards the unexplored block and update the map after every move
             for command in commands:
                 if command == 'f':
@@ -558,7 +558,7 @@ class RightHandRule(algoAbstract):
                 if len(path) < len(min_path):
                     min_path = path[:]
 
-            commands = self.convert(min_path)
+            commands = self.astar.convert(min_path)
             # command the robot to move towards the unexplored block and update the map after every move
             for command in commands:
                 if command == 'f':
@@ -587,7 +587,7 @@ class RightHandRule(algoAbstract):
         else:
             # go back to start
             return_path = self.get_path((1,1))
-            commands = self.convert(return_path)
+            commands = self.astar.convert(return_path)
             # command the robot to move towards the unexplored block and update the map after every move
             for command in commands:
                 if command == 'f':
