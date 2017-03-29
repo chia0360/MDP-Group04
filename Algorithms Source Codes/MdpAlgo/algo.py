@@ -518,7 +518,7 @@ class RightHandRule(algoAbstract):
             # go back to start
             print("going back")
 
-            return_path = self.get_path((1,1))
+            return_path = self.astar.solve(explored_map, self.map.get_robot_location(), (1,1))
             commands = self.astar.convert(return_path, self.map.get_robot_direction())
             print("command to go back", commands)
             # command the robot to move towards the unexplored block and update the map after every move
@@ -548,7 +548,7 @@ class RightHandRule(algoAbstract):
                     # checking valid position
                     block = (row, col)
                     # get the path
-                    path = self.get_path(block)
+                    path = self.astar.solve(explored_map, self.map.get_robot_location(), block)
                     if len(path) > 0:
                         all_paths[block] = path 
             
@@ -594,7 +594,7 @@ class RightHandRule(algoAbstract):
         else:
             # go back to start
             print("going back")
-            return_path = self.get_path((1,1))
+            return_path = self.astar.solve(explored_map, self.map.get_robot_location(), (1,1))
             commands = self.astar.convert(return_path, self.map.get_robot_direction())
             print("command to go back", commands)
             # command the robot to move towards the unexplored block and update the map after every move
@@ -608,33 +608,35 @@ class RightHandRule(algoAbstract):
                 self.handler.do_read()
             return
         
-    def get_path(self, block):
-        result = [block]
-        if block in self.came_from:
-            node = self.came_from[block]
-            while True:
-                result.insert(0, node)
-                if node in self.came_from:
-                    node = self.came_from[node]
-                    continue
-                else:
-                    break
-            moves = []
-            for i in range(len(result)-1):
-                if result[i][0] < result[i+1][0]:
-                    moves.append('S')
-                elif result[i][0] > result[i+1][0]:
-                    moves.append('N')
-                else:
-                    if result[i][1] < result[i+1][1]:
-                        moves.append('E')
-                    else:
-                        moves.append('W')
-            # print(moves)  
-            return moves
-        else:
-            # no path
-            return []
+    # def get_path(self, block, end):
+    #     _, self.came_from = self.astar.solve(self.map.get_map(), block, end)
+    #     result = [block]
+    #     if block in self.came_from:
+    #         node = self.came_from[block]
+    #         while True:
+    #             result.insert(0, node)
+    #             if node in self.came_from:
+    #                 node = self.came_from[node]
+    #                 continue
+    #             else:
+    #                 break
+
+    #         moves = []
+    #         for i in range(len(result)-1):
+    #             if result[i][0] < result[i+1][0]:
+    #                 moves.append('S')
+    #             elif result[i][0] > result[i+1][0]:
+    #                 moves.append('N')
+    #             else:
+    #                 if result[i][1] < result[i+1][1]:
+    #                     moves.append('E')
+    #                 else:
+    #                     moves.append('W')
+    #         # print(moves)  
+    #         return moves
+    #     else:
+    #         # no path
+    #         return []
 
 
     def check_front(self):
@@ -1027,7 +1029,7 @@ class AStar:
                     moves.append('W')
         print(moves)
 
-        return moves, came_from
+        return moves
 
     
     def convert (self, msg, cur_dir):
