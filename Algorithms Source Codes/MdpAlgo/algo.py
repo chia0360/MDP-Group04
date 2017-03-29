@@ -337,7 +337,7 @@ class RightHandRule(algoAbstract):
             self.done = True
             self.handler.status = "stop"
             time.sleep(2)
-            if self.map.get_robot_direction == 'N':
+            if self.map.get_robot_direction() == 'N':
                 self.handler.left()
             self.handler.left()
             # stop the handler robot status here, if doesn't work try comment out.
@@ -370,7 +370,7 @@ class RightHandRule(algoAbstract):
             if self.shortest_path_moves:
                 self.handler.simulator.master.after(self.interval, self.run)
         else:
-            moves = self.astar.convert(self.shortest_path_moves)
+            moves = self.astar.convert(self.shortest_path_moves, self.map.get_robot_direction())
             print("shortest path in run function: ", moves)
             self.handler.robot.send('o')
             # will send everything to the arduino in this turn.
@@ -517,7 +517,7 @@ class RightHandRule(algoAbstract):
         if len(unexplored) == 0:
             # go back to start
             return_path = self.get_path((1,1))
-            commands = self.astar.convert(return_path)
+            commands = self.astar.convert(return_path, self.map.get_robot_direction())
             # command the robot to move towards the unexplored block and update the map after every move
             for command in commands:
                 if command == 'f':
@@ -558,7 +558,7 @@ class RightHandRule(algoAbstract):
                 if len(path) < len(min_path):
                     min_path = path[:]
 
-            commands = self.astar.convert(min_path)
+            commands = self.astar.convert(min_path, self.map.get_robot_direction())
             # command the robot to move towards the unexplored block and update the map after every move
             for command in commands:
                 if command == 'f':
@@ -587,7 +587,7 @@ class RightHandRule(algoAbstract):
         else:
             # go back to start
             return_path = self.get_path((1,1))
-            commands = self.astar.convert(return_path)
+            commands = self.astar.convert(return_path, self.map.get_robot_direction())
             # command the robot to move towards the unexplored block and update the map after every move
             for command in commands:
                 if command == 'f':
@@ -1021,9 +1021,9 @@ class AStar:
         return moves, came_from
 
     
-    def convert (self, msg):
+    def convert (self, msg, cur_dir):
         new_list = []
-        cur_dir = self.map.get_robot_direction()
+        # cur_dir = self.map.get_robot_direction()
         msg = [cur_dir] + msg[:]
 
         for i in range (1,len(msg)):
