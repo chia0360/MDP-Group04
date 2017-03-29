@@ -267,6 +267,7 @@ class RightHandRule(algoAbstract):
         self.simulation = config.robot_simulation
         self.goal_reached = False
         self.astar = AStar()
+        self.came_from = {}
     # def getHexMap(self):
     #     print("getHexMap descriptor", self.des.descriptor2)
     #     print("getHexMap map", self.des.map)
@@ -306,6 +307,17 @@ class RightHandRule(algoAbstract):
             self.goal_reached = True
 
         if location[0] == 1 and location[1] == 1 and self.goal_reached:
+            # finished first exploration, will trigger the exploration of unexplored blocks using astar
+
+            # first run astar once to get the initial self.came_from.
+            self.findSP()
+
+            # recursively run find_explored to get the path to unexplored blocks
+            # until there is no more unexplored block
+            self.find_unexplored()
+
+            # update the findSP the last time to get new shortest path
+            self.findSP()
             # send the hex string over here
             time.sleep(2)
             self.handler.robot.send(self.des.descriptor1())
@@ -334,7 +346,6 @@ class RightHandRule(algoAbstract):
         if not self.done and self.simulation:
             self.handler.simulator.master.after(self.interval, self.periodic_check)
             
-#print Descriptor with every move
         explored = self.map.get_map()
         self.des.map = explored
         # a = self.des.descriptor1()
@@ -343,7 +354,6 @@ class RightHandRule(algoAbstract):
         
     def findSP(self):
         # use the generic astar to find the shortest path
-        
         self.shortest_path_moves = self.astar.solve(self.map.get_map(), self.astar.start, self.astar.goal)
         print(self.shortest_path_moves)
         # return self.shortest_path_moves
@@ -479,7 +489,7 @@ class RightHandRule(algoAbstract):
                 # haven't turned because map already explored robot didn't need to turn to explore the map
                 # so robot need to turn now
             self.handler.right()
-            sensor = None;
+            sensor = None
             while not sensor:
                 sensor = self.handler.robot.receive()
 
@@ -494,6 +504,100 @@ class RightHandRule(algoAbstract):
                 return True
         else:
             return False
+
+    def find_unexplored(self):
+        unexplored = []
+        explored_map = self.map.get_map()
+        for row in range(15):
+            for col in range(20):
+                if explored_map[row][col] == 0:
+                    self.unexplored.append((row, col))
+
+        print("There are", len(unexplored), "unexplored blocks left")
+        if len(unexplored) == 0:
+            return
+        # find the string to go to all the unexplored block
+        closest = []
+        offsets = [(-3, -1), (-3, 0), (-3, 1),
+                (-1, -3), (0, -3), (1, -3),
+                (-1, 3), (0, 3), (1, 3),
+                (3, -1), (3, 0), (3, 1)]
+
+        all_paths = {}
+        for unex_block in unexplored:
+            for offset in offsets:
+                row = block[0] - offset[0]
+                col = block[1] - offset[1]
+                if (row >= 1 and row <= 13) and (col >= 1 and col <= 18):
+                    # checking valid position
+                block = (row, col)
+                # get the path
+                path = self.get_path(block)
+                all_paths[block] = path
+        
+        # get the path to closest block
+        min_path = all_paths[0][:]
+        
+        for path in all_paths:
+            if len(path) < len(min_path):
+                min_path = path[:]
+
+        
+        commands = self.convert(min_path)
+        # command the robot to move towards the unexplored block and update the map after every move
+        for command in commands:
+            if command == 'f':
+                self.handler.move()
+            elif command == 'r':
+                self.handler.right()
+            elif command == 'l':
+                self.handler.left()
+            self.handler.do_read()
+        
+        # when we reach the block adjacent to the unexplored block, since we dunno our direction,
+        # turn left and right to update the map
+        self.handler.left()
+        self.handler.do_read()
+        self.handler.right()
+        self.handler.right()
+        self.handler.do_read()
+        # no need to turn back to original direction since the next call to find_unexplored will take into 
+        # account the current direction of the robot to calculate the path
+
+        # update the self.came_from by running astar again
+        self.findSP()
+
+        # call this function recursively until there is no more unexplored block
+        self.find_unexplored()
+        
+    def get_path(self, block):
+        result = [block]
+        if block in self.came_from:
+            node = came_from[block]
+            while True:
+                result.insert(0, node)
+                if node in came_from:
+                    node = came_from[node]
+                    continue
+                else:
+                    break
+            moves = []
+            for i in range(len(result)-1):
+                if result[i][0] < result[i+1][0]:
+                    moves.append('S')
+                elif result[i][0] > result[i+1][0]:
+                    moves.append('N')
+                else:
+                    if result[i][1] < result[i+1][1]:
+                        moves.append('E')
+                    else:
+                        moves.append('W')
+            print(moves)
+            return moves
+        else:
+            # no path
+            return []
+
 
     def check_front(self):
         print("check front using walls")
@@ -689,7 +793,7 @@ class AStar:
         # if its on the sides, if its on the diagonal,
         # increase by 14
 
-        # the open list contains the nodes to be evaluated
+        # the open   list contains the nodes to be evaluated
         # as key as the fScore of the node as value
         open_list = {}
         # here the origin to destination we use the distance
@@ -734,6 +838,7 @@ class AStar:
                     open_list[top] = fScore
                     gScore[top] = tentative_gScore
                     came_from[top] = current
+                    self.came_from[top] = current
                     # best until now or new node
 
             # bottom 
@@ -746,6 +851,7 @@ class AStar:
                     
                 if bottom not in open_list or tentative_gScore < gScore[bottom]:
                     came_from[bottom] = current
+                    self.came_from[bottom] = current
                     gScore[bottom] = tentative_gScore
                     open_list[bottom] = fScore
 
@@ -758,6 +864,7 @@ class AStar:
                     tentative_gScore += 0.1
                 if left not in open_list or tentative_gScore < gScore[left]:
                     came_from[left] = current
+                    self.came_from[left] = current
                     gScore[left] = tentative_gScore
                     open_list[left] = fScore
 
@@ -771,6 +878,7 @@ class AStar:
 
                 if right not in open_list or tentative_gScore < gScore[right]:
                     came_from[right] = current
+                    self.came_from[right] = current
                     gScore[right] = tentative_gScore
                     open_list[right] = fScore
             
@@ -886,8 +994,8 @@ class AStar:
     
     def convert (self, msg):
         new_list = []
-        #cur_dir = self.map.get_robot_direction()
-        msg = ['S'] + msg[:]
+        cur_dir = self.map.get_robot_direction()
+        msg = [cur_dir] + msg[:]
 
         for i in range (1,len(msg)):
             if (msg[i] == msg[i-1]):
