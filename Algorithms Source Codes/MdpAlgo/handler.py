@@ -247,7 +247,7 @@ class Handler:
             # this sensor data is in the the following order
             # while not data:
             counter += 1
-            if counter == 20 and safe_m:
+            if counter == 200 and safe_m:
                 self.robot.send('m')
                 safe_m = False
             data = self.robot.receive()
