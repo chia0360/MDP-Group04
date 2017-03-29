@@ -354,7 +354,7 @@ class RightHandRule(algoAbstract):
         
     def findSP(self):
         # use the generic astar to find the shortest path
-        self.shortest_path_moves = self.astar.solve(self.map.get_map(), self.astar.start, self.astar.goal)
+        self.shortest_path_moves, self.came_from = self.astar.solve(self.map.get_map(), self.astar.start, self.astar.goal)
         print(self.shortest_path_moves)
         # return self.shortest_path_moves
         
@@ -842,7 +842,7 @@ class AStar:
                     open_list[top] = fScore
                     gScore[top] = tentative_gScore
                     came_from[top] = current
-                    self.came_from[top] = current
+                    # self.came_from[top] = current
                     # best until now or new node
 
             # bottom 
@@ -855,7 +855,7 @@ class AStar:
                     
                 if bottom not in open_list or tentative_gScore < gScore[bottom]:
                     came_from[bottom] = current
-                    self.came_from[bottom] = current
+                    # self.came_from[bottom] = current
                     gScore[bottom] = tentative_gScore
                     open_list[bottom] = fScore
 
@@ -868,7 +868,7 @@ class AStar:
                     tentative_gScore += 0.1
                 if left not in open_list or tentative_gScore < gScore[left]:
                     came_from[left] = current
-                    self.came_from[left] = current
+                    # self.came_from[left] = current
                     gScore[left] = tentative_gScore
                     open_list[left] = fScore
 
@@ -882,7 +882,7 @@ class AStar:
 
                 if right not in open_list or tentative_gScore < gScore[right]:
                     came_from[right] = current
-                    self.came_from[right] = current
+                    # self.came_from[right] = current
                     gScore[right] = tentative_gScore
                     open_list[right] = fScore
             
@@ -993,7 +993,7 @@ class AStar:
                     moves.append('W')
         print(moves)
 
-        return moves
+        return moves, came_from
 
     
     def convert (self, msg):
