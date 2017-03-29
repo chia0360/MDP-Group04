@@ -549,7 +549,7 @@ class RightHandRule(algoAbstract):
                     block = (row, col)
                     # get the path
                     path = self.get_path(block)
-                    if len(path) != 0:
+                    if len(path) > 0:
                         all_paths[block] = path 
             
         # get the path to closest block
@@ -564,6 +564,7 @@ class RightHandRule(algoAbstract):
 
             commands = self.astar.convert(min_path, self.map.get_robot_direction())
             # command the robot to move towards the unexplored block and update the map after every move
+            print("before sending commands")
             for command in commands:
                 if command == 'f':
                     self.handler.move()
@@ -579,6 +580,7 @@ class RightHandRule(algoAbstract):
             # self.handler.do_read()
             # self.handler.right()
             # self.handler.do_read()
+            print("before sending turn")
             self.handler.right()
             self.handler.do_read()
             # no need to turn back to original direction since the next call to find_unexplored will take into 
@@ -628,7 +630,7 @@ class RightHandRule(algoAbstract):
                         moves.append('E')
                     else:
                         moves.append('W')
-            print(moves)  
+            # print(moves)  
             return moves
         else:
             # no path
