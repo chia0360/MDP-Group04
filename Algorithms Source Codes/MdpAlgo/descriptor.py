@@ -66,6 +66,6 @@ class descriptor:
             temp += ret[i+2:i+3]
             temp += ret[i+3:i+4]
             hexa += str(hex(int(temp,2)))[2:3]
-        return(hexa)
+        return(hexa + "w")
 # ------------------------------End of class----------------------------------------
 
