@@ -1029,7 +1029,7 @@ class AStar:
         for i in range (1,len(msg)):
             if (msg[i] == msg[i-1]):
                 new_list.append('f')
-            elif (
+            elif (\
                 (msg[i-1]== 'N' and msg[i] == 'S') or\
                 (msg[i-1]== 'E' and msg[i] == 'W') or\
                 (msg[i-1]== 'S' and msg[i] == 'N') or\
