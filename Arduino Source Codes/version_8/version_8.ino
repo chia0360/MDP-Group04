@@ -176,9 +176,9 @@ void action() {
 
 
       if (frontLeftSensorAvg <= 15 && frontRightSensorAvg <= 15 && frontCentreSensorAvg <= 16) {
-        repositionRobotFront();
+        repoRobotFront();
         realignRobotCentre() ;
-        repositionRobotFront();
+        repoRobotFront();
         count = 0;
       }
 
@@ -186,17 +186,17 @@ void action() {
       //         repositionRobotFront();
 
       else if (frontLeftSensorAvg <= 15 && frontCentreSensorAvg <= 14) {
-        realignRobotCentre() ;
-        repositionRobotFrontLeft();
-        realignRobotCentre() ;
+        repoRobotCentre() ;
+        repoRobotFrontLeft();
+        repoRobotCentre() ;
         //    count=0;
 
       }
 
       else if (frontRightSensorAvg <= 15 && frontCentreSensorAvg <= 14) {
-        realignRobotCentre() ;
-        repositionRobotFrontRight();
-        realignRobotCentre() ;
+        repoRobotCentre() ;
+        repoRobotFrontRight();
+        repoRobotCentre() ;
         count = 0;
 
       }
@@ -211,9 +211,9 @@ void action() {
           FindFrontSensorAvg();
 
           if (frontLeftSensorAvg <= 17.5 && frontRightSensorAvg <= 17.5 && frontCentreSensorAvg <= 17) { //if front sensor has sth
-            repositionRobotFront() ;
-            realignRobotCentre() ;
-            repositionRobotFront() ;
+            repoRobotFront() ;
+            repoRobotCentre() ;
+            repoRobotFront() ;
           }
 
           TurnLeftAngle();
@@ -256,15 +256,15 @@ void action() {
 
       if (cornerrepositioning == true) {
         if (frontLeftSensorAvg <= 15 && frontRightSensorAvg <= 15 && frontCentreSensorAvg <= 16) {
-          repositionRobotFront();
+          repoRobotFront();
           realignRobotCentre() ;
-          repositionRobotFront();
+          repoRobotFront();
           count = 0;
         }
 
         //2 blocks left and right in front
         if (frontLeftSensorAvg <= 14 && frontRightSensorAvg <= 14)
-          repositionRobotFront();
+          repoRobotFront();
       }
 
       commands = 'z';
@@ -275,11 +275,11 @@ void action() {
     case 'd':
       //corner calibration
       TurnRightAngle();
-      repositionRobotFront() ;
+      repoRobotFront() ;
       realignRobotCentre() ;
       TurnLeftAngle();
       realignRobotCentre();
-      repositionRobotFront() ;
+      repoRobotFront() ;
       commands = 'm';
       error = false;
       cornerrepositioning = false;
@@ -474,7 +474,7 @@ void FindFrontSensorAvg() {
 
 //-------------Repositioning----------------------------
 //repositioning front robot
-void repositionRobotFront() {
+void repoRobotFront() {
   int check = 0;
 
   FindFrontSensorAvg();
@@ -515,7 +515,7 @@ int realignRideSide() {
 }
 
 //check centre distance
-void realignRobotCentre() {
+void repoRobotCentre() {
   FindFrontSensorAvg();
   /*forward*/
   while ((frontCentreSensorAvg - calibratedFrontCentreDist) > 0.1) {
@@ -579,7 +579,7 @@ void RightReposition() {
   check++;
 }
 
-void repositionRobotFrontLeft() {
+void repoRobotFrontLeft() {
   int reposCount = 0;
   FindFrontSensorAvg();
 
@@ -601,7 +601,7 @@ void repositionRobotFrontLeft() {
 }
 
 
-void repositionRobotFrontRight() {
+void repoRobotFrontRight() {
   int reposCount = 0;
   FindFrontSensorAvg();
 
