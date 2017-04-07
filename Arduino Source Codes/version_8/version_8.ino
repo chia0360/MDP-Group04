@@ -2,7 +2,7 @@
 #include "PinChangeInt.h"
 #include "DualVNH5019MotorShield.h"
 DualVNH5019MotorShield md;
-#define arraySize 10
+#define medianSize 10
 
 //----------------------Sensors------------------------------------------------------------
 int RightSensorPin = A3;
@@ -745,24 +745,24 @@ double backRightSensorReading() {
 
 //find the median of the sensor values
 void Median() {
-  static int index = 0;
+  static int i = 0;
 
   // get reading
-  leftSensorArray[index] = leftSensorReading();
-  rightSensorArray[index] = rightSensorReading();
-  frontRightSensorArray[index] = frontRightSensorReading();
-  frontLeftSensorArray[index] = frontLeftSensorReading();
-  frontCentreSensorArray[index] = frontCentreSensorReading();
-  NewRightSensorArray[index] = backRightSensorReading();
+  leftSensorArray[i] = leftSensorReading();
+  rightSensorArray[i] = rightSensorReading();
+  frontRightSensorArray[i] = frontRightSensorReading();
+  frontLeftSensorArray[i] = frontLeftSensorReading();
+  frontCentreSensorArray[i] = frontCentreSensorReading();
+  NewRightSensorArray[i] = backRightSensorReading();
   // sort data
   Sorting();
 
-  leftSensorMedian = leftSensorArray[arraySize / 2];
-  rightSensorMedian = rightSensorArray[arraySize / 2];
-  frontRightSensorMedian = frontRightSensorArray[arraySize / 2];
-  frontLeftSensorMedian = frontLeftSensorArray[arraySize / 2];
-  frontCentreSensorMedian = frontCentreSensorArray[arraySize / 2];
-  NewRightSensorMedian = NewRightSensorArray[arraySize / 2];
+  leftSensorMedian = leftSensorArray[medianSize / 2];
+  rightSensorMedian = rightSensorArray[medianSize / 2];
+  frontRightSensorMedian = frontRightSensorArray[medianSize / 2];
+  frontLeftSensorMedian = frontLeftSensorArray[medianSize / 2];
+  frontCentreSensorMedian = frontCentreSensorArray[medianSize / 2];
+  NewRightSensorMedian = NewRightSensorArray[medianSize / 2];
   index = (index + 1) % arraySize;
 }
 
@@ -771,37 +771,37 @@ void Sorting() {
   for (int i = 1; i < arraySize; i++) {
     for (int j = i; j > 0; j--) {
       if (leftSensorArray[j] < leftSensorArray[j - 1]) {
-        double temp = leftSensorArray[j];
+        double temporary = leftSensorArray[j];
         leftSensorArray[j] = leftSensorArray[j - 1];
-        leftSensorArray[j - 1] = temp;
+        leftSensorArray[j - 1] = temporary;
       }
       if (rightSensorArray[j] < rightSensorArray[j - 1]) {
-        double temp = rightSensorArray[j];
+        double temporary = rightSensorArray[j];
         rightSensorArray[j] = rightSensorArray[j - 1];
-        rightSensorArray[j - 1] = temp;
+        rightSensorArray[j - 1] = temporary;
       }
 
       if (frontLeftSensorArray[j] < frontLeftSensorArray[j - 1]) {
-        double temp = frontLeftSensorArray[j];
+        double temporary = frontLeftSensorArray[j];
         frontLeftSensorArray[j] = frontLeftSensorArray[j - 1];
-        frontLeftSensorArray[j - 1] = temp;
+        frontLeftSensorArray[j - 1] = temporary;
       }
       if (frontCentreSensorArray[j] < frontCentreSensorArray[j - 1]) {
-        double temp = frontCentreSensorArray[j];
+        double temporary = frontCentreSensorArray[j];
         frontCentreSensorArray[j] = frontCentreSensorArray[j - 1];
-        frontCentreSensorArray[j - 1] = temp;
+        frontCentreSensorArray[j - 1] = temporary;
       }
 
       if (frontRightSensorArray[j] < frontRightSensorArray[j - 1]) {
-        double temp = frontRightSensorArray[j];
+        double temporary = frontRightSensorArray[j];
         frontRightSensorArray[j] = frontRightSensorArray[j - 1];
-        frontRightSensorArray[j - 1] = temp;
+        frontRightSensorArray[j - 1] = temporary;
       }
 
       if (NewRightSensorArray[j] < NewRightSensorArray[j - 1]) {
-        double temp = NewRightSensorArray[j];
+        double temporary = NewRightSensorArray[j];
         NewRightSensorArray[j] = NewRightSensorArray[j - 1];
-        NewRightSensorArray[j - 1] = temp;
+        NewRightSensorArray[j - 1] = temporary;
       }
     }
   }
